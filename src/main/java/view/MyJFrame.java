@@ -1,12 +1,12 @@
 package view;
 
-import model.LifeView;
-
 import javax.swing.*;
 import java.awt.*;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Logger;
 
-public class MyJFrame extends JFrame implements LifeView {
+public class MyJFrame extends JFrame implements Observer {
     private static final Logger logger = Logger.getLogger(MyJFrame.class.getName());
 
     private int height = 400;
@@ -115,4 +115,7 @@ public class MyJFrame extends JFrame implements LifeView {
         jFrame.add(initView);
     }
 
+    public void update(Observable o, Object arg) {
+
+    }
 }

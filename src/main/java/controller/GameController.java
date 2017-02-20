@@ -1,6 +1,6 @@
 package controller;
 
-import model.LifeView;
+import model.Game;
 import view.MyJFrame;
 
 import java.io.IOException;
@@ -10,6 +10,8 @@ public class GameController {
     private static final Logger logger = Logger.getLogger(GameController.class.getName());
 
     public GameController() throws IOException {
-        LifeView lifeView = new MyJFrame(600, 800);
+        Game game = new Game(10, 10);
+        MyJFrame myJFrame = new MyJFrame(600, 800);
+        game.addObserver(myJFrame);
     }
 }
