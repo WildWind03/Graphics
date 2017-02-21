@@ -1,19 +1,24 @@
 package model;
 
+import java.util.Observable;
 import java.util.logging.Logger;
 
-public class Field implements IField {
+public class Field extends Observable {
     private static final Logger logger = Logger.getLogger(Field.class.getName());
+
     private final int width;
     private final int height;
 
-    private final ICell field[][];
+    private final Cell field[][];
 
     public Field(int width, int height) {
         this.width = width;
         this.height = height;
 
-        field = new ICell[width][height];
+        field = new Cell[width][height];
+
+        notifyObservers(this);
+
     }
 
     public int getWidth() {
@@ -24,7 +29,7 @@ public class Field implements IField {
         return height;
     }
 
-    public ICell[][] getCells() {
+    public Cell[][] getCells() {
         return field;
     }
 }

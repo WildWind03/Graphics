@@ -1,12 +1,11 @@
 package view;
 
-import model.IField;
+import model.Field;
+import util.GraphicsUtil;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.logging.Logger;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
@@ -19,7 +18,7 @@ public class InitView extends JPanel {
     private final int height;
 
     public InitView(int width, int height) {
-      bufferedImage = new BufferedImage(width, height, TYPE_INT_RGB);
+        bufferedImage = new BufferedImage(width, height, TYPE_INT_RGB);
         this.width = width;
         this.height = height;
     }
@@ -35,7 +34,7 @@ public class InitView extends JPanel {
         g.drawImage(bufferedImage, 0, 0, null);
     }
 
-    public void drawField(IField field) {
+    public void drawField(Field field) {
 
     }
 }

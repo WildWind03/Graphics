@@ -1,16 +1,16 @@
 package view;
 
+import model.Field;
+
 import javax.swing.*;
 import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.logging.Logger;
 
-public class MyJFrame extends JFrame implements Observer {
+public class MyJFrame extends JFrame {
     private static final Logger logger = Logger.getLogger(MyJFrame.class.getName());
 
-    private int height = 400;
-    private int width = 700;
+    private final int height;
+    private final int width;
 
     private JFrame jFrame;
     private JToolBar jToolBar;
@@ -115,7 +115,7 @@ public class MyJFrame extends JFrame implements Observer {
         jFrame.add(initView);
     }
 
-    public void update(Observable o, Object arg) {
-
+    public void repaintField(Field field) {
+        initView.drawField(field);
     }
 }
