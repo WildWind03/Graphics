@@ -44,18 +44,42 @@ public class SpanFiller {
         int startX = x;
         int finishX = x;
 
-        while (bufferedImage.getRGB(startX, y) == replacedColor) {
+        while (startX >= 0 && bufferedImage.getRGB(startX, y) == replacedColor) {
             bufferedImage.setRGB(startX, y, rgb);
             startX--;
         }
 
-        while (bufferedImage.getRGB(finishX, y) == replacedColor) {
+        while (finishX < bufferedImage.getWidth() && bufferedImage.getRGB(finishX, y) == replacedColor) {
             bufferedImage.setRGB(startX, y, rgb);
             finishX++;
         }
 
-        for (int k = startX; k < finishX; ++k) {
+        boolean isPrevAboveAdded = false;
+        boolean isPrevUnderAdded = false;
 
+
+        for (int k = startX; k < finishX; ++k) {
+            if (bufferedImage.getRGB(k, y + 1) != replacedColor) {
+                if (!isPrevAboveAdded) {
+                    isPrevAboveAdded = true;
+                    points.push(new Point(k, y + 1));
+                }
+            } else {
+                isPrevAboveAdded = false;
+            }
+
+            if (bufferedImage.getRGB(k, y - 1) != replacedColor) {
+                if (!isPrevUnderAdded) {
+                    isPrevUnderAdded = true;
+                    points.push(new Point(k, y - 1));
+                }
+            } else {
+                isPrevUnderAdded = false;
+            }
+        }
+
+        if (!points.isEmpty()){
+            fill();
         }
     }
 }

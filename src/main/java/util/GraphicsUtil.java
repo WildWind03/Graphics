@@ -131,34 +131,4 @@ public class GraphicsUtil {
     public static int getVerticalLength(int lineLength) {
         return 2 * getVerticalPart(lineLength) + lineLength;
     }
-
-    public static void spanFill(BufferedImage bufferedImage, int x1, int y1, int rgb, Stack<Point> points) {
-        if (null == points) {
-            points = new Stack<Point>();
-            points.add(new Point(x1, y1));
-        }
-
-        if (points.isEmpty()) {
-            return;
-        }
-
-        Point point = points.pop();
-        int x = point.getX();
-        int y = point.getY();
-
-        int replacedColor = bufferedImage.getRGB(x, y);
-
-        int startX = x;
-        int finishX = x;
-
-        while (bufferedImage.getRGB(startX, y) == replacedColor) {
-            bufferedImage.setRGB(startX, y, rgb);
-            startX--;
-        }
-
-        while (bufferedImage.getRGB(finishX, y) == replacedColor) {
-            bufferedImage.setRGB(startX, y, rgb);
-            finishX++;
-        }
-    }
 }

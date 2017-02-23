@@ -1,5 +1,6 @@
 package view;
 
+import graphics.SpanFiller;
 import model.Cell;
 import model.Field;
 import util.GraphicsUtil;
@@ -47,8 +48,11 @@ public class InitView extends JPanel {
                     }
                 }
             }
-
         }
+
+        SpanFiller spanFiller = new SpanFiller(bufferedImage, 3, 3, 0xFF0000);
+
+        spanFiller.fill();
 
         g.drawImage(bufferedImage, 0, 0, null);
 
