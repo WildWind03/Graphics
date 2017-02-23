@@ -7,6 +7,6 @@ public class Main {
     private static final Logger logger = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) throws IOException {
-        GameController gameController = new GameController(10, 10, 600, 800);
+        GameController gameController = new GameController(10, 10, 1000, 1200);
     }
 }

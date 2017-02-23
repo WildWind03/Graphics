@@ -1,5 +1,6 @@
 package view;
 
+import model.Cell;
 import model.Field;
 import util.GraphicsUtil;
 
@@ -16,6 +17,7 @@ public class InitView extends JPanel {
     private final BufferedImage bufferedImage;
     private final int width;
     private final int height;
+    private Field currentField = null;
 
     public InitView(int width, int height) {
         bufferedImage = new BufferedImage(width, height, TYPE_INT_RGB);
@@ -31,10 +33,29 @@ public class InitView extends JPanel {
         drawer.clearRect(0, 0, width, height);
         drawer.setColor(Color.BLACK);
 
+        if (null != currentField) {
+            Cell[][] cells = currentField.getCells();
+
+            for (int k = 0; k < cells.length; ++k) {
+                if (0 == k%2) {
+                    for (int i = 0; i < cells[0].length; ++i) {
+                        GraphicsUtil.drawHexagon(bufferedImage, i, k, 50);
+                    }
+                } else {
+                    for (int i = 0; i < cells[0].length - 1; ++i) {
+                        GraphicsUtil.drawHexagon(bufferedImage, i, k, 50);
+                    }
+                }
+            }
+
+        }
+
         g.drawImage(bufferedImage, 0, 0, null);
+
     }
 
     public void drawField(Field field) {
-
+        currentField = field;
+        paintComponent(getGraphics());
     }
 }
