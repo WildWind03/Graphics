@@ -172,7 +172,7 @@ public class GraphicsUtil {
             relX = x - (column * getHorizontalLength(lineLength));
         }
 
-        double k = 2 * (double) getVerticalPart(lineLength) / (double) getHalfOfHorizontalLength(lineLength);
+        double k = (double) getVerticalPart(lineLength) / (double) getHalfOfHorizontalLength(lineLength);
 
         if (relY < -k * relX + getVerticalPart(lineLength)) {
             row--;
