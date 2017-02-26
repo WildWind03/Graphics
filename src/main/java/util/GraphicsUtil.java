@@ -84,17 +84,27 @@ public class GraphicsUtil {
         }
     }
 
-    public static void drawHexagon(BufferedImage bufferedImage, int x, int y, int lineLength) {
+    public static void drawHexagon(BufferedImage bufferedImage, int x, int y, int lineLength, int maxY) {
         Point point = fromCellPositionToCoordinatesUpd(x, y, lineLength);
         int realX = point.getX();
         int realY = point.getY();
 
-        drawLine(bufferedImage, realX, realY, realX, realY + lineLength);
-        drawLine(bufferedImage, realX, realY + lineLength, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength));
-        drawLine(bufferedImage, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength), realX + getHorizontalLength(lineLength), realY + lineLength);
-        drawLine(bufferedImage, realX + getHorizontalLength(lineLength), realY + lineLength, realX + getHorizontalLength(lineLength), realY);
-        drawLine(bufferedImage, realX + getHorizontalLength(lineLength), realY, realX + getHalfOfHorizontalLength(lineLength), realY - getVerticalPart(lineLength));
-        drawLine(bufferedImage, realX, realY, realX + getHalfOfHorizontalLength(lineLength), realY - getVerticalPart(lineLength));
+        if (0 == y % 2) {
+            drawLine(bufferedImage, realX, realY, realX, realY + lineLength);
+            drawLine(bufferedImage, realX, realY + lineLength, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength));
+            drawLine(bufferedImage, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength), realX + getHorizontalLength(lineLength), realY + lineLength);
+            drawLine(bufferedImage, realX + getHorizontalLength(lineLength), realY + lineLength, realX + getHorizontalLength(lineLength), realY);
+            drawLine(bufferedImage, realX + getHorizontalLength(lineLength), realY, realX + getHalfOfHorizontalLength(lineLength), realY - getVerticalPart(lineLength));
+            drawLine(bufferedImage, realX, realY, realX + getHalfOfHorizontalLength(lineLength), realY - getVerticalPart(lineLength));
+        } else {
+            drawLine(bufferedImage, realX, realY, realX, realY + lineLength);
+            drawLine(bufferedImage, realX + getHorizontalLength(lineLength), realY + lineLength, realX + getHorizontalLength(lineLength), realY);
+
+            if ( y == maxY - 1) {
+                drawLine(bufferedImage, realX, realY + lineLength, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength));
+                drawLine(bufferedImage, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength), realX + getHorizontalLength(lineLength), realY + lineLength);
+            }
+        }
     }
 
     /*public static void drawHexagon(BufferedImage bufferedImage, int x, int y, int lineLength) {
@@ -130,6 +140,7 @@ public class GraphicsUtil {
             return new Point(horizontalStart + horizontalLength, (int) (y0 * verticalLength) - y0 * getVerticalPart(lineLength));
         }
     }
+
 
     public static Point fromCellPositionToCoordinatesUpd(int x0, int y0, int lineLength) {
         return (0 == y0 % 2) ? new Point(getHorizontalLength(lineLength) * x0, y0 * getVerticalLength(lineLength) - y0 * getVerticalPart(lineLength) + getVerticalPart(lineLength))
