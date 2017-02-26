@@ -57,14 +57,14 @@ public class InitView extends JPanel {
                 for (int k = 0; k < cells.length; ++k) {
                     if (0 == k % 2) {
                         for (int i = 0; i < cells[0].length; ++i) {
-                            if (cells[k][i].isAlive()) {
-                                GraphicsUtil.fillHexagon(bufferedImage, k, i, lineLength, fillColor);
+                            if (cells[i][k].isAlive()) {
+                                GraphicsUtil.fillHexagon(bufferedImage, i, k, lineLength, fillColor);
                             }
                         }
                     } else {
                         for (int i = 0; i < cells[0].length - 1; ++i) {
-                            if (cells[k][i].isAlive()) {
-                                GraphicsUtil.fillHexagon(bufferedImage, k, i, lineLength, fillColor);
+                            if (cells[i][k].isAlive()) {
+                                GraphicsUtil.fillHexagon(bufferedImage, i, k, lineLength, fillColor);
                             }
                         }
                     }

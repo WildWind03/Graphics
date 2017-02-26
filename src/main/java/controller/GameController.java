@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class GameController implements Observer {
     private static final Logger logger = Logger.getLogger(GameController.class.getName());
 
-    private final int lineLength = 30;
+    private final int lineLength = 60;
 
     private final Game game;
     private final MyJFrame myJFrame;
