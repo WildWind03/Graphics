@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 public class Cell {
     private static final Logger logger = Logger.getLogger(Cell.class.getName());
 
-    private final int impact;
+    private int impact;
 
     public Cell(int impact) {
         this.impact = impact;
@@ -13,5 +13,9 @@ public class Cell {
 
     public int getImpact() {
         return impact;
+    }
+
+    public void setImpact() {
+        this.impact = impact;
     }
 }

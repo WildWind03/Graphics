@@ -1,7 +1,6 @@
 package util;
 
 import java.awt.image.BufferedImage;
-import java.util.Stack;
 import java.util.logging.Logger;
 
 public class GraphicsUtil {
@@ -139,6 +138,47 @@ public class GraphicsUtil {
         } else {
             return new Point(horizontalStart + horizontalLength, (int) (y0 * verticalLength) - y0 * getVerticalPart(lineLength));
         }
+    }
+
+    public static Point fromCoordinatesToPositionInField(int x, int y, int lineLength) {
+        int gridHeight = lineLength + getVerticalPart(lineLength);
+        int row = y / gridHeight;
+        int column;
+
+        boolean isRowOdd = (row % 2 == 1);
+
+        if (isRowOdd) {
+            column = (x - getHalfOfHorizontalLength(lineLength)) / getHorizontalLength(lineLength);
+        } else {
+            column = (x / getHorizontalLength(lineLength));
+        }
+
+        int relY = y - (row * gridHeight);
+        int relX;
+
+        if (isRowOdd) {
+            relX = (x - (column * getHorizontalLength(lineLength))) - getHalfOfHorizontalLength(lineLength);
+        } else {
+            relX = x - (column * getHorizontalLength(lineLength));
+        }
+
+        int k = getVerticalPart(lineLength) / getHalfOfHorizontalLength(lineLength);
+
+        if (relY < -k * relX + getVerticalPart(lineLength)) {
+            row--;
+            if (!isRowOdd) {
+                column--;
+            }
+        } else {
+            if (relY < k * relX - getVerticalPart(lineLength)) {
+                row--;
+                if (isRowOdd) {
+                    column++;
+                }
+            }
+        }
+
+        return new Point(column, row);
     }
 
 

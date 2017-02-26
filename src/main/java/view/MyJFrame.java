@@ -4,6 +4,8 @@ import model.Field;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.logging.Logger;
 
 public class MyJFrame extends JFrame {
@@ -30,11 +32,12 @@ public class MyJFrame extends JFrame {
 
     private InitView initView;
 
-    public MyJFrame(int width, int height) {
+    public MyJFrame(int width, int height, int lineLength) {
         this.width = width;
         this.height = height;
 
-        initView = new InitView(width, height);
+        initView = new InitView(width, height, lineLength);
+
         jFrame = new JFrame();
         jFrame.setSize(width, height);
         jFrame.setVisible(true);
@@ -117,5 +120,9 @@ public class MyJFrame extends JFrame {
 
     public void repaintField(Field field) {
         initView.drawField(field);
+    }
+
+    public void addOnClickListener(MouseListener mouseListener) {
+        initView.addMouseListener(mouseListener);
     }
 }
