@@ -17,11 +17,16 @@ public class Game extends Observable implements Observer {
 
     public void update(Observable o, Object arg) {
         if (arg instanceof Field) {
+            setChanged();
             notifyObservers(arg);
         }
+    }
 
-        if (arg instanceof GraphicsUtil.Point) {
-            field.getCells()[((GraphicsUtil.Point) arg).getX()][((GraphicsUtil.Point) arg).getY()].setImpact();
+    public void onClickOnField(int x, int y) {
+        if (x >= 0 && y >= 0 && x < field.getWidth() && y < field.getHeight()) {
+            field.markCellAlive(x, y);
+            setChanged();
+            notifyObservers(field);
         }
     }
 

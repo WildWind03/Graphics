@@ -5,17 +5,27 @@ import java.util.logging.Logger;
 public class Cell {
     private static final Logger logger = Logger.getLogger(Cell.class.getName());
 
-    private int impact;
+    private double impact;
+    private boolean isAlive;
 
-    public Cell(int impact) {
+    public Cell(double impact) {
         this.impact = impact;
     }
 
-    public int getImpact() {
+    public double getImpact() {
         return impact;
     }
 
-    public void setImpact() {
-        this.impact = impact;
+    public void changeState(boolean isAlive) {
+        this.isAlive = isAlive;
     }
+
+    public void addImpact(double impact) {
+        this.impact+=impact;
+    }
+
+    public boolean isAlive() {
+        return isAlive;
+    }
+
 }

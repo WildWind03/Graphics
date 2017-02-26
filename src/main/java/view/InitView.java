@@ -1,14 +1,11 @@
 package view;
 
-import graphics.SpanFiller;
 import model.Cell;
 import model.Field;
 import util.GraphicsUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.logging.Logger;
 
@@ -23,6 +20,7 @@ public class InitView extends JPanel {
     private final int height;
     private final int lineLength;
     private Field currentField = null;
+    private int[] fillColor = {0, 255, 0};
 
     public InitView(int width, int height, final int lineLength) {
         bufferedImage = new BufferedImage(width, height, TYPE_INT_RGB);
@@ -55,10 +53,25 @@ public class InitView extends JPanel {
                         }
                     }
                 }
-            }
 
-            SpanFiller spanFiller = new SpanFiller(bufferedImage, 400, 233, new int[]{255, 0, 0});
-            spanFiller.applyFiller();
+                for (int k = 0; k < cells.length; ++k) {
+                    if (0 == k % 2) {
+                        for (int i = 0; i < cells[0].length; ++i) {
+                            if (cells[k][i].isAlive()) {
+                                GraphicsUtil.fillHexagon(bufferedImage, k, i, lineLength, fillColor);
+                            }
+                        }
+                    } else {
+                        for (int i = 0; i < cells[0].length - 1; ++i) {
+                            if (cells[k][i].isAlive()) {
+                                GraphicsUtil.fillHexagon(bufferedImage, k, i, lineLength, fillColor);
+                            }
+                        }
+                    }
+                }
+
+
+            }
 
             g.drawImage(bufferedImage, 0, 0, null);
         }

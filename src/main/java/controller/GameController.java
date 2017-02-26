@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class GameController implements Observer {
     private static final Logger logger = Logger.getLogger(GameController.class.getName());
 
-    private final int lineLength = 40;
+    private final int lineLength = 100;
 
     private final Game game;
     private final MyJFrame myJFrame;
@@ -26,9 +26,11 @@ public class GameController implements Observer {
         myJFrame = new MyJFrame(windowWidth, windowHeight, lineLength);
         myJFrame.repaintField(game.getField());
 
-        myJFrame.addMouseListener(new MouseListener() {
+        myJFrame.addOnClickListener(new MouseListener() {
             public void mouseClicked(MouseEvent e) {
                 GraphicsUtil.Point point = GraphicsUtil.fromCoordinatesToPositionInField(e.getX(), e.getY(), lineLength);
+
+                game.onClickOnField(point.getX(), point.getY());
             }
 
             public void mousePressed(MouseEvent e) {

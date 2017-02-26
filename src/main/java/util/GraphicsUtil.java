@@ -1,5 +1,7 @@
 package util;
 
+import graphics.SpanFiller;
+
 import java.awt.image.BufferedImage;
 import java.util.logging.Logger;
 
@@ -106,6 +108,12 @@ public class GraphicsUtil {
         }
     }
 
+    public static void fillHexagon(BufferedImage bufferedImage, int x, int y, int lineLength, int[] color) {
+        Point point = fromCellPositionToCoordinatesUpd(x, y, lineLength);
+        SpanFiller spanFiller = new SpanFiller(bufferedImage, point.getX() + 1, point.getY(), color);
+        spanFiller.applyFiller();
+    }
+
     /*public static void drawHexagon(BufferedImage bufferedImage, int x, int y, int lineLength) {
         Point point = fromCellPositionToCoordinates(x, y, lineLength);
         int realX = point.getX();
@@ -145,6 +153,8 @@ public class GraphicsUtil {
         int row = y / gridHeight;
         int column;
 
+
+
         boolean isRowOdd = (row % 2 == 1);
 
         if (isRowOdd) {
@@ -162,7 +172,7 @@ public class GraphicsUtil {
             relX = x - (column * getHorizontalLength(lineLength));
         }
 
-        int k = getVerticalPart(lineLength) / getHalfOfHorizontalLength(lineLength);
+        double k = 2 * (double) getVerticalPart(lineLength) / (double) getHalfOfHorizontalLength(lineLength);
 
         if (relY < -k * relX + getVerticalPart(lineLength)) {
             row--;
