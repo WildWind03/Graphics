@@ -50,9 +50,9 @@ public class InitView extends JPanel {
             }
         }
 
-        SpanFiller spanFiller = new SpanFiller(bufferedImage, 3, 3, 0xFF0000);
+        SpanFiller spanFiller = new SpanFiller(bufferedImage, 0, 0, new int[] {255, 0, 0});
 
-        spanFiller.fill();
+        spanFiller.applyFiller();
 
         g.drawImage(bufferedImage, 0, 0, null);
 
