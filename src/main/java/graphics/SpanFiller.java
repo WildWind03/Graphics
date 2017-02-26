@@ -8,10 +8,10 @@ import java.util.logging.Logger;
 public class SpanFiller {
     private static final Logger logger = Logger.getLogger(SpanFiller.class.getName());
 
-    private static class Point {
+    private static class MyPoint {
         private int x, y;
 
-        private Point(int x, int y) {
+        private MyPoint(int x, int y) {
             this.x = x;
             this.y = y;
         }
@@ -25,21 +25,22 @@ public class SpanFiller {
         }
     }
 
-    private final Stack<Point> points = new Stack<Point>();
+    private final Stack<MyPoint> myPoints;
     private final int[] fillColor;
     private final BufferedImage bufferedImage;
     private final int replacedColor[] = new int[3];
 
     public SpanFiller(BufferedImage bufferedImage, int x, int y, int[] fillColor) {
+        myPoints = new Stack<MyPoint>();
         this.fillColor = fillColor;
         this.bufferedImage = bufferedImage;
-        points.push(new Point(x, y));
+        myPoints.push(new MyPoint(x, y));
 
         bufferedImage.getRaster().getPixel(x, y, replacedColor);
     }
 
-    public void applyFiller() {
-        Point point = points.peek();
+    /*public void applyFiller() {
+        MyPoint point = myPoints.peek();
         int x = point.getX();
         int y = point.getY();
 
@@ -48,12 +49,12 @@ public class SpanFiller {
         if (!Arrays.equals(bufferedImage.getRaster().getPixel(x, y, currentColor), fillColor)) {
             fill();
         }
-    }
+    }*/
 
-    private void fill() {
-        Point point = points.pop();
-        int x = point.getX();
-        int y = point.getY();
+    public void applyFiller() {
+        MyPoint myPoint = myPoints.pop();
+        int x = myPoint.getX();
+        int y = myPoint.getY();
 
         int startX = x - 1;
         int finishX = x + 1;
@@ -67,10 +68,10 @@ public class SpanFiller {
 
             bufferedImage.getRaster().getPixel(startX, y, currentColor);
 
-            if (Arrays.equals(currentColor, replacedColor)) {
-                bufferedImage.getRaster().setPixel(startX--, y, fillColor);
-            } else {
+            if (!Arrays.equals(currentColor, replacedColor)) {
                 break;
+            } else {
+                startX--;
             }
         }
 
@@ -81,10 +82,10 @@ public class SpanFiller {
 
             bufferedImage.getRaster().getPixel(finishX , y, currentColor);
 
-            if (Arrays.equals(currentColor, replacedColor)) {
-                bufferedImage.getRaster().setPixel(finishX++, y, fillColor);
-            } else {
+            if (!Arrays.equals(currentColor, replacedColor)) {
                 break;
+            } else {
+                finishX++;
             }
         }
 
@@ -93,6 +94,8 @@ public class SpanFiller {
 
 
         for (int k = startX + 1; k < finishX; ++k) {
+            bufferedImage.getRaster().setPixel(k, y, fillColor);
+
             if (y + 1 < bufferedImage.getHeight()) {
 
                 bufferedImage.getRaster().getPixel(k, y + 1, currentColor);
@@ -100,7 +103,7 @@ public class SpanFiller {
                 if (Arrays.equals(currentColor, replacedColor)) {
                     if (!isPrevAboveAdded) {
                         isPrevAboveAdded = true;
-                        points.push(new Point(k, y + 1));
+                        myPoints.push(new MyPoint(k, y + 1));
                     }
                 } else {
                     isPrevAboveAdded = false;
@@ -113,7 +116,7 @@ public class SpanFiller {
                 if (Arrays.equals(currentColor, replacedColor)) {
                     if (!isPrevUnderAdded) {
                         isPrevUnderAdded = true;
-                        points.push(new Point(k, y - 1));
+                        myPoints.push(new MyPoint(k, y - 1));
                     }
                 } else {
                     isPrevUnderAdded = false;
@@ -121,8 +124,8 @@ public class SpanFiller {
             }
         }
 
-        if (!points.isEmpty()){
-            fill();
+        if (!myPoints.isEmpty()){
+            applyFiller();
         }
     }
 }

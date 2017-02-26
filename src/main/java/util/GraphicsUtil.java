@@ -85,37 +85,55 @@ public class GraphicsUtil {
     }
 
     public static void drawHexagon(BufferedImage bufferedImage, int x, int y, int lineLength) {
+        Point point = fromCellPositionToCoordinatesUpd(x, y, lineLength);
+        int realX = point.getX();
+        int realY = point.getY();
+
+        drawLine(bufferedImage, realX, realY, realX, realY + lineLength);
+        drawLine(bufferedImage, realX, realY + lineLength, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength));
+        drawLine(bufferedImage, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength), realX + getHorizontalLength(lineLength), realY + lineLength);
+        drawLine(bufferedImage, realX + getHorizontalLength(lineLength), realY + lineLength, realX + getHorizontalLength(lineLength), realY);
+        drawLine(bufferedImage, realX + getHorizontalLength(lineLength), realY, realX + getHalfOfHorizontalLength(lineLength), realY - getVerticalPart(lineLength));
+        drawLine(bufferedImage, realX, realY, realX + getHalfOfHorizontalLength(lineLength), realY - getVerticalPart(lineLength));
+    }
+
+    /*public static void drawHexagon(BufferedImage bufferedImage, int x, int y, int lineLength) {
         Point point = fromCellPositionToCoordinates(x, y, lineLength);
         int realX = point.getX();
         int realY = point.getY();
 
-        int endLeftX = realX - getHorizontalLength(lineLength) / 2;
+        int endLeftX = realX - getHalfOfHorizontalLength(lineLength);
         int endLeftY = realY + getVerticalPart(lineLength);
 
         drawLine(bufferedImage, realX, realY, endLeftX, endLeftY);
         drawLine(bufferedImage, endLeftX, endLeftY, endLeftX, endLeftY + lineLength);
         drawLine(bufferedImage, endLeftX, endLeftY + lineLength, realX, endLeftY + lineLength + getVerticalPart(lineLength));
 
-        int endRightX = realX + getHorizontalLength(lineLength) / 2;
+        int endRightX = realX + getHalfOfHorizontalLength(lineLength);
         int endRightY = realY + getVerticalPart(lineLength);
 
         drawLine(bufferedImage, realX, realY, endRightX, endRightY);
         drawLine(bufferedImage, endRightX, endRightY, endRightX, endRightY + lineLength);
         drawLine(bufferedImage, endRightX, endRightY + lineLength, realX, endLeftY + lineLength + getVerticalPart(lineLength));
 
-    }
+    }*/
 
     public static Point fromCellPositionToCoordinates(int x0, int y0, int lineLength) {
         final int horizontalLength = getHorizontalLength(lineLength);
-        final double c = getVerticalPart(lineLength);
+        final int verticalLength = getVerticalLength(lineLength);
 
-        final double verticalLength = 2 * c + lineLength;
+        final int horizontalStart = x0 * horizontalLength;
 
         if (0 == y0 % 2) {
-            return new Point((int) (x0 * horizontalLength + horizontalLength / 2), (int) (y0 * verticalLength) - y0 * getVerticalPart(lineLength) );
+            return new Point(horizontalStart + getHalfOfHorizontalLength(lineLength), (int) (y0 * verticalLength) - y0 * getVerticalPart(lineLength) );
         } else {
-            return new Point(x0 * horizontalLength + horizontalLength, (int) (y0 * verticalLength) - y0 * getVerticalPart(lineLength));
+            return new Point(horizontalStart + horizontalLength, (int) (y0 * verticalLength) - y0 * getVerticalPart(lineLength));
         }
+    }
+
+    public static Point fromCellPositionToCoordinatesUpd(int x0, int y0, int lineLength) {
+        return (0 == y0 % 2) ? new Point(getHorizontalLength(lineLength) * x0, y0 * getVerticalLength(lineLength) - y0 * getVerticalPart(lineLength) + getVerticalPart(lineLength))
+                : new Point(getHorizontalLength(lineLength) * x0 + getHalfOfHorizontalLength(lineLength), y0 * getVerticalLength(lineLength) - y0 * getVerticalPart(lineLength) + getVerticalPart(lineLength));
     }
 
     public static int getHorizontalLength(int lineLength) {
@@ -124,8 +142,11 @@ public class GraphicsUtil {
     }
 
     public static int getVerticalPart(int lineLength) {
-        int horizontalLength = getHorizontalLength(lineLength);
-        return (int) Math.sqrt(lineLength * lineLength - (horizontalLength * horizontalLength) / 4);
+        return (int) Math.sqrt(((int) (lineLength * lineLength)) - (int) (getHalfOfHorizontalLength(lineLength) * getHalfOfHorizontalLength(lineLength)));
+    }
+
+    public static int getHalfOfHorizontalLength(int lineLength) {
+        return getHorizontalLength(lineLength) / 2;
     }
 
     public static int getVerticalLength(int lineLength) {

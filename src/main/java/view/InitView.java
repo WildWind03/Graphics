@@ -50,16 +50,19 @@ public class InitView extends JPanel {
             }
         }
 
-        SpanFiller spanFiller = new SpanFiller(bufferedImage, 0, 0, new int[] {255, 0, 0});
-
+        SpanFiller spanFiller = new SpanFiller(bufferedImage, 400, 233, new int[] {255, 0, 0});
         spanFiller.applyFiller();
 
-        g.drawImage(bufferedImage, 0, 0, null);
+        if (null != currentField) {
+            g.drawImage(bufferedImage, 0, 0, null);
+        }
 
     }
 
     public void drawField(Field field) {
+
         currentField = field;
-        paintComponent(getGraphics());
+        repaint();
+        //paintComponent(getGraphics());
     }
 }
