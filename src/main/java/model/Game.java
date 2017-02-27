@@ -1,7 +1,5 @@
 package model;
 
-import util.GraphicsUtil;
-
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Logger;

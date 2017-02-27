@@ -1,7 +1,5 @@
 package util;
 
-import static org.junit.Assert.*;
-
 
 public class GraphicsUtilTest {
     @org.junit.Test
