@@ -7,6 +7,7 @@ import view.MyJFrame;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
@@ -51,6 +52,23 @@ public class GameController implements Observer {
 
             }
         });
+
+        myJFrame.addOnMoveListener(new MouseMotionListener() {
+            private GraphicsUtil.Point previousPoint = null;
+
+            public void mouseDragged(MouseEvent e) {
+                GraphicsUtil.Point point = GraphicsUtil.fromCoordinatesToPositionInField(e.getX(), e.getY(), lineLength);
+
+                if (!point.equals(previousPoint)) {
+                    previousPoint = point;
+                    game.onClickOnField(point.getX(), point.getY());
+                }
+            }
+
+            public void mouseMoved(MouseEvent e) {
+            }
+        });
+
 
     }
 

@@ -4,16 +4,13 @@ import model.Field;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.logging.Logger;
 
 public class MyJFrame extends JFrame {
     private static final Logger logger = Logger.getLogger(MyJFrame.class.getName());
     private static final String TITLE = "Life";
-
-    private final int height;
-    private final int width;
 
     private JFrame jFrame;
     private JToolBar jToolBar;
@@ -34,9 +31,7 @@ public class MyJFrame extends JFrame {
     private InitView initView;
 
     public MyJFrame(int width, int height, int lineLength) {
-        setTitle(TITLE);
-        this.width = width;
-        this.height = height;
+        setName(TITLE);
 
         initView = new InitView(width, height, lineLength);
 
@@ -119,6 +114,7 @@ public class MyJFrame extends JFrame {
         jFrame.add(initView);
 
         jFrame.pack();
+        jFrame.setResizable(false);
     }
 
     public void repaintField(Field field) {
@@ -127,5 +123,9 @@ public class MyJFrame extends JFrame {
 
     public void addOnClickListener(MouseListener mouseListener) {
         initView.addMouseListener(mouseListener);
+    }
+
+    public void addOnMoveListener(MouseMotionListener mouseMotionListener) {
+        initView.addMouseMotionListener(mouseMotionListener);
     }
 }

@@ -66,8 +66,6 @@ public class InitView extends JPanel {
                         }
                     }
                 }
-
-
             }
 
             g.drawImage(bufferedImage, 0, 0, null);
