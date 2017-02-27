@@ -31,7 +31,7 @@ public class MyJFrame extends JFrame {
     private InitView initView;
 
     public MyJFrame(int width, int height, int lineLength) {
-        setName(TITLE);
+        super(TITLE);
 
         initView = new InitView(width, height, lineLength);
 

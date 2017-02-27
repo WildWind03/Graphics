@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static util.GraphicsUtil.getHalfOfHorizontalLength;
+import static util.GraphicsUtil.getHorizontalLength;
 
 public class InitView extends JPanel {
 
@@ -22,22 +23,12 @@ public class InitView extends JPanel {
     private Field currentField = null;
     private int[] fillColor = {0, 255, 0};
 
-    private JLabel[][] impacts;
-
     public InitView(int width, int height, final int lineLength) {
         setPreferredSize(new Dimension(width, height));
         setLayout(null);
 
         bufferedImage = new BufferedImage(width, height, TYPE_INT_RGB);
         this.lineLength = lineLength;
-
-        this.impacts = new JLabel[width][height];
-
-        for (int k = 0; k < width; ++k) {
-            for (int i = 0; i < height; ++i) {
-                impacts[k][i] = new JLabel();
-            }
-        }
     }
 
     @Override
@@ -70,17 +61,17 @@ public class InitView extends JPanel {
                         for (int i = 0; i < cells[0].length; ++i) {
                             if (cells[i][k].isAlive()) {
                                 GraphicsUtil.fillHexagon(bufferedImage, i, k, lineLength, fillColor);
-                                printImpact(i, k, cells[k][i].getImpact());
-                                //GraphicsUtil.printImpact(this, i, k, cells[i][k].getImpact(), lineLength);
                             }
+
+                            printImpact(i, k, cells[i][k].getImpact(), bufferedImage);
                         }
                     } else {
                         for (int i = 0; i < cells[0].length - 1; ++i) {
                             if (cells[i][k].isAlive()) {
                                 GraphicsUtil.fillHexagon(bufferedImage, i, k, lineLength, fillColor);
-                                printImpact(i, k, cells[k][i].getImpact());
-                                //GraphicsUtil.printImpact(this, i, k, cells[i][k].getImpact(), lineLength);
                             }
+
+                            printImpact(i, k, cells[i][k].getImpact(), bufferedImage);
                         }
                     }
                 }
@@ -90,17 +81,23 @@ public class InitView extends JPanel {
         }
     }
 
-    private void printImpact(int x, int y, double impact) {
+    private void printImpact(int x, int y, double impact, BufferedImage bufferedImage) {
         GraphicsUtil.Point point = GraphicsUtil.fromCellPositionToCoordinatesUpd(x, y, lineLength);
         int centerX = point.getX() + lineLength / 2;
         int centerY = point.getY() + getHalfOfHorizontalLength(lineLength);
 
-        JLabel jLabel = impacts[x][y];
-        add(jLabel);
         String impactStr = Double.toString(impact);
-        jLabel.setSize(40, 40);
-        jLabel.setText(impactStr);
-        jLabel.setLocation(centerX - 30, centerY);
+
+        int dotPos = impactStr.indexOf('.');
+        String wholePart = impactStr.substring(0, dotPos);
+        String decimalPart = impactStr.substring(dotPos + 1, dotPos + 2);
+
+        Graphics2D graphics2D = (Graphics2D) bufferedImage.getGraphics();
+
+        int fontSize = lineLength / 2;
+        graphics2D.setFont(new Font("Courier New", Font.PLAIN, fontSize));
+        graphics2D.setColor(new Color(0, 0, 0));
+        graphics2D.drawString(wholePart + "." + decimalPart, centerX - lineLength / 9, centerY - lineLength / 5);
     }
 
     public void drawField(Field field) {

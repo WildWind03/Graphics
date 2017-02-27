@@ -51,6 +51,11 @@ public class Field extends Observable {
     }
 
     public void markCellAlive(int x, int y) {
+
+        if (field[x][y].isAlive()) {
+            return;
+        }
+
         field[x][y].changeState(true);
 
         addImpact(x + 1, y, FIRST_IMPACT);

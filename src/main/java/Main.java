@@ -9,6 +9,6 @@ public class Main {
     private static final int lineLength = 30;
 
     public static void main(String[] args) throws IOException {
-        GameController gameController = new GameController(10, 10, lineLength);
+        GameController gameController = new GameController(20, 20, lineLength);
     }
 }
