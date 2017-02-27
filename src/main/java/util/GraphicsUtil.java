@@ -2,6 +2,7 @@ package util;
 
 import graphics.SpanFiller;
 
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.util.logging.Logger;
 
@@ -127,8 +128,18 @@ public class GraphicsUtil {
         }
     }
 
-    public static void showImpact(BufferedImage bufferedImage, int x, int y, double impact) {
+    public static void printImpact(JPanel jPanel, int x, int y, double impact, int lineLength) {
+        Point point = fromCellPositionToCoordinatesUpd(x, y, lineLength);
+        int centerX = point.getX() + lineLength / 2;
+        int centerY = point.getY() + getHalfOfHorizontalLength(lineLength);
 
+        JLabel jLabel = new JLabel(Double.toString(impact));
+        jLabel.setSize(30, 30);
+        int startX = centerX - jLabel.getWidth() / 2;
+        int startY = centerY - jLabel.getHeight() / 2;
+
+        jPanel.add(jLabel);
+        jLabel.setLocation(startX, startY);
     }
 
     public static void fillHexagon(BufferedImage bufferedImage, int x, int y, int lineLength, int[] color) {
