@@ -15,12 +15,15 @@ import java.util.logging.Logger;
 public class GameController implements Observer {
     private static final Logger logger = Logger.getLogger(GameController.class.getName());
 
-    private final int lineLength = 60;
+    private final int VERTICAL_MARGIN = 1;
+    private final int HORIZONTAL_MARGIN = 1;
 
     private final Game game;
     private final MyJFrame myJFrame;
 
-    public GameController(int fieldWidth, int fieldHeight, int windowWidth, int windowHeight) throws IOException {
+    public GameController(int fieldWidth, int fieldHeight, final int lineLength) throws IOException {
+        int windowWidth = fieldWidth * GraphicsUtil.getHorizontalLength(lineLength) + HORIZONTAL_MARGIN;
+        int windowHeight = fieldHeight * (GraphicsUtil.getVerticalPart(lineLength) + lineLength) + GraphicsUtil.getVerticalPart(lineLength) + VERTICAL_MARGIN;
         game = new Game(fieldWidth, fieldHeight);
         game.addObserver(this);
         myJFrame = new MyJFrame(windowWidth, windowHeight, lineLength);
@@ -28,13 +31,12 @@ public class GameController implements Observer {
 
         myJFrame.addOnClickListener(new MouseListener() {
             public void mouseClicked(MouseEvent e) {
-                GraphicsUtil.Point point = GraphicsUtil.fromCoordinatesToPositionInField(e.getX(), e.getY(), lineLength);
-
-                game.onClickOnField(point.getX(), point.getY());
             }
 
             public void mousePressed(MouseEvent e) {
+                GraphicsUtil.Point point = GraphicsUtil.fromCoordinatesToPositionInField(e.getX(), e.getY(), lineLength);
 
+                game.onClickOnField(point.getX(), point.getY());
             }
 
             public void mouseReleased(MouseEvent e) {

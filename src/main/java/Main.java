@@ -6,7 +6,9 @@ import java.util.logging.Logger;
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class.getName());
 
+    private static final int lineLength = 30;
+
     public static void main(String[] args) throws IOException {
-        GameController gameController = new GameController(5, 5, 1000, 1200);
+        GameController gameController = new GameController(10, 10, lineLength);
     }
 }

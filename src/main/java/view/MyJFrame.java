@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 public class MyJFrame extends JFrame {
     private static final Logger logger = Logger.getLogger(MyJFrame.class.getName());
+    private static final String TITLE = "Life";
 
     private final int height;
     private final int width;
@@ -33,13 +34,13 @@ public class MyJFrame extends JFrame {
     private InitView initView;
 
     public MyJFrame(int width, int height, int lineLength) {
+        setTitle(TITLE);
         this.width = width;
         this.height = height;
 
         initView = new InitView(width, height, lineLength);
 
         jFrame = new JFrame();
-        jFrame.setSize(width, height);
         jFrame.setVisible(true);
 
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -116,6 +117,8 @@ public class MyJFrame extends JFrame {
         jFrame.add(jToolBar, BorderLayout.NORTH);
 
         jFrame.add(initView);
+
+        jFrame.pack();
     }
 
     public void repaintField(Field field) {

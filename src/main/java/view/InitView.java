@@ -16,16 +16,13 @@ public class InitView extends JPanel {
     private static final Logger logger = Logger.getLogger(InitView.class.getName());
 
     private final BufferedImage bufferedImage;
-    private final int width;
-    private final int height;
     private final int lineLength;
     private Field currentField = null;
     private int[] fillColor = {0, 255, 0};
 
     public InitView(int width, int height, final int lineLength) {
+        setPreferredSize(new Dimension(width, height));
         bufferedImage = new BufferedImage(width, height, TYPE_INT_RGB);
-        this.width = width;
-        this.height = height;
         this.lineLength = lineLength;
     }
 
@@ -36,7 +33,7 @@ public class InitView extends JPanel {
         if (null != currentField) {
             Graphics2D drawer = (Graphics2D) bufferedImage.getGraphics();
             drawer.setBackground(Color.WHITE);
-            drawer.clearRect(0, 0, width, height);
+            drawer.clearRect(0, 0, getWidth(), getHeight());
             drawer.setColor(Color.BLACK);
 
             if (null != currentField) {
