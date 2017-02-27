@@ -127,6 +127,10 @@ public class GraphicsUtil {
         }
     }
 
+    public static void showImpact(BufferedImage bufferedImage, int x, int y, double impact) {
+
+    }
+
     public static void fillHexagon(BufferedImage bufferedImage, int x, int y, int lineLength, int[] color) {
         Point point = fromCellPositionToCoordinatesUpd(x, y, lineLength);
         SpanFiller spanFiller = new SpanFiller(bufferedImage, point.getX() + 1, point.getY(), color);
