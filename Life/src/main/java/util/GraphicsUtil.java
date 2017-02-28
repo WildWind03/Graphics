@@ -69,16 +69,16 @@ public class GraphicsUtil {
             if (lengthX >= lengthY) {
                 int y = y0;
                 int x = x0;
-                int d = -1 * lengthX;
+                int d = lengthX;
 
                 length++;
                 while (length-- != 0) {
                     bufferedImage.setRGB(x, y, DEFAULT_COLOR);
                     x += dx;
-                    d += 2 * lengthY;
+                    d -= 2 * lengthY;
 
-                    if (d > 0) {
-                        d -= 2 * lengthX;
+                    if (d < 0) {
+                        d += 2 * lengthX;
                         y += dy;
                     }
                 }
@@ -186,8 +186,6 @@ public class GraphicsUtil {
         int gridHeight = lineLength + getVerticalPart(lineLength);
         int row = y / gridHeight;
         int column;
-
-
 
         boolean isRowOdd = (row % 2 == 1);
 

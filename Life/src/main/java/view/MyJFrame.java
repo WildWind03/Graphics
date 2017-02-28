@@ -11,8 +11,9 @@ import java.util.logging.Logger;
 public class MyJFrame extends JFrame {
     private static final Logger logger = Logger.getLogger(MyJFrame.class.getName());
     private static final String TITLE = "Life";
+    private static final int MAX_SHOWING_WIDTH_START = 1024;
+    private static final int MAX_SHOWING_HEIGHT_START = 768;
 
-    private JFrame jFrame;
     private JToolBar jToolBar;
     private JButton newDocumentButton;
     private JMenuBar jMenuBar;
@@ -33,12 +34,13 @@ public class MyJFrame extends JFrame {
     public MyJFrame(int width, int height, int lineLength) {
         super(TITLE);
 
+        int realWindowWidth = Math.min(width, MAX_SHOWING_HEIGHT_START);
+        int realWindowHeight = Math.min(height, MAX_SHOWING_HEIGHT_START);
+
         initView = new InitView(width, height, lineLength);
 
-        jFrame = new JFrame();
-        jFrame.setVisible(true);
-
-        jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setVisible(true);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         jMenuBar = new JMenuBar();
 
@@ -58,7 +60,7 @@ public class MyJFrame extends JFrame {
         JMenu helpMenu = new JMenu("Help");
         jMenuBar.add(helpMenu);
 
-        jFrame.setJMenuBar(jMenuBar);
+        setJMenuBar(jMenuBar);
 
         jToolBar = new JToolBar();
 
@@ -109,12 +111,14 @@ public class MyJFrame extends JFrame {
 
         jToolBar.add(aboutAuthorButton);
 
-        jFrame.add(jToolBar, BorderLayout.NORTH);
+        add(jToolBar, BorderLayout.NORTH);
 
-        jFrame.add(initView);
+        JScrollPane scrollPane = new JScrollPane(initView);
+        scrollPane.setPreferredSize(new Dimension(realWindowWidth, realWindowHeight));
+        scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+        add(scrollPane, BorderLayout.CENTER);
 
-        jFrame.pack();
-        jFrame.setResizable(false);
+        pack();
     }
 
     public void repaintField(Field field) {

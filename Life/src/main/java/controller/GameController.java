@@ -13,7 +13,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Logger;
 
-public class GameController implements Observer {
+public class GameController {
     private static final Logger logger = Logger.getLogger(GameController.class.getName());
 
     private final int VERTICAL_MARGIN = 1;
@@ -22,11 +22,17 @@ public class GameController implements Observer {
     private final Game game;
     private final MyJFrame myJFrame;
 
-    public GameController(int fieldWidth, int fieldHeight, final int lineLength) throws IOException {
+    public GameController(final int fieldWidth, final int fieldHeight, final int lineLength) throws IOException {
         int windowWidth = fieldWidth * GraphicsUtil.getHorizontalLength(lineLength) + HORIZONTAL_MARGIN;
         int windowHeight = fieldHeight * (GraphicsUtil.getVerticalPart(lineLength) + lineLength) + GraphicsUtil.getVerticalPart(lineLength) + VERTICAL_MARGIN;
         game = new Game(fieldWidth, fieldHeight);
-        game.addObserver(this);
+        game.addObserver(new Observer() {
+            public void update(Observable o, Object arg) {
+                if (arg instanceof Field) {
+                    myJFrame.repaintField((Field) arg);
+                }
+            }
+        });
         myJFrame = new MyJFrame(windowWidth, windowHeight, lineLength);
         myJFrame.repaintField(game.getField());
 
@@ -36,7 +42,6 @@ public class GameController implements Observer {
 
             public void mousePressed(MouseEvent e) {
                 GraphicsUtil.Point point = GraphicsUtil.fromCoordinatesToPositionInField(e.getX(), e.getY(), lineLength);
-
                 game.onClickOnField(point.getX(), point.getY());
             }
 
@@ -70,11 +75,5 @@ public class GameController implements Observer {
         });
 
 
-    }
-
-    public void update(Observable o, Object arg) {
-        if (arg instanceof Field) {
-            myJFrame.repaintField((Field) arg);
-        }
     }
 }
