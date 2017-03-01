@@ -29,7 +29,9 @@ public class Game extends Observable {
     public void onClickOnField(int x, int y) {
         Field field = getField();
 
-        if (x >= 0 && y >= 0 && x < field.getWidth() && y < field.getHeight()) {
+        int maxWidth = (0 == y % 2) ? field.getWidth() : field.getWidth() - 1;
+
+        if (x >= 0 && y >= 0 && x < maxWidth && y < field.getHeight()) {
             makeCellAlive(x, y);
             setChanged();
             notifyObservers(field);
@@ -48,31 +50,31 @@ public class Game extends Observable {
 
             for (int i = 0; i < width; ++i) {
                 int countOfAliveFirstNeighbours = (int) currentField
-                        .getFirstNeighbours(k, i)
+                        .getFirstNeighbours(i, k)
                         .stream()
                         .filter(Cell::isAlive)
                         .count();
 
                 int countOfAliveSecondNeighbours = (int) currentField
-                        .getSecondNeighbours(k, i)
+                        .getSecondNeighbours(i, k)
                         .stream()
                         .filter(Cell::isAlive)
                         .count();
 
                 double newImpact = countOfAliveFirstNeighbours * FIRST_IMPACT + countOfAliveSecondNeighbours * SECOND_IMPACT;
 
-                nextField.setImpact(k, i, newImpact);
-                if (currentField.isAlive(k, i)) {
+                nextField.setImpact(i, k, newImpact);
+                if (currentField.isAlive(i, k)) {
                     if (newImpact >= lifeBegin && newImpact <= lifeEnd) {
-                        nextField.changeState(k, i, true);
+                        nextField.changeState(i, k, true);
                     } else {
-                        nextField.changeState(k, i, false);
+                        nextField.changeState(i, k, false);
                     }
                 } else {
                     if (newImpact >= birthBegin && newImpact <= birthEnd) {
-                        nextField.changeState(k, i, true);
+                        nextField.changeState(i, k, true);
                     } else {
-                        nextField.changeState(k, i, false);
+                        nextField.changeState(i, k, false);
                     }
                 }
             }

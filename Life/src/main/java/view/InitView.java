@@ -1,6 +1,5 @@
 package view;
 
-import model.Cell;
 import model.Field;
 import util.GraphicsUtil;
 
@@ -12,18 +11,17 @@ import java.util.logging.Logger;
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static util.GraphicsUtil.getHalfOfHorizontalLength;
 
-public class InitView extends JPanel {
-
-    private static final Logger logger = Logger.getLogger(InitView.class.getName());
-
+class InitView extends JPanel {
     private final BufferedImage bufferedImage;
     private final int lineLength;
     private Field currentField = null;
     private int[] fillColor = {0, 255, 0};
+    private boolean isImpactShowing = false;
 
-    public InitView(int width, int height, final int lineLength) {
+    InitView(int width, int height, final int lineLength) {
         setPreferredSize(new Dimension(width, height));
         setLayout(null);
+        setBackground(Color.WHITE);
 
         bufferedImage = new BufferedImage(width, height, TYPE_INT_RGB);
         this.lineLength = lineLength;
@@ -40,35 +38,23 @@ public class InitView extends JPanel {
             drawer.setColor(Color.BLACK);
 
             if (null != currentField) {
-                //Cell[][] cells = currentField.getCells();
-
                 for (int k = 0; k < currentField.getHeight(); ++k) {
-                    if (0 == k % 2) {
-                        for (int i = 0; i < currentField.getWidth(); ++i) {
-                            GraphicsUtil.drawHexagon(bufferedImage, i, k, lineLength, currentField.getHeight());
-                        }
-                    } else {
-                        for (int i = 0; i < currentField.getWidth() - 1; ++i) {
-                            GraphicsUtil.drawHexagon(bufferedImage, i, k, lineLength, currentField.getHeight());
-                        }
+
+                    int width = (0 == k % 2) ? currentField.getWidth() : currentField.getWidth() - 1;
+                    for (int i =0; i < width; ++i) {
+                        GraphicsUtil.drawHexagon(bufferedImage, i, k, lineLength, currentField.getHeight());
                     }
                 }
 
                 for (int k = 0; k < currentField.getHeight(); ++k) {
-                    if (0 == k % 2) {
-                        for (int i = 0; i < currentField.getWidth(); ++i) {
-                            if (currentField.isAlive(i, k)) {
-                                GraphicsUtil.fillHexagon(bufferedImage, i, k, lineLength, fillColor);
-                            }
+                    int width = (0 == k % 2) ? currentField.getWidth() : currentField.getWidth() - 1;
 
-                            printImpact(i, k, currentField.getImpact(i, k), bufferedImage);
+                    for (int i = 0; i < width; ++i) {
+                        if (currentField.isAlive(i, k)) {
+                            GraphicsUtil.fillHexagon(bufferedImage, i, k, lineLength, fillColor);
                         }
-                    } else {
-                        for (int i = 0; i < currentField.getWidth() - 1; ++i) {
-                            if (currentField.isAlive(i, k)) {
-                                GraphicsUtil.fillHexagon(bufferedImage, i, k, lineLength, fillColor);
-                            }
 
+                        if (isImpactShowing) {
                             printImpact(i, k, currentField.getImpact(i, k), bufferedImage);
                         }
                     }
@@ -95,11 +81,31 @@ public class InitView extends JPanel {
         int fontSize = lineLength / 2;
         graphics2D.setFont(new Font("Courier New", Font.PLAIN, fontSize));
         graphics2D.setColor(new Color(0, 0, 0));
-        graphics2D.drawString(wholePart + "." + decimalPart, centerX - lineLength / 9, centerY - lineLength / 5);
+
+        String impactToPrint;
+        int startX;
+
+        if ("0".equals(decimalPart)) {
+            impactToPrint = wholePart;
+            startX = centerX + lineLength / 4;
+        } else {
+            impactToPrint = wholePart + "." + decimalPart;
+            startX = centerX - lineLength / 9;
+        }
+
+        graphics2D.drawString(impactToPrint, startX, centerY - lineLength / 5);
     }
 
-    public void drawField(Field field) {
+    void drawField(Field field) {
         currentField = field;
         repaint();
+    }
+
+    void changeImpactMode(boolean isImpactShowing) {
+        this.isImpactShowing = isImpactShowing;
+    }
+
+    public boolean isImpactShowing() {
+        return isImpactShowing;
     }
 }

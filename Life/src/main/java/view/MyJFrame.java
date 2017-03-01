@@ -2,6 +2,7 @@ package view;
 
 import model.Field;
 
+import javax.management.relation.RoleUnresolved;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -12,13 +13,15 @@ import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 public class MyJFrame extends JFrame {
     private static final String TITLE = "Life";
 
-    private static final String ABOUT_AUTHOR = "About author";
-
     private static final String FILE = "File";
     private static final String CREATE = "Create";
     private static final String EXIT = "Exit";
+
     private static final String EDIT = "Edit";
+
     private static final String PROPERTIES = "Properties";
+    private static final String ABOUT_THE_GAME = "About the game";
+
     private static final String HELP = "Help";
     private static final String OPEN = "Open";
     private static final String CLEAR = "Clear";
@@ -26,12 +29,13 @@ public class MyJFrame extends JFrame {
     private static final String REPLACE = "Replace";
     private static final String IMPACT = "Impact";
     private static final String NEXT = "Next";
-    private static final String ABOUT_THE_GAME = "About the game";
 
     private static final String ABOUT_AUTHOR_TEXT = "Life \n Created by Chirikhin Alexander \n 01.03.2017, NSU";
 
-    private static final String NEW_ICON_PATH = "./src/main/resources/new_icon_22.png";
-    private static final String OPEN_ICON_PATH = "./src/main/resources/open_icon_22.png";
+    private static final String NEW_ICON_PATH = "./src/main/resources/create_icon.png";
+    private static final String OPEN_ICON_PATH = "./src/main/resources/open_icon.png";
+    private static final String SAVE_ICON_PATH = "./src/main/resources/save_icon.png";
+
     private static final String CLEAR_SHORT = "clr";
     private static final String XOR_SHORT = "xor";
     private static final String REPLACE_SHORT = "rpl";
@@ -44,8 +48,8 @@ public class MyJFrame extends JFrame {
     private static final String CLOSE_SHORT = "X";
     private static final String CLOSE = "Close";
 
-    private static final int MAX_SHOWING_WIDTH_START = 1024;
-    private static final int MAX_SHOWING_HEIGHT_START = 768;
+    private static final int MAX_SHOWING_WIDTH_START = 1280;
+    private static final int MAX_SHOWING_HEIGHT_START = 720;
 
     private JToolBar jToolBar;
     private JButton newDocumentButton;
@@ -62,6 +66,8 @@ public class MyJFrame extends JFrame {
 
     private JButton aboutAuthorButton;
     private JButton exitButton;
+
+    private final JCheckBoxMenuItem impactMenuItem;
 
     private InitView initView;
 
@@ -88,19 +94,28 @@ public class MyJFrame extends JFrame {
         JMenu fileMenu = new JMenu(FILE);
         JMenuItem createMenuFileItem = new JMenuItem(CREATE);
         fileMenu.add(createMenuFileItem);
+
         JMenuItem exitMenuFileItem = new JMenuItem(EXIT);
+        addOnItemClickListener(exitMenuFileItem, this::onExit);
+
         fileMenu.add(exitMenuFileItem);
         jMenuBar.add(fileMenu);
 
         JMenu editMenu = new JMenu(EDIT);
+
+        impactMenuItem = new JCheckBoxMenuItem(IMPACT);
+        addOnItemClickListener(impactMenuItem, this::onImpactButtonClicked);
+        editMenu.add(impactMenuItem);
+
         jMenuBar.add(editMenu);
 
         JMenu propertiesMenu = new JMenu(PROPERTIES);
         jMenuBar.add(propertiesMenu);
 
         JMenu helpMenu = new JMenu(HELP);
-        JMenuItem jMenuItem = new JMenuItem(ABOUT_THE_GAME);
-        helpMenu.add(jMenuItem);
+        JMenuItem aboutGameMenuItem = new JMenuItem(ABOUT_THE_GAME);
+        addOnItemClickListener(aboutGameMenuItem, this::showInformationAboutProgram);
+        helpMenu.add(aboutGameMenuItem);
         jMenuBar.add(helpMenu);
 
         setJMenuBar(jMenuBar);
@@ -141,6 +156,7 @@ public class MyJFrame extends JFrame {
 
         impactButton = new JToggleButton(IMPACT_SHORT);
         impactButton.setToolTipText(IMPACT);
+        addOnClickListener(impactButton, this::onImpactButtonClicked);
         jToolBar.add(impactButton);
 
         nextButton = new JButton(NEXT_SHORT);
@@ -150,7 +166,7 @@ public class MyJFrame extends JFrame {
         jToolBar.addSeparator();
 
         aboutAuthorButton = new JButton(ABOUT_THE_GAME_SHORT);
-        aboutAuthorButton.setToolTipText(ABOUT_AUTHOR);
+        aboutAuthorButton.setToolTipText(ABOUT_THE_GAME);
         addOnClickListener(aboutAuthorButton, this::showInformationAboutProgram);
 
         jToolBar.add(aboutAuthorButton);
@@ -164,7 +180,6 @@ public class MyJFrame extends JFrame {
         add(jToolBar, BorderLayout.NORTH);
 
         JScrollPane scrollPane = new JScrollPane(initView);
-        scrollPane.setPreferredSize(new Dimension(realWindowWidth, realWindowHeight));
         scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
         add(scrollPane, BorderLayout.CENTER);
 
@@ -192,7 +207,41 @@ public class MyJFrame extends JFrame {
     }
 
     private void showInformationAboutProgram() {
-        JOptionPane.showMessageDialog(this, ABOUT_AUTHOR_TEXT, ABOUT_AUTHOR, INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, ABOUT_AUTHOR_TEXT, ABOUT_THE_GAME, INFORMATION_MESSAGE);
+    }
+
+    private void onStartButtonClicked() {
+
+    }
+
+    private void onOpenButtonClicked() {
+
+    }
+
+    private void onCreateButtonClicked() {
+
+    }
+
+    private void onSaveButtonClicked() {
+
+    }
+
+    private void onImpactButtonClicked() {
+        if (initView.isImpactShowing()) {
+            initView.changeImpactMode(false);
+            impactMenuItem.setSelected(false);
+            impactButton.setSelected(false);
+        } else {
+            initView.changeImpactMode(true);
+            impactMenuItem.setSelected(true);
+            impactButton.setSelected(true);
+        }
+
+        initView.repaint();
+    }
+
+    private void addOnItemClickListener(JMenuItem jMenuItem, Runnable runnable) {
+        jMenuItem.addActionListener(e -> runnable.run());
     }
 
     private void addOnClickListener(JComponent component, Runnable runnable) {

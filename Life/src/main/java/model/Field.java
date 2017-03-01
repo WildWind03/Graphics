@@ -111,7 +111,9 @@ public class Field {
     }
 
     private void addCellToNeighbourList(int x, int y, List<Cell> neighbours) {
-        if (x >= 0 && y >= 0 && x < getWidth() && y < getHeight()) {
+        int width = (0 == y % 2) ? getWidth() : getWidth() - 1;
+
+        if (x >= 0 && y >= 0 && x < width && y < getHeight()) {
             neighbours.add(cells[x][y]);
         }
     }
