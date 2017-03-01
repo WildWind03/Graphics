@@ -8,7 +8,7 @@ public class Cell {
     private double impact;
     private boolean isAlive;
 
-    public Cell(double impact) {
+    Cell(double impact) {
         this.impact = impact;
     }
 
@@ -16,16 +16,20 @@ public class Cell {
         return impact;
     }
 
-    public void changeState(boolean isAlive) {
+    void changeState(boolean isAlive) {
         this.isAlive = isAlive;
     }
 
-    public void addImpact(double impact) {
+    void addImpact(double impact) {
         this.impact+=impact;
     }
 
     public boolean isAlive() {
         return isAlive;
+    }
+
+    void setImpact(double newImpact) {
+        this.impact = newImpact;
     }
 
 }

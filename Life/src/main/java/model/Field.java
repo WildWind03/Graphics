@@ -1,35 +1,30 @@
 package model;
 
-import java.util.Observable;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
 
-public class Field extends Observable {
+public class Field {
     private static final Logger logger = Logger.getLogger(Field.class.getName());
 
     private final int width;
     private final int height;
 
-    private final double FIRST_IMPACT = 1;
-    private final double SECOND_IMPACT = 0.3;
-
     private final double DEFAULT_IMPACT = 0;
 
-    private final Cell field[][];
+    private final Cell cells[][];
 
     public Field(int width, int height) {
         this.width = width;
         this.height = height;
 
-        field = new Cell[width][height];
+        cells = new Cell[width][height];
 
         for (int k = 0; k < width; ++k) {
             for (int i = 0; i < height; ++i) {
-                field[k][i] = new Cell(DEFAULT_IMPACT);
+                cells[k][i] = new Cell(DEFAULT_IMPACT);
             }
         }
-
-        notifyObservers(this);
-
     }
 
     public int getWidth() {
@@ -40,51 +35,69 @@ public class Field extends Observable {
         return height;
     }
 
-    public Cell[][] getCells() {
-        return field;
-    }
-
     public void addImpact(int x, int y, double count) {
         if (x >= 0 && x < getWidth() && y >= 0 && y < getHeight()) {
-            field[x][y].addImpact(count);
+            cells[x][y].addImpact(count);
         }
     }
 
-    public void markCellAlive(int x, int y) {
-
-        if (field[x][y].isAlive()) {
-            return;
+    public void clear() {
+        for (int k = 0; k < width; ++k) {
+            for (int i = 0; i < height; ++i) {
+                cells[k][i].changeState(false);
+                cells[k][i].setImpact(DEFAULT_IMPACT);
+            }
         }
+    }
 
-        field[x][y].changeState(true);
+    public void changeState(int x, int y, boolean newState) {
+        cells[x][y].changeState(newState);
+    }
 
-        addImpact(x + 1, y, FIRST_IMPACT);
-        addImpact(x - 1, y, FIRST_IMPACT);
+    public void setImpact(int x, int y, double newImpact) {
+        cells[x][y].setImpact(newImpact);
+    }
 
-        addImpact(x, y - 1, FIRST_IMPACT);
-        addImpact(x, y + 1, FIRST_IMPACT);
-
-        addImpact(x, y - 2, SECOND_IMPACT);
-        addImpact(x, y + 2, SECOND_IMPACT);
+    public List<Cell> getFirstNeighbours(int x, int y) {
+        LinkedList<Cell> neighbours = new LinkedList<Cell>();
+        neighbours.add(cells[x + 1][y]);
+        neighbours.add(cells[x - 1][y]);
+        neighbours.add(cells[x][y - 1]);
+        neighbours.add(cells[x][y + 1]);
 
         if (0 == y % 2) {
-            addImpact(x - 1, y - 1, FIRST_IMPACT);
-            addImpact(x - 1, y + 1, FIRST_IMPACT);
-
-            addImpact(x + 1, y - 1, SECOND_IMPACT);
-            addImpact(x - 2, y - 1, SECOND_IMPACT);
-
-            addImpact(x + 1, y + 1, SECOND_IMPACT);
-            addImpact(x - 2, y + 1, SECOND_IMPACT);
+            neighbours.add(cells[x - 1][y - 1]);
+            neighbours.add(cells[x - 1][y + 1]);
         } else {
-            addImpact(x + 1, y - 1, FIRST_IMPACT);
-            addImpact(x + 1, y + 1, FIRST_IMPACT);
-
-            addImpact(x - 1, y - 1, SECOND_IMPACT);
-            addImpact(x + 2, y - 1, SECOND_IMPACT);
-
-            addImpact(x - 1, y + 1, SECOND_IMPACT);
-            addImpact(x + 2, y + 1, SECOND_IMPACT);
+            neighbours.add(cells[x + 1][y - 1]);
+            neighbours.add(cells[x + 1][y + 1]);
         }
+
+        return neighbours;
+    }
+
+    public List<Cell> getSecondNeighbours(int x, int y) {
+        LinkedList<Cell> neighbours = new LinkedList<Cell>();
+
+        neighbours.add(cells[x][y - 2]);
+        neighbours.add(cells[x][y + 2]);
+
+        if (0 == y % 2) {
+            neighbours.add(cells[x + 1][y - 1]);
+            neighbours.add(cells[x - 2][y - 1]);
+            neighbours.add(cells[x + 1][y + 1]);
+            neighbours.add(cells[x - 2][y + 1]);
+        } else {
+            neighbours.add(cells[x - 1][y - 1]);
+            neighbours.add(cells[x + 2][y - 1]);
+            neighbours.add(cells[x - 1][y + 1]);
+            neighbours.add(cells[x + 2][y + 1]);
+        }
+
+        return neighbours;
+    }
+
+    boolean isAlive(int x, int y) {
+        return cells[x][y].isAlive();
     }
 }
