@@ -103,4 +103,13 @@ public class Game extends Observable {
                 .getSecondNeighbours(x, y)
                 .forEach(cell -> cell.addImpact(SECOND_IMPACT));
     }
+
+    public void restart() {
+        turn = 0;
+        firstField.clear();
+        secondField.clear();
+
+        setChanged();
+        notifyObservers(getField());
+    }
 }

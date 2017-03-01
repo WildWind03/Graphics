@@ -50,6 +50,7 @@ public class MyJFrame extends JFrame {
 
     private static final int MAX_SHOWING_WIDTH_START = 1280;
     private static final int MAX_SHOWING_HEIGHT_START = 720;
+    private static final String SAVE = "Save";
 
     private JToolBar jToolBar;
     private JButton newDocumentButton;
@@ -124,17 +125,26 @@ public class MyJFrame extends JFrame {
         ImageIcon newIcon = new ImageIcon(NEW_ICON_PATH);
         newDocumentButton = new JButton(newIcon);
         newDocumentButton.setToolTipText(CREATE);
+        addOnClickListener(newDocumentButton, this::onCreateButtonClicked);
         jToolBar.add(newDocumentButton);
 
         ImageIcon openIcon = new ImageIcon(OPEN_ICON_PATH);
         openButton = new JButton(openIcon);
         openButton.setToolTipText(OPEN);
+        addOnClickListener(openButton, this::onOpenButtonClicked);
         jToolBar.add(openButton);
+
+        ImageIcon saveIcon = new ImageIcon(SAVE_ICON_PATH);
+        saveButton = new JButton(saveIcon);
+        saveButton.setToolTipText(SAVE);
+        addOnClickListener(saveButton, this::onSaveButtonClicked);
+        jToolBar.add(saveButton);
 
         jToolBar.addSeparator();
 
         clearButton = new JButton(CLEAR_SHORT);
         clearButton.setToolTipText(CLEAR);
+        addOnClickListener(clearButton, this::onClearButtonClicked);
         jToolBar.add(clearButton);
 
         xorButton = new JToggleButton(XOR_SHORT);
@@ -151,6 +161,7 @@ public class MyJFrame extends JFrame {
 
         runButton = new JToggleButton(RUN_SHORT);
         runButton.setToolTipText(RUN);
+        addOnClickListener(runButton, this::onRunButtonClicked);
         jToolBar.add(runButton);
 
         impactButton = new JToggleButton(IMPACT_SHORT);
@@ -192,6 +203,13 @@ public class MyJFrame extends JFrame {
         pack();
     }
 
+    private void onRunButtonClicked() {
+    }
+
+    private void onClearButtonClicked() {
+        
+    }
+
     public void repaintField(Field field) {
         initView.drawField(field);
     }
@@ -204,8 +222,8 @@ public class MyJFrame extends JFrame {
         initView.addMouseMotionListener(mouseMotionListener);
     }
 
-    public void addOnNextButtonListener(MouseListener mouseListener) {
-        nextButton.addMouseListener(mouseListener);
+    public void addOnNextButtonListener(Runnable runnable) {
+        addOnClickListener(nextButton, runnable);
     }
 
     private void onExit() {
@@ -248,6 +266,10 @@ public class MyJFrame extends JFrame {
 
     private void addOnItemClickListener(JMenuItem jMenuItem, Runnable runnable) {
         jMenuItem.addActionListener(e -> runnable.run());
+    }
+
+    public void addOnClearButtonListener(Runnable runnable) {
+        addOnClickListener(clearButton, runnable);
     }
 
     private void addOnClickListener(JComponent component, Runnable runnable) {
