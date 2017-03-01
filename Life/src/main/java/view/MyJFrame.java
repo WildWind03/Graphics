@@ -56,6 +56,8 @@ public class MyJFrame extends JFrame {
     private JMenuBar jMenuBar;
     private JButton openButton;
 
+    private JButton saveButton;
+
     private JButton clearButton;
     private JToggleButton xorButton;
     private JToggleButton replaceButton;
@@ -73,9 +75,6 @@ public class MyJFrame extends JFrame {
 
     public MyJFrame(int width, int height, int lineLength) {
         super(TITLE);
-
-        int realWindowWidth = Math.min(width, MAX_SHOWING_WIDTH_START);
-        int realWindowHeight = Math.min(height, MAX_SHOWING_HEIGHT_START);
 
         initView = new InitView(width, height, lineLength);
 
@@ -181,6 +180,13 @@ public class MyJFrame extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(initView);
         scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+        if (width > MAX_SHOWING_WIDTH_START || height > MAX_SHOWING_HEIGHT_START) {
+            int realWindowWidth = Math.min(width, MAX_SHOWING_WIDTH_START);
+            int realWindowHeight = Math.min(height, MAX_SHOWING_HEIGHT_START);
+
+            scrollPane.setPreferredSize(new Dimension(realWindowWidth, realWindowHeight));
+        }
+
         add(scrollPane, BorderLayout.CENTER);
 
         pack();
