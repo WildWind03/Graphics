@@ -273,15 +273,16 @@ public class MyJFrame extends JFrame {
     }
 
     private void addOnClickListener(JComponent component, Runnable runnable) {
+        // TODO: 3/1/2017 ActionListener for toogle button. Impact, problems
         component.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                runnable.run();
+
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-
+                runnable.run();
             }
 
             @Override

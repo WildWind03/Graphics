@@ -6,7 +6,6 @@ import util.GraphicsUtil;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.logging.Logger;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static util.GraphicsUtil.getHalfOfHorizontalLength;

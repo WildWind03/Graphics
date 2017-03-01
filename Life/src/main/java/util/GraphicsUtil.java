@@ -148,27 +148,6 @@ public class GraphicsUtil {
         spanFiller.applyFiller();
     }
 
-    /*public static void drawHexagon(BufferedImage bufferedImage, int x, int y, int lineLength) {
-        Point point = fromCellPositionToCoordinates(x, y, lineLength);
-        int realX = point.getX();
-        int realY = point.getY();
-
-        int endLeftX = realX - getHalfOfHorizontalLength(lineLength);
-        int endLeftY = realY + getVerticalPart(lineLength);
-
-        drawLine(bufferedImage, realX, realY, endLeftX, endLeftY);
-        drawLine(bufferedImage, endLeftX, endLeftY, endLeftX, endLeftY + lineLength);
-        drawLine(bufferedImage, endLeftX, endLeftY + lineLength, realX, endLeftY + lineLength + getVerticalPart(lineLength));
-
-        int endRightX = realX + getHalfOfHorizontalLength(lineLength);
-        int endRightY = realY + getVerticalPart(lineLength);
-
-        drawLine(bufferedImage, realX, realY, endRightX, endRightY);
-        drawLine(bufferedImage, endRightX, endRightY, endRightX, endRightY + lineLength);
-        drawLine(bufferedImage, endRightX, endRightY + lineLength, realX, endLeftY + lineLength + getVerticalPart(lineLength));
-
-    }*/
-
     public static Point fromCellPositionToCoordinates(int x0, int y0, int lineLength) {
         final int horizontalLength = getHorizontalLength(lineLength);
         final int verticalLength = getVerticalLength(lineLength);
