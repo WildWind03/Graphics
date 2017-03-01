@@ -74,6 +74,33 @@ public class GameController {
             }
         });
 
+        myJFrame.addOnNextButtonListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                game.nextTurn();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+
 
     }
 }

@@ -42,10 +42,22 @@ public class Field {
     }
 
     public void clear() {
+        makeAllCellsDead();
+        resetCellsImpacts();
+    }
+
+    public void makeAllCellsDead() {
         for (int k = 0; k < width; ++k) {
             for (int i = 0; i < height; ++i) {
                 cells[k][i].changeState(false);
-                cells[k][i].setImpact(DEFAULT_IMPACT);
+            }
+        }
+    }
+
+    public void resetCellsImpacts() {
+        for (int k = 0; k < width; ++k) {
+            for (int i = 0; i < height; ++i) {
+                cells[k][i].setImpact(0);
             }
         }
     }
@@ -60,17 +72,18 @@ public class Field {
 
     public List<Cell> getFirstNeighbours(int x, int y) {
         LinkedList<Cell> neighbours = new LinkedList<Cell>();
-        neighbours.add(cells[x + 1][y]);
-        neighbours.add(cells[x - 1][y]);
-        neighbours.add(cells[x][y - 1]);
-        neighbours.add(cells[x][y + 1]);
+
+        addCellToNeighbourList(x + 1, y, neighbours);
+        addCellToNeighbourList(x - 1, y, neighbours);
+        addCellToNeighbourList(x, y - 1, neighbours);
+        addCellToNeighbourList(x, y + 1, neighbours);
 
         if (0 == y % 2) {
-            neighbours.add(cells[x - 1][y - 1]);
-            neighbours.add(cells[x - 1][y + 1]);
+            addCellToNeighbourList(x - 1, y - 1, neighbours);
+            addCellToNeighbourList(x - 1, y + 1, neighbours);
         } else {
-            neighbours.add(cells[x + 1][y - 1]);
-            neighbours.add(cells[x + 1][y + 1]);
+            addCellToNeighbourList(x + 1, y - 1, neighbours);
+            addCellToNeighbourList(x + 1, y + 1, neighbours);
         }
 
         return neighbours;
@@ -79,25 +92,35 @@ public class Field {
     public List<Cell> getSecondNeighbours(int x, int y) {
         LinkedList<Cell> neighbours = new LinkedList<Cell>();
 
-        neighbours.add(cells[x][y - 2]);
-        neighbours.add(cells[x][y + 2]);
+        addCellToNeighbourList(x, y - 2, neighbours);
+        addCellToNeighbourList(x, y + 2, neighbours);
 
         if (0 == y % 2) {
-            neighbours.add(cells[x + 1][y - 1]);
-            neighbours.add(cells[x - 2][y - 1]);
-            neighbours.add(cells[x + 1][y + 1]);
-            neighbours.add(cells[x - 2][y + 1]);
+            addCellToNeighbourList(x + 1, y - 1, neighbours);
+            addCellToNeighbourList(x - 2, y - 1, neighbours);
+            addCellToNeighbourList(x + 1, y + 1, neighbours);
+            addCellToNeighbourList(x - 2, y + 1, neighbours);
         } else {
-            neighbours.add(cells[x - 1][y - 1]);
-            neighbours.add(cells[x + 2][y - 1]);
-            neighbours.add(cells[x - 1][y + 1]);
-            neighbours.add(cells[x + 2][y + 1]);
+            addCellToNeighbourList(x - 1, y - 1, neighbours);
+            addCellToNeighbourList(x + 2, y - 1, neighbours);
+            addCellToNeighbourList(x - 1, y + 1, neighbours);
+            addCellToNeighbourList(x + 2, y + 1, neighbours);
         }
 
         return neighbours;
     }
 
-    boolean isAlive(int x, int y) {
+    private void addCellToNeighbourList(int x, int y, List<Cell> neighbours) {
+        if (x >= 0 && y >= 0 && x < getWidth() && y < getHeight()) {
+            neighbours.add(cells[x][y]);
+        }
+    }
+
+    public boolean isAlive(int x, int y) {
         return cells[x][y].isAlive();
+    }
+
+    public double getImpact(int x, int y) {
+        return cells[x][y].getImpact();
     }
 }

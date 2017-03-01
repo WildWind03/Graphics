@@ -37,12 +37,11 @@ public class Game extends Observable {
     }
 
     public void nextTurn() {
-        turn++;
-
         Field currentField = getField();
         Field nextField = (0 != turn % 2) ? firstField : secondField;
 
-        nextField.clear();
+        turn++;
+        nextField.makeAllCellsDead();
 
         for (int k = 0; k < currentField.getHeight(); ++k) {
             int width = (0 == k % 2) ? currentField.getWidth() : currentField.getWidth() - 1;
@@ -63,8 +62,24 @@ public class Game extends Observable {
                 double newImpact = countOfAliveFirstNeighbours * FIRST_IMPACT + countOfAliveSecondNeighbours * SECOND_IMPACT;
 
                 nextField.setImpact(k, i, newImpact);
+                if (currentField.isAlive(k, i)) {
+                    if (newImpact >= lifeBegin && newImpact <= lifeEnd) {
+                        nextField.changeState(k, i, true);
+                    } else {
+                        nextField.changeState(k, i, false);
+                    }
+                } else {
+                    if (newImpact >= birthBegin && newImpact <= birthEnd) {
+                        nextField.changeState(k, i, true);
+                    } else {
+                        nextField.changeState(k, i, false);
+                    }
+                }
             }
         }
+
+        setChanged();
+        notifyObservers(getField());
     }
 
     public Field getField() {

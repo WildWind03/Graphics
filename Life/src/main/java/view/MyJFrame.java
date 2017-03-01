@@ -4,6 +4,7 @@ import model.Field;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.logging.Logger;
@@ -34,7 +35,7 @@ public class MyJFrame extends JFrame {
     public MyJFrame(int width, int height, int lineLength) {
         super(TITLE);
 
-        int realWindowWidth = Math.min(width, MAX_SHOWING_HEIGHT_START);
+        int realWindowWidth = Math.min(width, MAX_SHOWING_WIDTH_START);
         int realWindowHeight = Math.min(height, MAX_SHOWING_HEIGHT_START);
 
         initView = new InitView(width, height, lineLength);
@@ -131,5 +132,9 @@ public class MyJFrame extends JFrame {
 
     public void addOnMoveListener(MouseMotionListener mouseMotionListener) {
         initView.addMouseMotionListener(mouseMotionListener);
+    }
+
+    public void addOnNextButtonListener(MouseListener mouseListener) {
+        nextButton.addMouseListener(mouseListener);
     }
 }

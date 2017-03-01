@@ -31,25 +31,13 @@ public class SpanFiller {
     private final int replacedColor[] = new int[3];
 
     public SpanFiller(BufferedImage bufferedImage, int x, int y, int[] fillColor) {
-        myPoints = new Stack<MyPoint>();
+        myPoints = new Stack<>();
         this.fillColor = fillColor;
         this.bufferedImage = bufferedImage;
         myPoints.push(new MyPoint(x, y));
 
         bufferedImage.getRaster().getPixel(x, y, replacedColor);
     }
-
-    /*public void applyFiller() {
-        MyPoint point = myPoints.peek();
-        int x = point.getX();
-        int y = point.getY();
-
-        int[] currentColor = new int[3];
-
-        if (!Arrays.equals(bufferedImage.getRaster().getPixel(x, y, currentColor), fillColor)) {
-            fill();
-        }
-    }*/
 
     public void applyFiller() {
         MyPoint myPoint = myPoints.pop();

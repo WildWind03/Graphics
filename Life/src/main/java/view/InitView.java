@@ -40,36 +40,36 @@ public class InitView extends JPanel {
             drawer.setColor(Color.BLACK);
 
             if (null != currentField) {
-                Cell[][] cells = currentField.getCells();
+                //Cell[][] cells = currentField.getCells();
 
-                for (int k = 0; k < cells.length; ++k) {
+                for (int k = 0; k < currentField.getHeight(); ++k) {
                     if (0 == k % 2) {
-                        for (int i = 0; i < cells[0].length; ++i) {
+                        for (int i = 0; i < currentField.getWidth(); ++i) {
                             GraphicsUtil.drawHexagon(bufferedImage, i, k, lineLength, currentField.getHeight());
                         }
                     } else {
-                        for (int i = 0; i < cells[0].length - 1; ++i) {
+                        for (int i = 0; i < currentField.getWidth() - 1; ++i) {
                             GraphicsUtil.drawHexagon(bufferedImage, i, k, lineLength, currentField.getHeight());
                         }
                     }
                 }
 
-                for (int k = 0; k < cells.length; ++k) {
+                for (int k = 0; k < currentField.getHeight(); ++k) {
                     if (0 == k % 2) {
-                        for (int i = 0; i < cells[0].length; ++i) {
-                            if (cells[i][k].isAlive()) {
+                        for (int i = 0; i < currentField.getWidth(); ++i) {
+                            if (currentField.isAlive(i, k)) {
                                 GraphicsUtil.fillHexagon(bufferedImage, i, k, lineLength, fillColor);
                             }
 
-                            printImpact(i, k, cells[i][k].getImpact(), bufferedImage);
+                            printImpact(i, k, currentField.getImpact(i, k), bufferedImage);
                         }
                     } else {
-                        for (int i = 0; i < cells[0].length - 1; ++i) {
-                            if (cells[i][k].isAlive()) {
+                        for (int i = 0; i < currentField.getWidth() - 1; ++i) {
+                            if (currentField.isAlive(i, k)) {
                                 GraphicsUtil.fillHexagon(bufferedImage, i, k, lineLength, fillColor);
                             }
 
-                            printImpact(i, k, cells[i][k].getImpact(), bufferedImage);
+                            printImpact(i, k, currentField.getImpact(i, k), bufferedImage);
                         }
                     }
                 }
