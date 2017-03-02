@@ -161,12 +161,12 @@ public class MyJFrame extends JFrame {
 
         runButton = new JToggleButton(RUN_SHORT);
         runButton.setToolTipText(RUN);
-        addOnClickListener(runButton, this::onRunButtonClicked);
+        addOnActionListener(runButton, this::onRunButtonClicked);
         jToolBar.add(runButton);
 
         impactButton = new JToggleButton(IMPACT_SHORT);
         impactButton.setToolTipText(IMPACT);
-        addOnClickListener(impactButton, this::onImpactButtonClicked);
+        addOnActionListener(impactButton, this::onImpactButtonClicked);
         jToolBar.add(impactButton);
 
         nextButton = new JButton(NEXT_SHORT);
@@ -272,17 +272,20 @@ public class MyJFrame extends JFrame {
         addOnClickListener(clearButton, runnable);
     }
 
-    private void addOnClickListener(JComponent component, Runnable runnable) {
-        // TODO: 3/1/2017 ActionListener for toogle button. Impact, problems
+    private void addOnActionListener(JToggleButton jToggleButton, Runnable runnable) {
+        jToggleButton.addActionListener(e -> runnable.run());
+    }
+
+    private void addOnClickListener(JButton component, Runnable runnable) {
         component.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
+                runnable.run();
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-                runnable.run();
+
             }
 
             @Override
