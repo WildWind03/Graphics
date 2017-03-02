@@ -33,6 +33,7 @@ public class GameController {
                 }
             }
         });
+
         myJFrame = new MyJFrame(windowWidth, windowHeight, lineLength);
         myJFrame.repaintField(game.getField());
 
@@ -57,6 +58,18 @@ public class GameController {
 
         myJFrame.addOnClearButtonListener(game::restart);
         myJFrame.addOnNextButtonListener(game::nextTurn);
+
+        myJFrame.addOnNewGameListener((width, height) -> {
+            //game = new Game(width, height);
+        });
+
+        myJFrame.addOnOpenGameListener(() -> {
+
+        });
+
+        myJFrame.addOnSaveGameListener(() -> {
+
+        });
 
 
     }

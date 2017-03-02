@@ -155,7 +155,6 @@ public class MyJFrame extends JFrame {
 
         clearButton = new JButton(CLEAR_SHORT);
         clearButton.setToolTipText(CLEAR);
-        addOnActionListener(clearButton, this::onClearButtonClicked);
         jToolBar.add(clearButton);
 
         xorButton = new JToggleButton(XOR_SHORT);
@@ -251,15 +250,12 @@ public class MyJFrame extends JFrame {
         }
     }
 
-    private void onClearButtonClicked() {
-        
-    }
-
     public void repaintField(Field field) {
         initView.drawField(field);
     }
 
     public void addOnClickListener(MyRunnable runnable) {
+
         initView.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -324,7 +320,7 @@ public class MyJFrame extends JFrame {
     }
 
     private void onCreateButtonClicked() {
-
+        DialogMultipleInput.show("Please, choose new field size");
     }
 
     private void onSaveButtonClicked() {
@@ -357,34 +353,19 @@ public class MyJFrame extends JFrame {
         jToggleButton.addActionListener(e -> runnable.run());
     }
 
-    /*private void addOnClickListener(JButton component, Runnable runnable) {
+    private void addOnActionListener(AbstractButton abstractButton, MyRunnable myRunnable) {
+        //abstractButton.addActionListener(e -> myRunnable.run());
+    }
 
-        component.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                runnable.run();
-            }
+    public void addOnNewGameListener(MyRunnable runnable) {
+        addOnActionListener(newDocumentButton, runnable);
+    }
 
-            @Override
-            public void mousePressed(MouseEvent e) {
+    public void addOnSaveGameListener(Runnable runnable) {
+        addOnActionListener(saveButton, runnable);
+    }
 
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
-
-    }*/
+    public void addOnOpenGameListener(Runnable runnable) {
+        addOnActionListener(openButton, runnable);
+    }
 }
