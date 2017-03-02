@@ -1,11 +1,14 @@
 package view;
 
+import controller.MyRunnable;
 import model.Field;
 
 import javax.management.relation.RoleUnresolved;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
+import java.util.Timer;
 import java.util.logging.Logger;
 
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
@@ -50,29 +53,37 @@ public class MyJFrame extends JFrame {
 
     private static final int MAX_SHOWING_WIDTH_START = 1280;
     private static final int MAX_SHOWING_HEIGHT_START = 720;
+
+    private static final int RUN_PERIOD = 1000;
     private static final String SAVE = "Save";
 
-    private JToolBar jToolBar;
-    private JButton newDocumentButton;
-    private JMenuBar jMenuBar;
-    private JButton openButton;
+    private final JToolBar jToolBar;
+    private final JButton newDocumentButton;
+    private final JMenuBar jMenuBar;
+    private final JButton openButton;
 
-    private JButton saveButton;
+    private final JButton saveButton;
 
-    private JButton clearButton;
-    private JToggleButton xorButton;
-    private JToggleButton replaceButton;
-    private JButton propertiesButton;
-    private JToggleButton runButton;
-    private JToggleButton impactButton;
-    private JButton nextButton;
+    private final JButton clearButton;
+    private final JToggleButton xorButton;
+    private final JToggleButton replaceButton;
+    private final JButton propertiesButton;
+    private final JToggleButton runButton;
+    private final JToggleButton impactButton;
+    private final JButton nextButton;
 
-    private JButton aboutAuthorButton;
-    private JButton exitButton;
+    private final JButton aboutAuthorButton;
+    private final JButton exitButton;
 
     private final JCheckBoxMenuItem impactMenuItem;
 
-    private InitView initView;
+    private final InitView initView;
+
+    private boolean isRunningMode = false;
+
+    private Runnable nextButtonAction;
+
+    private Timer runTask;
 
     public MyJFrame(int width, int height, int lineLength) {
         super(TITLE);
@@ -125,26 +136,26 @@ public class MyJFrame extends JFrame {
         ImageIcon newIcon = new ImageIcon(NEW_ICON_PATH);
         newDocumentButton = new JButton(newIcon);
         newDocumentButton.setToolTipText(CREATE);
-        addOnClickListener(newDocumentButton, this::onCreateButtonClicked);
+        addOnActionListener(newDocumentButton, this::onCreateButtonClicked);
         jToolBar.add(newDocumentButton);
 
         ImageIcon openIcon = new ImageIcon(OPEN_ICON_PATH);
         openButton = new JButton(openIcon);
         openButton.setToolTipText(OPEN);
-        addOnClickListener(openButton, this::onOpenButtonClicked);
+        addOnActionListener(openButton, this::onOpenButtonClicked);
         jToolBar.add(openButton);
 
         ImageIcon saveIcon = new ImageIcon(SAVE_ICON_PATH);
         saveButton = new JButton(saveIcon);
         saveButton.setToolTipText(SAVE);
-        addOnClickListener(saveButton, this::onSaveButtonClicked);
+        addOnActionListener(saveButton, this::onSaveButtonClicked);
         jToolBar.add(saveButton);
 
         jToolBar.addSeparator();
 
         clearButton = new JButton(CLEAR_SHORT);
         clearButton.setToolTipText(CLEAR);
-        addOnClickListener(clearButton, this::onClearButtonClicked);
+        addOnActionListener(clearButton, this::onClearButtonClicked);
         jToolBar.add(clearButton);
 
         xorButton = new JToggleButton(XOR_SHORT);
@@ -177,13 +188,13 @@ public class MyJFrame extends JFrame {
 
         aboutAuthorButton = new JButton(ABOUT_THE_GAME_SHORT);
         aboutAuthorButton.setToolTipText(ABOUT_THE_GAME);
-        addOnClickListener(aboutAuthorButton, this::showInformationAboutProgram);
+        addOnActionListener(aboutAuthorButton, this::showInformationAboutProgram);
 
         jToolBar.add(aboutAuthorButton);
 
         exitButton = new JButton(CLOSE_SHORT);
         exitButton.setToolTipText(CLOSE);
-        addOnClickListener(exitButton, this::onExit);
+        addOnActionListener(exitButton, this::onExit);
 
         jToolBar.add(exitButton);
 
@@ -204,6 +215,40 @@ public class MyJFrame extends JFrame {
     }
 
     private void onRunButtonClicked() {
+        if (!isRunningMode) {
+            isRunningMode = true;
+            newDocumentButton.setEnabled(false);
+            openButton.setEnabled(false);
+            saveButton.setEnabled(false);
+
+            clearButton.setEnabled(false);
+            xorButton.setEnabled(false);
+            replaceButton.setEnabled(false);
+            propertiesButton.setEnabled(false);
+            nextButton.setEnabled(false);
+
+            runTask = new Timer();
+            runTask.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (null != nextButtonAction) {
+                        nextButtonAction.run();
+                    }
+                }
+            }, 0, RUN_PERIOD);
+        } else {
+            runTask.cancel();
+            isRunningMode = false;
+            newDocumentButton.setEnabled(true);
+            openButton.setEnabled(true);
+            saveButton.setEnabled(true);
+
+            clearButton.setEnabled(true);
+            xorButton.setEnabled(true);
+            replaceButton.setEnabled(true);
+            propertiesButton.setEnabled(true);
+            nextButton.setEnabled(true);
+        }
     }
 
     private void onClearButtonClicked() {
@@ -214,16 +259,56 @@ public class MyJFrame extends JFrame {
         initView.drawField(field);
     }
 
-    public void addOnClickListener(MouseListener mouseListener) {
-        initView.addMouseListener(mouseListener);
+    public void addOnClickListener(MyRunnable runnable) {
+        initView.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!isRunningMode) {
+                    runnable.run(e.getX(), e.getY());
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
     }
 
-    public void addOnMoveListener(MouseMotionListener mouseMotionListener) {
-        initView.addMouseMotionListener(mouseMotionListener);
+    public void addOnMoveListener(MyRunnable runnable) {
+        initView.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (!isRunningMode) {
+                    runnable.run(e.getX(), e.getY());
+                }
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+
+            }
+        });
     }
 
     public void addOnNextButtonListener(Runnable runnable) {
-        addOnClickListener(nextButton, runnable);
+        addOnActionListener(nextButton, runnable);
+        this.nextButtonAction = runnable;
     }
 
     private void onExit() {
@@ -232,10 +317,6 @@ public class MyJFrame extends JFrame {
 
     private void showInformationAboutProgram() {
         JOptionPane.showMessageDialog(this, ABOUT_AUTHOR_TEXT, ABOUT_THE_GAME, INFORMATION_MESSAGE);
-    }
-
-    private void onStartButtonClicked() {
-
     }
 
     private void onOpenButtonClicked() {
@@ -269,14 +350,15 @@ public class MyJFrame extends JFrame {
     }
 
     public void addOnClearButtonListener(Runnable runnable) {
-        addOnClickListener(clearButton, runnable);
+        addOnActionListener(clearButton, runnable);
     }
 
-    private void addOnActionListener(JToggleButton jToggleButton, Runnable runnable) {
+    private void addOnActionListener(AbstractButton jToggleButton, Runnable runnable) {
         jToggleButton.addActionListener(e -> runnable.run());
     }
 
-    private void addOnClickListener(JButton component, Runnable runnable) {
+    /*private void addOnClickListener(JButton component, Runnable runnable) {
+
         component.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -303,5 +385,6 @@ public class MyJFrame extends JFrame {
 
             }
         });
-    }
+
+    }*/
 }

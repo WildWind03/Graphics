@@ -36,41 +36,22 @@ public class GameController {
         myJFrame = new MyJFrame(windowWidth, windowHeight, lineLength);
         myJFrame.repaintField(game.getField());
 
-        myJFrame.addOnClickListener(new MouseListener() {
-            public void mouseClicked(MouseEvent e) {
-            }
-
-            public void mousePressed(MouseEvent e) {
-                GraphicsUtil.Point point = GraphicsUtil.fromCoordinatesToPositionInField(e.getX(), e.getY(), lineLength);
-                game.onClickOnField(point.getX(), point.getY());
-            }
-
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            public void mouseExited(MouseEvent e) {
-
-            }
+        myJFrame.addOnClickListener((x, y) -> {
+            GraphicsUtil.Point point = GraphicsUtil.fromCoordinatesToPositionInField(x, y, lineLength);
+            game.onClickOnField(point.getX(), point.getY());
         });
 
-        myJFrame.addOnMoveListener(new MouseMotionListener() {
-            private GraphicsUtil.Point previousPoint = null;
+        myJFrame.addOnMoveListener(new MyRunnable() {
+            GraphicsUtil.Point previousPoint;
 
-            public void mouseDragged(MouseEvent e) {
-                GraphicsUtil.Point point = GraphicsUtil.fromCoordinatesToPositionInField(e.getX(), e.getY(), lineLength);
+            @Override
+            public void run(int x, int y) {
+                GraphicsUtil.Point point = GraphicsUtil.fromCoordinatesToPositionInField(x, y, lineLength);
 
                 if (!point.equals(previousPoint)) {
                     previousPoint = point;
                     game.onClickOnField(point.getX(), point.getY());
                 }
-            }
-
-            public void mouseMoved(MouseEvent e) {
             }
         });
 
