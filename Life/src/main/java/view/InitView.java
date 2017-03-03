@@ -12,8 +12,12 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static util.GraphicsUtil.getHalfOfHorizontalLength;
 
 class InitView extends JPanel {
+    private static final String FONT_NAME = "Courier New";
     private BufferedImage bufferedImage;
-    private final int lineLength;
+
+    private int lineLength;
+    private int lineWidth = 1;
+
     private Field currentField = null;
     private int[] fillColor = {0, 255, 0};
     private boolean isImpactShowing = false;
@@ -84,7 +88,7 @@ class InitView extends JPanel {
         Graphics2D graphics2D = (Graphics2D) bufferedImage.getGraphics();
 
         int fontSize = lineLength / 2;
-        graphics2D.setFont(new Font("Courier New", Font.PLAIN, fontSize));
+        graphics2D.setFont(new Font(FONT_NAME, Font.PLAIN, fontSize));
         graphics2D.setColor(new Color(0, 0, 0));
 
         String impactToPrint;
@@ -122,5 +126,13 @@ class InitView extends JPanel {
 
     public boolean isImpactShowing() {
         return isImpactShowing;
+    }
+
+    public void updateLineWidth(int lineWidth) {
+        this.lineWidth = lineWidth;
+    }
+
+    public void updateLineLength(int lineLength) {
+       this.lineLength = lineLength;
     }
 }

@@ -1,5 +1,9 @@
 package model;
 
+import support.Point;
+import util.GraphicsUtil;
+
+import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.FileHandler;
@@ -102,6 +106,12 @@ public class Game extends Observable {
         getField()
                 .getSecondNeighbours(x, y)
                 .forEach(cell -> cell.addImpact(SECOND_IMPACT));
+    }
+
+    public void makeCellAlive(LinkedList<Point<Integer>> points) {
+        points.forEach(point -> {
+            makeCellAlive(point.getX(), point.getY());
+        });
     }
 
     public void restart() {

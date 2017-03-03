@@ -2,10 +2,14 @@ package controller;
 
 import model.Field;
 import model.Game;
+import support.Point;
 import util.GraphicsUtil;
 import view.MyJFrame;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Paths;
+import java.util.LinkedList;
+import java.util.Scanner;
 import java.util.logging.Logger;
 
 public class GameController {
@@ -44,7 +48,7 @@ public class GameController {
             game.onClickOnField(point.getX(), point.getY());
         });
 
-        myJFrame.setOnMoveListener(new MyRunnable() {
+        myJFrame.setOnMoveListener(new TwoIntegerRunnable() {
             GraphicsUtil.Point previousPoint;
 
             @Override
@@ -72,8 +76,46 @@ public class GameController {
             setListeners(myJFrame);
         });
 
-        myJFrame.setOnOpenGameListener(() -> {
+        myJFrame.setOnOpenGameListener((fileName) -> {
+            try (Scanner scanner = new Scanner(Paths.get(fileName))) {
+                int width = scanner.nextInt();
+                int height = scanner.nextInt();
 
+                int lineWidth = scanner.nextInt();
+
+                int lineLength = scanner.nextInt();
+
+                int countOfLifeCells = scanner.nextInt();
+
+                LinkedList<Point<Integer>> lifeCells = new LinkedList<>();
+
+                for (int i = 0; i < countOfLifeCells; ++i) {
+                    lifeCells.add(new Point<>(scanner.nextInt(), scanner.nextInt()));
+                }
+
+                game = new Game(width, height);
+
+                int windowWidth = width * GraphicsUtil.getHorizontalLength(lineLength)
+                        + HORIZONTAL_MARGIN
+                        + lineWidth;
+
+                int windowHeight = height * (GraphicsUtil.getVerticalPart(lineLength) + lineLength)
+                        + GraphicsUtil.getVerticalPart(lineLength)
+                        + VERTICAL_MARGIN
+                        + lineWidth;
+
+                myJFrame.updateSize(windowWidth, windowHeight);
+                myJFrame.updateLineWidth(lineWidth);
+                myJFrame.updateLineLength(lineLength);
+
+                game.makeCellAlive(lifeCells);
+
+                myJFrame.repaintField(game.getField());
+                setListeners(myJFrame);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
 
         myJFrame.setOnSaveGameListener(() -> {

@@ -1,6 +1,6 @@
 package controller;
 
-public interface MyRunnable {
+public interface TwoIntegerRunnable {
     void run(int x, int y);
 
 }

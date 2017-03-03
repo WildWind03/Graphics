@@ -1,11 +1,14 @@
 package view;
 
-import controller.MyRunnable;
+import controller.StringRunnable;
+import controller.TwoIntegerRunnable;
+import javafx.stage.FileChooser;
 import model.Field;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.util.*;
 import java.util.Timer;
 
@@ -268,7 +271,7 @@ public class MyJFrame extends JFrame {
         initView.drawField(field);
     }
 
-    public void setOnClickListener(MyRunnable runnable) {
+    public void setOnClickListener(TwoIntegerRunnable runnable) {
         deleteOnClickListener(initView);
 
         initView.addMouseListener(new MouseListener() {
@@ -303,7 +306,7 @@ public class MyJFrame extends JFrame {
         });
     }
 
-    public void setOnMoveListener(MyRunnable runnable) {
+    public void setOnMoveListener(TwoIntegerRunnable runnable) {
         deleteMouseMotionListener(initView);
         initView.addMouseMotionListener(new MouseMotionListener() {
             @Override
@@ -370,7 +373,7 @@ public class MyJFrame extends JFrame {
         jToggleButton.addActionListener(e -> runnable.run());
     }
 
-    public void setOnNewGameListener(MyRunnable runnable) {
+    public void setOnNewGameListener(TwoIntegerRunnable runnable) {
         Runnable runnable1 = () -> {
             DialogMultipleInput.Result result = DialogMultipleInput.show(CHOOSE_NEW_FIELD_SIZE);
             if (null != result) {
@@ -385,8 +388,17 @@ public class MyJFrame extends JFrame {
         setOnActionListener(saveButton, runnable);
     }
 
-    public void setOnOpenGameListener(Runnable runnable) {
-        setOnActionListener(openButton, runnable);
+    public void setOnOpenGameListener(StringRunnable runnable) {
+        Runnable runnable1 = () -> {
+            JFileChooser jFileChooser = new JFileChooser();
+            int returnVal = jFileChooser.showDialog(this, "OK");
+
+            if (JFileChooser.APPROVE_OPTION == returnVal) {
+                runnable.run(jFileChooser.getSelectedFile().toString());
+            }
+        };
+
+        setOnActionListener(openButton, runnable1);
     }
 
     public void deleteActionListener(AbstractButton abstractButton) {
@@ -411,5 +423,13 @@ public class MyJFrame extends JFrame {
         for (MouseListener mouseListener1 : mouseListener) {
             jPanel.removeMouseListener(mouseListener1);
         }
+    }
+
+    public void updateLineWidth(int lineWidth) {
+        initView.updateLineWidth(lineWidth);
+    }
+
+    public void updateLineLength(int lineLength) {
+        initView.updateLineLength(lineLength);
     }
 }
