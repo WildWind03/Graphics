@@ -275,7 +275,9 @@ public class MyJFrame extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (!isRunningMode) {
-                    runnable.run(e.getX(), e.getY());
+                    if (!initView.isLine(e.getX(), e.getY())) {
+                        runnable.run(e.getX(), e.getY());
+                    }
                 }
             }
 

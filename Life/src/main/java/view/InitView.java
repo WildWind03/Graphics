@@ -6,6 +6,7 @@ import util.GraphicsUtil;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static util.GraphicsUtil.getHalfOfHorizontalLength;
@@ -103,6 +104,13 @@ class InitView extends JPanel {
     void drawField(Field field) {
         currentField = field;
         repaint();
+    }
+
+    public boolean isLine(int x, int y) {
+        int rgb[] = new int[3];
+        bufferedImage.getRaster().getPixel(x, y, rgb);
+        return Arrays.equals(new int[]{0, 0, 0}, rgb);
+
     }
 
     void changeImpactMode(boolean isImpactShowing) {
