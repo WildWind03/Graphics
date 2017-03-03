@@ -5,12 +5,7 @@ import model.Game;
 import util.GraphicsUtil;
 import view.MyJFrame;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.io.IOException;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.logging.Logger;
 
 public class GameController {
@@ -19,30 +14,37 @@ public class GameController {
     private final int VERTICAL_MARGIN = 1;
     private final int HORIZONTAL_MARGIN = 1;
 
-    private final Game game;
+    private Game game;
     private final MyJFrame myJFrame;
+    private final int lineLength;
 
     public GameController(final int fieldWidth, final int fieldHeight, final int lineLength) throws IOException {
+        this.lineLength = lineLength;
+
         int windowWidth = fieldWidth * GraphicsUtil.getHorizontalLength(lineLength) + HORIZONTAL_MARGIN;
         int windowHeight = fieldHeight * (GraphicsUtil.getVerticalPart(lineLength) + lineLength) + GraphicsUtil.getVerticalPart(lineLength) + VERTICAL_MARGIN;
-        game = new Game(fieldWidth, fieldHeight);
-        game.addObserver(new Observer() {
-            public void update(Observable o, Object arg) {
-                if (arg instanceof Field) {
-                    myJFrame.repaintField((Field) arg);
-                }
-            }
-        });
 
+        game = new Game(fieldWidth, fieldHeight);
         myJFrame = new MyJFrame(windowWidth, windowHeight, lineLength);
         myJFrame.repaintField(game.getField());
 
-        myJFrame.addOnClickListener((x, y) -> {
+        setListeners(myJFrame);
+
+    }
+
+    private void setListeners(MyJFrame myJFrame) {
+        game.addObserver((o, arg) -> {
+            if (arg instanceof Field) {
+                myJFrame.repaintField((Field) arg);
+            }
+        });
+
+        myJFrame.setOnClickListener((x, y) -> {
             GraphicsUtil.Point point = GraphicsUtil.fromCoordinatesToPositionInField(x, y, lineLength);
             game.onClickOnField(point.getX(), point.getY());
         });
 
-        myJFrame.addOnMoveListener(new MyRunnable() {
+        myJFrame.setOnMoveListener(new MyRunnable() {
             GraphicsUtil.Point previousPoint;
 
             @Override
@@ -56,21 +58,26 @@ public class GameController {
             }
         });
 
-        myJFrame.addOnClearButtonListener(game::restart);
-        myJFrame.addOnNextButtonListener(game::nextTurn);
+        myJFrame.setOnClearButtonListener(game::restart);
+        myJFrame.setOnNextButtonListener(game::nextTurn);
 
-        myJFrame.addOnNewGameListener((width, height) -> {
-            //game = new Game(width, height);
+        myJFrame.setOnNewGameListener((width, height) -> {
+            game = new Game(width, height);
+
+            int windowWidth = width * GraphicsUtil.getHorizontalLength(lineLength) + HORIZONTAL_MARGIN;
+            int windowHeight = height * (GraphicsUtil.getVerticalPart(lineLength) + lineLength) + GraphicsUtil.getVerticalPart(lineLength) + VERTICAL_MARGIN;
+
+            myJFrame.updateSize(windowWidth, windowHeight);
+            myJFrame.repaintField(game.getField());
+            setListeners(myJFrame);
         });
 
-        myJFrame.addOnOpenGameListener(() -> {
+        myJFrame.setOnOpenGameListener(() -> {
 
         });
 
-        myJFrame.addOnSaveGameListener(() -> {
+        myJFrame.setOnSaveGameListener(() -> {
 
         });
-
-
     }
 }

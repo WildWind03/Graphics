@@ -11,7 +11,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static util.GraphicsUtil.getHalfOfHorizontalLength;
 
 class InitView extends JPanel {
-    private final BufferedImage bufferedImage;
+    private BufferedImage bufferedImage;
     private final int lineLength;
     private Field currentField = null;
     private int[] fillColor = {0, 255, 0};
@@ -62,6 +62,11 @@ class InitView extends JPanel {
 
             g.drawImage(bufferedImage, 0, 0, null);
         }
+    }
+
+    public void updateSize(int width, int height) {
+        bufferedImage = new BufferedImage(width, height, TYPE_INT_RGB);
+        setPreferredSize(new Dimension(width, height));
     }
 
     private void printImpact(int x, int y, double impact, BufferedImage bufferedImage) {

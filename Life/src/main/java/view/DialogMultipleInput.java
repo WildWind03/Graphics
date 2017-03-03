@@ -6,8 +6,8 @@ import java.text.NumberFormat;
 
 public class DialogMultipleInput {
 
-    private static final String X_LABEl = "x:";
-    private static final String Y_LABEL = "y:";
+    private static final String WIDTH = "width:";
+    private static final String HEIGHT = "height:";
 
     public static class Result {
         private final int width;
@@ -55,10 +55,10 @@ public class DialogMultipleInput {
         yField.setValue(DEFAULT_FIELD_HEIGHT);
 
         JPanel myPanel = new JPanel();
-        myPanel.add(new JLabel(X_LABEl));
+        myPanel.add(new JLabel(WIDTH));
         myPanel.add(xField);
         myPanel.add(Box.createHorizontalStrut(GAP_BETWEEN_FIELDS));
-        myPanel.add(new JLabel(Y_LABEL));
+        myPanel.add(new JLabel(HEIGHT));
         myPanel.add(yField);
 
         int result = JOptionPane.showConfirmDialog(null, myPanel,

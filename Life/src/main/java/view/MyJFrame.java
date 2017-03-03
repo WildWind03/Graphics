@@ -3,13 +3,11 @@ package view;
 import controller.MyRunnable;
 import model.Field;
 
-import javax.management.relation.RoleUnresolved;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.util.Timer;
-import java.util.logging.Logger;
 
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 
@@ -56,6 +54,7 @@ public class MyJFrame extends JFrame {
 
     private static final int RUN_PERIOD = 1000;
     private static final String SAVE = "Save";
+    private static final String CHOOSE_NEW_FIELD_SIZE = "Choose new field size";
 
     private final JToolBar jToolBar;
     private final JButton newDocumentButton;
@@ -74,6 +73,8 @@ public class MyJFrame extends JFrame {
 
     private final JButton aboutAuthorButton;
     private final JButton exitButton;
+
+    private final JScrollPane scrollPane;
 
     private final JCheckBoxMenuItem impactMenuItem;
 
@@ -107,7 +108,7 @@ public class MyJFrame extends JFrame {
         fileMenu.add(createMenuFileItem);
 
         JMenuItem exitMenuFileItem = new JMenuItem(EXIT);
-        addOnItemClickListener(exitMenuFileItem, this::onExit);
+        setOnItemClickListener(exitMenuFileItem, this::onExit);
 
         fileMenu.add(exitMenuFileItem);
         jMenuBar.add(fileMenu);
@@ -115,7 +116,7 @@ public class MyJFrame extends JFrame {
         JMenu editMenu = new JMenu(EDIT);
 
         impactMenuItem = new JCheckBoxMenuItem(IMPACT);
-        addOnItemClickListener(impactMenuItem, this::onImpactButtonClicked);
+        setOnItemClickListener(impactMenuItem, this::onImpactButtonClicked);
         editMenu.add(impactMenuItem);
 
         jMenuBar.add(editMenu);
@@ -125,7 +126,7 @@ public class MyJFrame extends JFrame {
 
         JMenu helpMenu = new JMenu(HELP);
         JMenuItem aboutGameMenuItem = new JMenuItem(ABOUT_THE_GAME);
-        addOnItemClickListener(aboutGameMenuItem, this::showInformationAboutProgram);
+        setOnItemClickListener(aboutGameMenuItem, this::showInformationAboutProgram);
         helpMenu.add(aboutGameMenuItem);
         jMenuBar.add(helpMenu);
 
@@ -136,19 +137,18 @@ public class MyJFrame extends JFrame {
         ImageIcon newIcon = new ImageIcon(NEW_ICON_PATH);
         newDocumentButton = new JButton(newIcon);
         newDocumentButton.setToolTipText(CREATE);
-        addOnActionListener(newDocumentButton, this::onCreateButtonClicked);
         jToolBar.add(newDocumentButton);
 
         ImageIcon openIcon = new ImageIcon(OPEN_ICON_PATH);
         openButton = new JButton(openIcon);
         openButton.setToolTipText(OPEN);
-        addOnActionListener(openButton, this::onOpenButtonClicked);
+        setOnActionListener(openButton, this::onOpenButtonClicked);
         jToolBar.add(openButton);
 
         ImageIcon saveIcon = new ImageIcon(SAVE_ICON_PATH);
         saveButton = new JButton(saveIcon);
         saveButton.setToolTipText(SAVE);
-        addOnActionListener(saveButton, this::onSaveButtonClicked);
+        setOnActionListener(saveButton, this::onSaveButtonClicked);
         jToolBar.add(saveButton);
 
         jToolBar.addSeparator();
@@ -171,12 +171,12 @@ public class MyJFrame extends JFrame {
 
         runButton = new JToggleButton(RUN_SHORT);
         runButton.setToolTipText(RUN);
-        addOnActionListener(runButton, this::onRunButtonClicked);
+        setOnActionListener(runButton, this::onRunButtonClicked);
         jToolBar.add(runButton);
 
         impactButton = new JToggleButton(IMPACT_SHORT);
         impactButton.setToolTipText(IMPACT);
-        addOnActionListener(impactButton, this::onImpactButtonClicked);
+        setOnActionListener(impactButton, this::onImpactButtonClicked);
         jToolBar.add(impactButton);
 
         nextButton = new JButton(NEXT_SHORT);
@@ -187,20 +187,21 @@ public class MyJFrame extends JFrame {
 
         aboutAuthorButton = new JButton(ABOUT_THE_GAME_SHORT);
         aboutAuthorButton.setToolTipText(ABOUT_THE_GAME);
-        addOnActionListener(aboutAuthorButton, this::showInformationAboutProgram);
+        setOnActionListener(aboutAuthorButton, this::showInformationAboutProgram);
 
         jToolBar.add(aboutAuthorButton);
 
         exitButton = new JButton(CLOSE_SHORT);
         exitButton.setToolTipText(CLOSE);
-        addOnActionListener(exitButton, this::onExit);
+        setOnActionListener(exitButton, this::onExit);
 
         jToolBar.add(exitButton);
 
         add(jToolBar, BorderLayout.NORTH);
 
-        JScrollPane scrollPane = new JScrollPane(initView);
+        scrollPane = new JScrollPane(initView);
         scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+
         if (width > MAX_SHOWING_WIDTH_START || height > MAX_SHOWING_HEIGHT_START) {
             int realWindowWidth = Math.min(width, MAX_SHOWING_WIDTH_START);
             int realWindowHeight = Math.min(height, MAX_SHOWING_HEIGHT_START);
@@ -250,11 +251,25 @@ public class MyJFrame extends JFrame {
         }
     }
 
+    public void updateSize(int width, int height) {
+        initView.updateSize(width, height);
+
+        if (width > MAX_SHOWING_WIDTH_START || height > MAX_SHOWING_HEIGHT_START) {
+            int realWindowWidth = Math.min(width, MAX_SHOWING_WIDTH_START);
+            int realWindowHeight = Math.min(height, MAX_SHOWING_HEIGHT_START);
+
+            scrollPane.setPreferredSize(new Dimension(realWindowWidth, realWindowHeight));
+        }
+
+        pack();
+    }
+
     public void repaintField(Field field) {
         initView.drawField(field);
     }
 
-    public void addOnClickListener(MyRunnable runnable) {
+    public void setOnClickListener(MyRunnable runnable) {
+        deleteOnClickListener(initView);
 
         initView.addMouseListener(new MouseListener() {
             @Override
@@ -286,7 +301,8 @@ public class MyJFrame extends JFrame {
         });
     }
 
-    public void addOnMoveListener(MyRunnable runnable) {
+    public void setOnMoveListener(MyRunnable runnable) {
+        deleteMouseMotionListener(initView);
         initView.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -302,8 +318,8 @@ public class MyJFrame extends JFrame {
         });
     }
 
-    public void addOnNextButtonListener(Runnable runnable) {
-        addOnActionListener(nextButton, runnable);
+    public void setOnNextButtonListener(Runnable runnable) {
+        setOnActionListener(nextButton, runnable);
         this.nextButtonAction = runnable;
     }
 
@@ -317,10 +333,6 @@ public class MyJFrame extends JFrame {
 
     private void onOpenButtonClicked() {
 
-    }
-
-    private void onCreateButtonClicked() {
-        DialogMultipleInput.show("Please, choose new field size");
     }
 
     private void onSaveButtonClicked() {
@@ -341,31 +353,59 @@ public class MyJFrame extends JFrame {
         initView.repaint();
     }
 
-    private void addOnItemClickListener(JMenuItem jMenuItem, Runnable runnable) {
+    private void setOnItemClickListener(JMenuItem jMenuItem, Runnable runnable) {
         jMenuItem.addActionListener(e -> runnable.run());
     }
 
-    public void addOnClearButtonListener(Runnable runnable) {
-        addOnActionListener(clearButton, runnable);
+    public void setOnClearButtonListener(Runnable runnable) {
+        setOnActionListener(clearButton, runnable);
     }
 
-    private void addOnActionListener(AbstractButton jToggleButton, Runnable runnable) {
+    private void setOnActionListener(AbstractButton jToggleButton, Runnable runnable) {
+        deleteActionListener(jToggleButton);
         jToggleButton.addActionListener(e -> runnable.run());
     }
 
-    private void addOnActionListener(AbstractButton abstractButton, MyRunnable myRunnable) {
-        //abstractButton.addActionListener(e -> myRunnable.run());
+    public void setOnNewGameListener(MyRunnable runnable) {
+        Runnable runnable1 = () -> {
+            DialogMultipleInput.Result result = DialogMultipleInput.show(CHOOSE_NEW_FIELD_SIZE);
+            if (null != result) {
+                runnable.run(result.getWidth(), result.getHeight());
+            }
+        };
+
+        setOnActionListener(newDocumentButton, runnable1);
     }
 
-    public void addOnNewGameListener(MyRunnable runnable) {
-        addOnActionListener(newDocumentButton, runnable);
+    public void setOnSaveGameListener(Runnable runnable) {
+        setOnActionListener(saveButton, runnable);
     }
 
-    public void addOnSaveGameListener(Runnable runnable) {
-        addOnActionListener(saveButton, runnable);
+    public void setOnOpenGameListener(Runnable runnable) {
+        setOnActionListener(openButton, runnable);
     }
 
-    public void addOnOpenGameListener(Runnable runnable) {
-        addOnActionListener(openButton, runnable);
+    public void deleteActionListener(AbstractButton abstractButton) {
+        ActionListener[] actionListeners = abstractButton.getActionListeners();
+
+        for (ActionListener actionListener : actionListeners) {
+            abstractButton.removeActionListener(actionListener);
+        }
+    }
+
+    public void deleteMouseMotionListener(JPanel jPanel) {
+        MouseMotionListener[] mouseMotionListeners = jPanel.getMouseMotionListeners();
+
+        for (MouseMotionListener mouseMotionListener : mouseMotionListeners) {
+            jPanel.removeMouseMotionListener(mouseMotionListener);
+        }
+    }
+
+    public void deleteOnClickListener(JPanel jPanel) {
+        MouseListener[] mouseListener = jPanel.getMouseListeners();
+
+        for (MouseListener mouseListener1 : mouseListener) {
+            jPanel.removeMouseListener(mouseListener1);
+        }
     }
 }
