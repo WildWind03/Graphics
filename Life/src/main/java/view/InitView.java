@@ -106,11 +106,14 @@ class InitView extends JPanel {
         repaint();
     }
 
-    public boolean isLine(int x, int y) {
-        int rgb[] = new int[3];
-        bufferedImage.getRaster().getPixel(x, y, rgb);
-        return Arrays.equals(new int[]{0, 0, 0}, rgb);
+    public boolean isCouldBeFilled(int x, int y) {
+        if (x>=0 && x < bufferedImage.getWidth() && y >= 0 && y <= bufferedImage.getHeight()) {
+            int rgb[] = new int[3];
+            bufferedImage.getRaster().getPixel(x, y, rgb);
+            return !Arrays.equals(new int[]{0, 0, 0}, rgb);
+        }
 
+        return false;
     }
 
     void changeImpactMode(boolean isImpactShowing) {

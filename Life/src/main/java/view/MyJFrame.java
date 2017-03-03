@@ -275,7 +275,7 @@ public class MyJFrame extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (!isRunningMode) {
-                    if (!initView.isLine(e.getX(), e.getY())) {
+                    if (initView.isCouldBeFilled(e.getX(), e.getY())) {
                         runnable.run(e.getX(), e.getY());
                     }
                 }
@@ -309,7 +309,9 @@ public class MyJFrame extends JFrame {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (!isRunningMode) {
-                    runnable.run(e.getX(), e.getY());
+                    if (initView.isCouldBeFilled(e.getX(), e.getY())) {
+                        runnable.run(e.getX(), e.getY());
+                    }
                 }
             }
 
