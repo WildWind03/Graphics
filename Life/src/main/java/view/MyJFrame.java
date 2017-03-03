@@ -1,12 +1,13 @@
 package view;
 
+import controller.FileException;
 import controller.InvalidGameFile;
 import controller.StringRunnable;
 import controller.TwoIntegerRunnable;
-import javafx.stage.FileChooser;
 import model.Field;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -59,6 +60,8 @@ public class MyJFrame extends JFrame {
     private static final int RUN_PERIOD = 1000;
     private static final String SAVE = "Save";
     private static final String CHOOSE_NEW_FIELD_SIZE = "Choose new field size";
+    private static final String SAVE_WARNING_REWRITE = "There is already a file with such name. Do you want to rewrite it?";
+    private static final String SAVE_REWRITE_WRNING_TITLE = "Rewrite the file?";
 
     private final JToolBar jToolBar;
     private final JButton newDocumentButton;
@@ -385,19 +388,50 @@ public class MyJFrame extends JFrame {
         setOnActionListener(newDocumentButton, runnable1);
     }
 
-    public void setOnSaveGameListener(Runnable runnable) {
-        setOnActionListener(saveButton, runnable);
+    public void setOnSaveGameListener(StringRunnable runnable) {
+        setOnActionListener(saveButton, () -> {
+            JFileChooser jFileChooser = new JFileChooser();
+            FileNameExtensionFilter fileFilter = new FileNameExtensionFilter("Map file", "txt");
+
+            jFileChooser.setFileFilter(fileFilter);
+            jFileChooser.addChoosableFileFilter(fileFilter);
+
+            int result = jFileChooser.showSaveDialog(this);
+
+            if (JFileChooser.APPROVE_OPTION == result) {
+                try {
+                    File file = jFileChooser.getSelectedFile();
+
+                    if (file.exists()) {
+                        int isConfirm = JOptionPane.showConfirmDialog(this, SAVE_WARNING_REWRITE, SAVE_REWRITE_WRNING_TITLE, JOptionPane.YES_NO_OPTION);
+
+                        if (JOptionPane.OK_OPTION != isConfirm) {
+                            return;
+                        }
+                    }
+
+                    runnable.run(jFileChooser.getSelectedFile().toString());
+                } catch (FileException e) {
+                    JOptionPane.showMessageDialog(this, e.getMessage());
+                }
+            }
+        });
     }
 
     public void setOnOpenGameListener(StringRunnable runnable) {
         Runnable runnable1 = () -> {
             JFileChooser jFileChooser = new JFileChooser();
-            int returnVal = jFileChooser.showDialog(this, "OK");
+            FileNameExtensionFilter fileFilter = new FileNameExtensionFilter("Map file", "txt");
+
+            jFileChooser.setFileFilter(fileFilter);
+            jFileChooser.addChoosableFileFilter(fileFilter);
+
+            int returnVal = jFileChooser.showOpenDialog(this);
 
             if (JFileChooser.APPROVE_OPTION == returnVal) {
                 try {
                     runnable.run(jFileChooser.getSelectedFile().toString());
-                } catch (InvalidGameFile invalidGameFile) {
+                } catch (FileException invalidGameFile) {
                     JOptionPane.showMessageDialog(this, invalidGameFile.getMessage());
                 }
             }
@@ -436,5 +470,13 @@ public class MyJFrame extends JFrame {
 
     public void updateLineLength(int lineLength) {
         initView.updateLineLength(lineLength);
+    }
+
+    public int getLineLength() {
+        return initView.getLineLength();
+    }
+
+    public int getLineWidth() {
+        return initView.getLineWidth();
     }
 }

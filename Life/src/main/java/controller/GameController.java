@@ -128,8 +128,20 @@ public class GameController {
             }
         });
 
-        myJFrame.setOnSaveGameListener(() -> {
-
+        myJFrame.setOnSaveGameListener((filename) -> {
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(filename), "utf-8"))) {
+                writer.write(game.getField().getWidth()
+                        + " "
+                + game.getField().getHeight());
+                writer.newLine();
+                writer.write(myJFrame.getLineWidth());
+                writer.newLine();
+                writer.write(myJFrame.getLineLength());
+                writer.newLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
     }
 

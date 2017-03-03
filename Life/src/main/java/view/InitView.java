@@ -137,4 +137,12 @@ class InitView extends JPanel {
     public void updateLineLength(int lineLength) {
        this.lineLength = lineLength;
     }
+
+    public int getLineWidth() {
+        return lineWidth;
+    }
+
+    public int getLineLength() {
+        return lineLength;
+    }
 }
