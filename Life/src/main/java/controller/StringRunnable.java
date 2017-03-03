@@ -1,5 +1,5 @@
 package controller;
 
 public interface StringRunnable {
-    void run(String string);
+    void run(String string) throws InvalidGameFile;
 }

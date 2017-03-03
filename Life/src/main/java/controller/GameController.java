@@ -6,6 +6,7 @@ import support.Point;
 import util.GraphicsUtil;
 import view.MyJFrame;
 
+import javax.swing.text.NumberFormatter;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.LinkedList;
@@ -44,16 +45,16 @@ public class GameController {
         });
 
         myJFrame.setOnClickListener((x, y) -> {
-            GraphicsUtil.Point point = GraphicsUtil.fromCoordinatesToPositionInField(x, y, lineLength);
+            Point<Integer> point = GraphicsUtil.fromCoordinatesToPositionInField(x, y, lineLength);
             game.onClickOnField(point.getX(), point.getY());
         });
 
         myJFrame.setOnMoveListener(new TwoIntegerRunnable() {
-            GraphicsUtil.Point previousPoint;
+            Point previousPoint;
 
             @Override
             public void run(int x, int y) {
-                GraphicsUtil.Point point = GraphicsUtil.fromCoordinatesToPositionInField(x, y, lineLength);
+                Point<Integer> point = GraphicsUtil.fromCoordinatesToPositionInField(x, y, lineLength);
 
                 if (!point.equals(previousPoint)) {
                     previousPoint = point;
@@ -77,20 +78,29 @@ public class GameController {
         });
 
         myJFrame.setOnOpenGameListener((fileName) -> {
-            try (Scanner scanner = new Scanner(Paths.get(fileName))) {
-                int width = scanner.nextInt();
-                int height = scanner.nextInt();
+            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName))) {
+                String sizeString = bufferedReader.readLine();
 
-                int lineWidth = scanner.nextInt();
+                Point<Integer> size = getPoint(sizeString);
+                int width = size.getX();
+                int height = size.getY();
 
-                int lineLength = scanner.nextInt();
+                String lineWidthString = bufferedReader.readLine();
 
-                int countOfLifeCells = scanner.nextInt();
+                int lineWidth = getValue(lineWidthString);
+
+                String lineLengthString = bufferedReader.readLine();
+                int lineLength = getValue(lineLengthString);
+
+                String countOfLifeCellsString = bufferedReader.readLine();
+                int countOfLifeCells = getValue(countOfLifeCellsString);
 
                 LinkedList<Point<Integer>> lifeCells = new LinkedList<>();
 
-                for (int i = 0; i < countOfLifeCells; ++i) {
-                    lifeCells.add(new Point<>(scanner.nextInt(), scanner.nextInt()));
+                for (int k = 0; k < countOfLifeCells; ++k) {
+                    String pointString = bufferedReader.readLine();
+                    Point<Integer> point = getPoint(pointString);
+                    lifeCells.add(point);
                 }
 
                 game = new Game(width, height);
@@ -121,5 +131,55 @@ public class GameController {
         myJFrame.setOnSaveGameListener(() -> {
 
         });
+    }
+
+    private int getValue(String string) throws InvalidGameFile {
+        String[] fieldSize = string.split(" ");
+
+        if (fieldSize.length < 1) {
+            throw new InvalidGameFile("Invalid width or height");
+        }
+
+        int value;
+
+        try {
+            value = Integer.parseInt(fieldSize[0]);
+        } catch (NumberFormatException e) {
+            throw new InvalidGameFile("Incorrect width and height");
+        }
+
+        if (fieldSize.length >= 2) {
+            String thirdToken = fieldSize[1];
+            if (!thirdToken.substring(0, 2).equals("//")) {
+                throw new InvalidGameFile("Invalid file. Too many arguments");
+            }
+        }
+
+        return value;
+    }
+
+    private Point<Integer> getPoint(String string) throws InvalidGameFile {
+        String[] fieldSize = string.split(" ");
+
+        if (fieldSize.length < 2) {
+            throw new InvalidGameFile("Invalid width or height");
+        }
+
+        int width, height;
+        try {
+            width = Integer.parseInt(fieldSize[0]);
+            height = Integer.parseInt(fieldSize[1]);
+        } catch (NumberFormatException e) {
+            throw new InvalidGameFile("Incorrect width and height");
+        }
+
+        if (fieldSize.length >= 3) {
+            String thirdToken = fieldSize[2];
+            if (!thirdToken.substring(0, 2).equals("//")) {
+                throw new InvalidGameFile("Invalid file. Too many arguments");
+            }
+        }
+
+        return new Point<>(width, height);
     }
 }

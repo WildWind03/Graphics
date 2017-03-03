@@ -1,6 +1,8 @@
 package view;
 
 import model.Field;
+import support.*;
+import support.Point;
 import util.GraphicsUtil;
 
 import javax.swing.*;
@@ -75,7 +77,7 @@ class InitView extends JPanel {
     }
 
     private void printImpact(int x, int y, double impact, BufferedImage bufferedImage) {
-        GraphicsUtil.Point point = GraphicsUtil.fromCellPositionToCoordinatesUpd(x, y, lineLength);
+        Point<Integer> point = GraphicsUtil.fromCellPositionToCoordinatesUpd(x, y, lineLength);
         int centerX = point.getX() + lineLength / 2;
         int centerY = point.getY() + getHalfOfHorizontalLength(lineLength);
 

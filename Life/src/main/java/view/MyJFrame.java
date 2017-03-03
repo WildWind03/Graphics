@@ -1,5 +1,6 @@
 package view;
 
+import controller.InvalidGameFile;
 import controller.StringRunnable;
 import controller.TwoIntegerRunnable;
 import javafx.stage.FileChooser;
@@ -394,7 +395,11 @@ public class MyJFrame extends JFrame {
             int returnVal = jFileChooser.showDialog(this, "OK");
 
             if (JFileChooser.APPROVE_OPTION == returnVal) {
-                runnable.run(jFileChooser.getSelectedFile().toString());
+                try {
+                    runnable.run(jFileChooser.getSelectedFile().toString());
+                } catch (InvalidGameFile invalidGameFile) {
+                    JOptionPane.showMessageDialog(this, invalidGameFile.getMessage());
+                }
             }
         };
 

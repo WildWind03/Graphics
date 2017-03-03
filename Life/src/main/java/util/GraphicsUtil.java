@@ -1,6 +1,7 @@
 package util;
 
 import graphics.SpanFiller;
+import support.Point;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
@@ -8,43 +9,6 @@ import java.util.logging.Logger;
 
 public class GraphicsUtil {
     private static final Logger logger = Logger.getLogger(GraphicsUtil.class.getName());
-
-    public static class Point {
-        private int x;
-        private int y;
-
-        Point(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public int getY() {
-            return y;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Point point = (Point) o;
-
-            if (x != point.x) return false;
-            return y == point.y;
-
-        }
-
-        @Override
-        public int hashCode() {
-            int result = x;
-            result = 31 * result + y;
-            return result;
-        }
-    }
 
     private static int DEFAULT_COLOR = 0x000000;
 
@@ -106,7 +70,7 @@ public class GraphicsUtil {
     }
 
     public static void drawHexagon(BufferedImage bufferedImage, int x, int y, int lineLength, int maxY) {
-        Point point = fromCellPositionToCoordinatesUpd(x, y, lineLength);
+        Point<Integer> point = fromCellPositionToCoordinatesUpd(x, y, lineLength);
         int realX = point.getX();
         int realY = point.getY();
 
@@ -128,22 +92,8 @@ public class GraphicsUtil {
         }
     }
 
-    public static void printImpact(JPanel jPanel, int x, int y, double impact, int lineLength) {
-        Point point = fromCellPositionToCoordinatesUpd(x, y, lineLength);
-        int centerX = point.getX() + lineLength / 2;
-        int centerY = point.getY() + getHalfOfHorizontalLength(lineLength);
-
-        JLabel jLabel = new JLabel(Double.toString(impact));
-        jLabel.setSize(30, 30);
-        int startX = centerX - jLabel.getWidth() / 2;
-        int startY = centerY - jLabel.getHeight() / 2;
-
-        jPanel.add(jLabel);
-        jLabel.setLocation(startX, startY);
-    }
-
     public static void fillHexagon(BufferedImage bufferedImage, int x, int y, int lineLength, int[] color) {
-        Point point = fromCellPositionToCoordinatesUpd(x, y, lineLength);
+        Point<Integer> point = fromCellPositionToCoordinatesUpd(x, y, lineLength);
         SpanFiller spanFiller = new SpanFiller(bufferedImage, point.getX() + 1, point.getY(), color);
         spanFiller.applyFiller();
     }
@@ -155,13 +105,13 @@ public class GraphicsUtil {
         final int horizontalStart = x0 * horizontalLength;
 
         if (0 == y0 % 2) {
-            return new Point(horizontalStart + getHalfOfHorizontalLength(lineLength), (int) (y0 * verticalLength) - y0 * getVerticalPart(lineLength) );
+            return new Point<>(horizontalStart + getHalfOfHorizontalLength(lineLength), (int) (y0 * verticalLength) - y0 * getVerticalPart(lineLength) );
         } else {
-            return new Point(horizontalStart + horizontalLength, (int) (y0 * verticalLength) - y0 * getVerticalPart(lineLength));
+            return new Point<>(horizontalStart + horizontalLength, (int) (y0 * verticalLength) - y0 * getVerticalPart(lineLength));
         }
     }
 
-    public static Point fromCoordinatesToPositionInField(int x, int y, int lineLength) {
+    public static Point<Integer> fromCoordinatesToPositionInField(int x, int y, int lineLength) {
         int gridHeight = lineLength + getVerticalPart(lineLength);
         int row = y / gridHeight;
         int column;
@@ -199,13 +149,13 @@ public class GraphicsUtil {
             }
         }
 
-        return new Point(column, row);
+        return new Point<>(column, row);
     }
 
 
-    public static Point fromCellPositionToCoordinatesUpd(int x0, int y0, int lineLength) {
-        return (0 == y0 % 2) ? new Point(getHorizontalLength(lineLength) * x0, y0 * getVerticalLength(lineLength) - y0 * getVerticalPart(lineLength) + getVerticalPart(lineLength))
-                : new Point(getHorizontalLength(lineLength) * x0 + getHalfOfHorizontalLength(lineLength), y0 * getVerticalLength(lineLength) - y0 * getVerticalPart(lineLength) + getVerticalPart(lineLength));
+    public static Point<Integer> fromCellPositionToCoordinatesUpd(int x0, int y0, int lineLength) {
+        return (0 == y0 % 2) ? new Point<>(getHorizontalLength(lineLength) * x0, y0 * getVerticalLength(lineLength) - y0 * getVerticalPart(lineLength) + getVerticalPart(lineLength))
+                : new Point<>(getHorizontalLength(lineLength) * x0 + getHalfOfHorizontalLength(lineLength), y0 * getVerticalLength(lineLength) - y0 * getVerticalPart(lineLength) + getVerticalPart(lineLength));
     }
 
     public static int getHorizontalLength(int lineLength) {
