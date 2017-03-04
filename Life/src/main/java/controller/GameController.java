@@ -135,9 +135,9 @@ public class GameController {
                         + " "
                 + game.getField().getHeight());
                 writer.newLine();
-                writer.write(myJFrame.getLineWidth());
+                writer.write(String.valueOf(myJFrame.getLineWidth()));
                 writer.newLine();
-                writer.write(myJFrame.getLineLength());
+                writer.write(String.valueOf(myJFrame.getLineLength()));
                 writer.newLine();
             } catch (IOException e) {
                 e.printStackTrace();

@@ -11,6 +11,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.Timer;
 
@@ -410,8 +411,8 @@ public class MyJFrame extends JFrame {
                         }
                     }
 
-                    runnable.run(jFileChooser.getSelectedFile().toString());
-                } catch (FileException e) {
+                    runnable.run(jFileChooser.getSelectedFile().getCanonicalPath() + ".txt");
+                } catch (FileException | IOException e) {
                     JOptionPane.showMessageDialog(this, e.getMessage());
                 }
             }
