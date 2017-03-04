@@ -139,6 +139,13 @@ public class GameController {
                 writer.newLine();
                 writer.write(String.valueOf(myJFrame.getLineLength()));
                 writer.newLine();
+
+                LinkedList<Point<Integer>> lifePoints = game.getLifePoints();
+                writer.write(String.valueOf(lifePoints.size()));
+                for (Point<Integer> point : lifePoints) {
+                    writer.newLine();
+                    writer.write(String.valueOf(point.getX() + " " + String.valueOf(point.getY())));
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

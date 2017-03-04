@@ -1,5 +1,7 @@
 package model;
 
+import support.Point;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -124,5 +126,19 @@ public class Field {
 
     public double getImpact(int x, int y) {
         return cells[x][y].getImpact();
+    }
+
+    public LinkedList<Point<Integer>> getLifeCells() {
+        LinkedList<Point<Integer>> lifePoints = new LinkedList<>();
+        for (int i = 0; i < height; ++i) {
+            int width = (0 == i % 2) ? getWidth() : getWidth() - 1;
+            for (int k = 0; k < width; ++k) {
+                if (cells[k][i].isAlive()) {
+                    lifePoints.add(new Point<>(k, i));
+                }
+            }
+        }
+
+        return lifePoints;
     }
 }

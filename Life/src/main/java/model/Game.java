@@ -114,6 +114,10 @@ public class Game extends Observable {
         });
     }
 
+    public LinkedList<Point<Integer>> getLifePoints() {
+        return getField().getLifeCells();
+    }
+
     public void restart() {
         turn = 0;
         firstField.clear();
