@@ -48,7 +48,7 @@ class InitView extends JPanel {
 
                     int width = (0 == k % 2) ? currentField.getWidth() : currentField.getWidth() - 1;
                     for (int i =0; i < width; ++i) {
-                        GraphicsUtil.drawHexagon(bufferedImage, i, k, lineLength, currentField.getHeight());
+                        GraphicsUtil.drawHexagon(bufferedImage, i, k, lineLength, currentField.getHeight(), lineWidth);
                     }
                 }
 
@@ -57,7 +57,7 @@ class InitView extends JPanel {
 
                     for (int i = 0; i < width; ++i) {
                         if (currentField.isAlive(i, k)) {
-                            GraphicsUtil.fillHexagon(bufferedImage, i, k, lineLength, fillColor);
+                            GraphicsUtil.fillHexagon(bufferedImage, i, k, lineLength, fillColor, lineWidth);
                         }
 
                         if (isImpactShowing) {

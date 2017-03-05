@@ -21,11 +21,8 @@ public class GameController {
 
     private Game game;
     private final MyJFrame myJFrame;
-    private final int lineLength;
 
     public GameController(final int fieldWidth, final int fieldHeight, final int lineLength) throws IOException {
-        this.lineLength = lineLength;
-
         int windowWidth = fieldWidth * GraphicsUtil.getHorizontalLength(lineLength) + HORIZONTAL_MARGIN;
         int windowHeight = fieldHeight * (GraphicsUtil.getVerticalPart(lineLength) + lineLength) + GraphicsUtil.getVerticalPart(lineLength) + VERTICAL_MARGIN;
 
@@ -33,11 +30,11 @@ public class GameController {
         myJFrame = new MyJFrame(windowWidth, windowHeight, lineLength);
         myJFrame.repaintField(game.getField());
 
-        setListeners(myJFrame);
+        setListeners(myJFrame, lineLength);
 
     }
 
-    private void setListeners(MyJFrame myJFrame) {
+    private void setListeners(MyJFrame myJFrame, final int lineLength) {
         game.addObserver((o, arg) -> {
             if (arg instanceof Field) {
                 myJFrame.repaintField((Field) arg);
@@ -74,7 +71,7 @@ public class GameController {
 
             myJFrame.updateSize(windowWidth, windowHeight);
             myJFrame.repaintField(game.getField());
-            setListeners(myJFrame);
+            setListeners(myJFrame, lineLength);
         });
 
         myJFrame.setOnOpenGameListener((fileName) -> {
@@ -90,7 +87,7 @@ public class GameController {
                 int lineWidth = getValue(lineWidthString);
 
                 String lineLengthString = bufferedReader.readLine();
-                int lineLength = getValue(lineLengthString);
+                int newLineLength = getValue(lineLengthString);
 
                 String countOfLifeCellsString = bufferedReader.readLine();
                 int countOfLifeCells = getValue(countOfLifeCellsString);
@@ -105,23 +102,23 @@ public class GameController {
 
                 game = new Game(width, height);
 
-                int windowWidth = width * GraphicsUtil.getHorizontalLength(lineLength)
+                int windowWidth = width * GraphicsUtil.getHorizontalLength(newLineLength)
                         + HORIZONTAL_MARGIN
                         + lineWidth;
 
-                int windowHeight = height * (GraphicsUtil.getVerticalPart(lineLength) + lineLength)
-                        + GraphicsUtil.getVerticalPart(lineLength)
+                int windowHeight = height * (GraphicsUtil.getVerticalPart(newLineLength) + newLineLength)
+                        + GraphicsUtil.getVerticalPart(newLineLength)
                         + VERTICAL_MARGIN
                         + lineWidth;
 
                 myJFrame.updateSize(windowWidth, windowHeight);
                 myJFrame.updateLineWidth(lineWidth);
-                myJFrame.updateLineLength(lineLength);
+                myJFrame.updateLineLength(newLineLength);
 
                 game.makeCellAlive(lifeCells);
 
                 myJFrame.repaintField(game.getField());
-                setListeners(myJFrame);
+                setListeners(myJFrame, newLineLength);
 
             } catch (IOException e) {
                 e.printStackTrace();

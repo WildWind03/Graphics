@@ -4,6 +4,8 @@ import graphics.SpanFiller;
 import support.Point;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.util.logging.Logger;
 
@@ -14,6 +16,17 @@ public class GraphicsUtil {
 
     private GraphicsUtil() {
 
+    }
+
+    public static void drawLine(BufferedImage bufferedImage, int x0, int y0, int x1, int y1, int lineLength) {
+        if (1 == lineLength) {
+            drawLine(bufferedImage, x0, y0, x1, y1);
+        } else {
+            Graphics2D graphics2D = (Graphics2D) bufferedImage.getGraphics();
+            graphics2D.setStroke(new BasicStroke(lineLength));
+            graphics2D.setColor(Color.BLACK);
+            graphics2D.draw(new Line2D.Float(x0, y0, x1, y1));
+        }
     }
 
     public static void drawLine(BufferedImage bufferedImage, int x0, int y0, int x1, int y1) {
@@ -69,32 +82,32 @@ public class GraphicsUtil {
         }
     }
 
-    public static void drawHexagon(BufferedImage bufferedImage, int x, int y, int lineLength, int maxY) {
+    public static void drawHexagon(BufferedImage bufferedImage, int x, int y, int lineLength, int maxY, int lineWidth) {
         Point<Integer> point = fromCellPositionToCoordinatesUpd(x, y, lineLength);
         int realX = point.getX();
         int realY = point.getY();
 
         if (0 == y % 2) {
-            drawLine(bufferedImage, realX, realY, realX, realY + lineLength);
-            drawLine(bufferedImage, realX, realY + lineLength, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength));
-            drawLine(bufferedImage, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength), realX + getHorizontalLength(lineLength), realY + lineLength);
-            drawLine(bufferedImage, realX + getHorizontalLength(lineLength), realY + lineLength, realX + getHorizontalLength(lineLength), realY);
-            drawLine(bufferedImage, realX + getHorizontalLength(lineLength), realY, realX + getHalfOfHorizontalLength(lineLength), realY - getVerticalPart(lineLength));
-            drawLine(bufferedImage, realX, realY, realX + getHalfOfHorizontalLength(lineLength), realY - getVerticalPart(lineLength));
+            drawLine(bufferedImage, realX, realY, realX, realY + lineLength, lineWidth);
+            drawLine(bufferedImage, realX, realY + lineLength, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength), lineWidth);
+            drawLine(bufferedImage, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength), realX + getHorizontalLength(lineLength), realY + lineLength, lineWidth);
+            drawLine(bufferedImage, realX + getHorizontalLength(lineLength), realY + lineLength, realX + getHorizontalLength(lineLength), realY, lineWidth);
+            drawLine(bufferedImage, realX + getHorizontalLength(lineLength), realY, realX + getHalfOfHorizontalLength(lineLength), realY - getVerticalPart(lineLength), lineWidth);
+            drawLine(bufferedImage, realX, realY, realX + getHalfOfHorizontalLength(lineLength), realY - getVerticalPart(lineLength), lineWidth);
         } else {
-            drawLine(bufferedImage, realX, realY, realX, realY + lineLength);
-            drawLine(bufferedImage, realX + getHorizontalLength(lineLength), realY + lineLength, realX + getHorizontalLength(lineLength), realY);
+            drawLine(bufferedImage, realX, realY, realX, realY + lineLength, lineWidth);
+            drawLine(bufferedImage, realX + getHorizontalLength(lineLength), realY + lineLength, realX + getHorizontalLength(lineLength), realY, lineWidth);
 
             if ( y == maxY - 1) {
-                drawLine(bufferedImage, realX, realY + lineLength, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength));
-                drawLine(bufferedImage, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength), realX + getHorizontalLength(lineLength), realY + lineLength);
+                drawLine(bufferedImage, realX, realY + lineLength, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength), lineWidth);
+                drawLine(bufferedImage, realX + getHalfOfHorizontalLength(lineLength), realY + lineLength + getVerticalPart(lineLength), realX + getHorizontalLength(lineLength), realY + lineLength, lineWidth);
             }
         }
     }
 
-    public static void fillHexagon(BufferedImage bufferedImage, int x, int y, int lineLength, int[] color) {
+    public static void fillHexagon(BufferedImage bufferedImage, int x, int y, int lineLength, int[] color, int lineWidth) {
         Point<Integer> point = fromCellPositionToCoordinatesUpd(x, y, lineLength);
-        SpanFiller spanFiller = new SpanFiller(bufferedImage, point.getX() + 1, point.getY(), color);
+        SpanFiller spanFiller = new SpanFiller(bufferedImage, point.getX() + lineWidth, point.getY(), color);
         spanFiller.applyFiller();
     }
 
