@@ -2,6 +2,7 @@ package view;
 
 import controller.*;
 import model.Field;
+import model.ModelConfiguration;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -451,6 +452,16 @@ public class MyJFrame extends JFrame {
         for (ActionListener actionListener : actionListeners) {
             abstractButton.removeActionListener(actionListener);
         }
+    }
+
+    public void setOnConfigurationChangedListener(ConfigurationRunnable runnable, ModelConfiguration modelConfiguration) {
+        setOnActionListener(propertiesButton, () -> {
+            Configuration currentConfiguration = new Configuration(modelConfiguration, getLineLength(), getLineWidth(), isReplaceMode);
+
+            ConfigurationDialog configurationDialog = new ConfigurationDialog(this);
+            configurationDialog.apparate(currentConfiguration);
+            runnable.run(configurationDialog.getConfiguration());
+        });
     }
 
     public void deleteMouseMotionListener(JPanel jPanel) {

@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 public class GameController {
     private static final Logger logger = Logger.getLogger(GameController.class.getName());
+    private static final String CHARSET_NAME = "utf-8";
 
     private final int VERTICAL_MARGIN = 1;
     private final int HORIZONTAL_MARGIN = 1;
@@ -142,7 +143,7 @@ public class GameController {
 
         myJFrame.setOnSaveGameListener((filename) -> {
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(filename), "utf-8"))) {
+                    new FileOutputStream(filename), CHARSET_NAME))) {
                 writer.write(game.getField().getWidth()
                         + " "
                 + game.getField().getHeight());
@@ -162,6 +163,9 @@ public class GameController {
                 e.printStackTrace();
             }
         });
+
+        myJFrame.setOnConfigurationChangedListener((configuration) -> game.applyNewConfiguration(configuration),
+                game.getConfiguration());
     }
 
     private int getValue(String string) throws InvalidGameFile {

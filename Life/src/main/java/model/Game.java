@@ -1,13 +1,10 @@
 package model;
 
 import support.Point;
-import util.GraphicsUtil;
+import view.Configuration;
 
 import java.util.LinkedList;
 import java.util.Observable;
-import java.util.Observer;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Game extends Observable {
@@ -172,5 +169,13 @@ public class Game extends Observable {
 
         setChanged();
         notifyObservers(getField());
+    }
+
+    public ModelConfiguration getConfiguration() {
+        return new ModelConfiguration(lifeBegin, lifeEnd, birthBegin, birthEnd, FIRST_IMPACT, SECOND_IMPACT, getField().getWidth(), getField().getHeight());
+    }
+
+    public void applyNewConfiguration(Configuration configuration) {
+
     }
 }
