@@ -6,11 +6,8 @@ import support.Point;
 import util.GraphicsUtil;
 import view.MyJFrame;
 
-import javax.swing.text.NumberFormatter;
 import java.io.*;
-import java.nio.file.Paths;
 import java.util.LinkedList;
-import java.util.Scanner;
 import java.util.logging.Logger;
 
 public class GameController {
@@ -47,21 +44,31 @@ public class GameController {
             }
         });
 
-        myJFrame.setOnClickListener((x, y) -> {
+        myJFrame.setOnClickListener((x, y, isReplaceMode) -> {
             Point<Integer> point = GraphicsUtil.fromCoordinatesToPositionInField(x, y, lineLength);
-            game.onClickOnField(point.getX(), point.getY());
+
+            if (isReplaceMode) {
+                game.onClickOnFieldReplaceMode(point.getX(), point.getY());
+            } else {
+                game.onClickOnFieldXORMode(point.getX(), point.getY());
+            }
         });
 
-        myJFrame.setOnMoveListener(new TwoIntegerRunnable() {
+        myJFrame.setOnMoveListener(new TwoIntegerOneBooleanRunnable() {
             Point previousPoint;
 
             @Override
-            public void run(int x, int y) {
+            public void run(int x, int y, boolean isReplaceMode) {
                 Point<Integer> point = GraphicsUtil.fromCoordinatesToPositionInField(x, y, lineLength);
 
                 if (!point.equals(previousPoint)) {
                     previousPoint = point;
-                    game.onClickOnField(point.getX(), point.getY());
+                    
+                    if (isReplaceMode) {
+                        game.onClickOnFieldReplaceMode(point.getX(), point.getY());
+                    } else {
+                        game.onClickOnFieldXORMode(point.getX(), point.getY());
+                    }
                 }
             }
         });

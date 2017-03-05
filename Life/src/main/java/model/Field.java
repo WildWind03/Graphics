@@ -124,6 +124,10 @@ public class Field {
         return cells[x][y].isAlive();
     }
 
+    public boolean isDead(int x, int y) {
+        return !isAlive(x, y);
+    }
+
     public double getImpact(int x, int y) {
         return cells[x][y].getImpact();
     }

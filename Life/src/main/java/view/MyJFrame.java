@@ -1,9 +1,6 @@
 package view;
 
-import controller.FileException;
-import controller.InvalidGameFile;
-import controller.StringRunnable;
-import controller.TwoIntegerRunnable;
+import controller.*;
 import model.Field;
 
 import javax.swing.*;
@@ -89,6 +86,7 @@ public class MyJFrame extends JFrame {
     private final InitView initView;
 
     private boolean isRunningMode = false;
+    private boolean isReplaceMode = true;
 
     private Runnable nextButtonAction;
 
@@ -150,13 +148,11 @@ public class MyJFrame extends JFrame {
         ImageIcon openIcon = new ImageIcon(OPEN_ICON_PATH);
         openButton = new JButton(openIcon);
         openButton.setToolTipText(OPEN);
-        setOnActionListener(openButton, this::onOpenButtonClicked);
         jToolBar.add(openButton);
 
         ImageIcon saveIcon = new ImageIcon(SAVE_ICON_PATH);
         saveButton = new JButton(saveIcon);
         saveButton.setToolTipText(SAVE);
-        setOnActionListener(saveButton, this::onSaveButtonClicked);
         jToolBar.add(saveButton);
 
         jToolBar.addSeparator();
@@ -167,10 +163,12 @@ public class MyJFrame extends JFrame {
 
         xorButton = new JToggleButton(XOR_SHORT);
         xorButton.setToolTipText(XOR_MODE);
+        setOnActionListener(xorButton, this::onXORButtonClicked);
         jToolBar.add(xorButton);
 
         replaceButton = new JToggleButton(REPLACE_SHORT);
         replaceButton.setToolTipText(REPLACE);
+        setOnActionListener(replaceButton, this::onReplaceButtonClicked);
         jToolBar.add(replaceButton);
 
         propertiesButton = new JButton(PROPERTIES_SHORT);
@@ -220,6 +218,20 @@ public class MyJFrame extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
 
         pack();
+
+        onReplaceButtonClicked();
+    }
+
+    private void onXORButtonClicked() {
+        isReplaceMode = false;
+        replaceButton.setSelected(false);
+        xorButton.setSelected(true);
+    }
+
+    private void onReplaceButtonClicked() {
+        isReplaceMode = true;
+        replaceButton.setSelected(true);
+        xorButton.setSelected(false);
     }
 
     private void onRunButtonClicked() {
@@ -276,7 +288,7 @@ public class MyJFrame extends JFrame {
         initView.drawField(field);
     }
 
-    public void setOnClickListener(TwoIntegerRunnable runnable) {
+    public void setOnClickListener(TwoIntegerOneBooleanRunnable runnable) {
         deleteOnClickListener(initView);
 
         initView.addMouseListener(new MouseListener() {
@@ -284,7 +296,7 @@ public class MyJFrame extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 if (!isRunningMode) {
                     if (initView.isCouldBeFilled(e.getX(), e.getY())) {
-                        runnable.run(e.getX(), e.getY());
+                        runnable.run(e.getX(), e.getY(), isReplaceMode);
                     }
                 }
             }
@@ -311,14 +323,14 @@ public class MyJFrame extends JFrame {
         });
     }
 
-    public void setOnMoveListener(TwoIntegerRunnable runnable) {
+    public void setOnMoveListener(TwoIntegerOneBooleanRunnable runnable) {
         deleteMouseMotionListener(initView);
         initView.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (!isRunningMode) {
                     if (initView.isCouldBeFilled(e.getX(), e.getY())) {
-                        runnable.run(e.getX(), e.getY());
+                        runnable.run(e.getX(), e.getY(), isReplaceMode);
                     }
                 }
             }
@@ -341,14 +353,6 @@ public class MyJFrame extends JFrame {
 
     private void showInformationAboutProgram() {
         JOptionPane.showMessageDialog(this, ABOUT_AUTHOR_TEXT, ABOUT_THE_GAME, INFORMATION_MESSAGE);
-    }
-
-    private void onOpenButtonClicked() {
-
-    }
-
-    private void onSaveButtonClicked() {
-
     }
 
     private void onImpactButtonClicked() {

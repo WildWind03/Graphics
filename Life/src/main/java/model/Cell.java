@@ -24,6 +24,10 @@ public class Cell {
         this.impact+=impact;
     }
 
+    void subtractImpact(double impact) {
+        this.impact-=impact;
+    }
+
     public boolean isAlive() {
         return isAlive;
     }

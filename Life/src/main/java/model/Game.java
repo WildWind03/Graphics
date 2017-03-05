@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Game extends Observable {
@@ -30,7 +31,11 @@ public class Game extends Observable {
         secondField = new Field(width, height);
     }
 
-    public void onClickOnField(int x, int y) {
+    public void onClickOnFieldReplaceMode(int x, int y) {
+        markCellAlive(x, y);
+    }
+
+    private void markCellAlive(int x, int y) {
         Field field = getField();
 
         int maxWidth = (0 == y % 2) ? field.getWidth() : field.getWidth() - 1;
@@ -39,6 +44,32 @@ public class Game extends Observable {
             makeCellAlive(x, y);
             setChanged();
             notifyObservers(field);
+        }
+    }
+
+    private void markCellDead(int x, int y) {
+        Field field = getField();
+
+        int maxWidth = (0 == y % 2) ? field.getWidth() : field.getWidth() - 1;
+
+        if (x >= 0 && y >= 0 && x < maxWidth && y < field.getHeight()) {
+            makeCellDead(x, y);
+            setChanged();
+            notifyObservers(field);
+        }
+    }
+
+    public void onClickOnFieldXORMode(int x, int y) {
+        Field field = getField();
+
+        int maxWidth = (0 == y % 2) ? field.getWidth() : field.getWidth() - 1;
+
+        if (x >= 0 && y >= 0 && x < maxWidth && y < field.getHeight()) {
+            if (getField().isAlive(x, y)) {
+                markCellDead(x, y);
+            } else {
+                markCellAlive(x, y);
+            }
         }
     }
 
@@ -106,6 +137,22 @@ public class Game extends Observable {
         getField()
                 .getSecondNeighbours(x, y)
                 .forEach(cell -> cell.addImpact(SECOND_IMPACT));
+    }
+
+    private void makeCellDead(int x, int y) {
+        if (getField().isDead(x, y)) {
+            return;
+        }
+
+        getField().changeState(x, y, false);
+
+        getField()
+                .getFirstNeighbours(x, y)
+                .forEach(cell -> cell.subtractImpact(FIRST_IMPACT));
+
+        getField()
+                .getSecondNeighbours(x, y)
+                .forEach(cell -> cell.subtractImpact(SECOND_IMPACT));
     }
 
     public void makeCellAlive(LinkedList<Point<Integer>> points) {
