@@ -459,8 +459,15 @@ public class MyJFrame extends JFrame {
             Configuration currentConfiguration = new Configuration(modelConfiguration, getLineLength(), getLineWidth(), isReplaceMode);
 
             ConfigurationDialog configurationDialog = new ConfigurationDialog(this);
+            configurationDialog.setModal(true);
             configurationDialog.apparate(currentConfiguration);
-            runnable.run(configurationDialog.getConfiguration());
+
+            Configuration configuration = configurationDialog.getConfiguration();
+            updateLineWidth(configuration.getLineWidth());
+            updateLineLength(configuration.getLineLength());
+            isReplaceMode = configuration.isReplaceMode();
+
+            runnable.run(configuration.getModelConfiguration());
         });
     }
 

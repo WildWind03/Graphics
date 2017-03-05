@@ -9,12 +9,12 @@ import java.util.logging.Logger;
 public class Field {
     private static final Logger logger = Logger.getLogger(Field.class.getName());
 
-    private final int width;
-    private final int height;
+    private int width;
+    private int height;
 
     private final double DEFAULT_IMPACT = 0;
 
-    private final Cell cells[][];
+    private Cell cells[][];
 
     public Field(int width, int height) {
         this.width = width;
@@ -144,5 +144,24 @@ public class Field {
         }
 
         return lifePoints;
+    }
+
+    public void changeSize(int newWidth, int newHeight) {
+        Cell[][] newCells = new Cell[newWidth][newHeight];
+
+        for (int k = 0; k < newHeight; ++k) {
+            for (int i = 0; i < newWidth; ++i) {
+                if (k < getHeight() && i < getWidth()) {
+                    newCells[i][k] = cells[i][k];
+                } else {
+                    newCells[i][k] = new Cell(DEFAULT_IMPACT);
+                }
+            }
+        }
+
+        cells = newCells;
+
+        this.width = newWidth;
+        this.height = newHeight;
     }
 }

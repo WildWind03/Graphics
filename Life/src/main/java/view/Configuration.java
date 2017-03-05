@@ -10,8 +10,8 @@ public class Configuration {
     private final int width;
     private final int height;
 
-    private final double lineWidth;
-    private final double lineLength;
+    private final int lineWidth;
+    private final int lineLength;
 
     private final double liveBegin;
     private final double liveEnd;
@@ -22,7 +22,7 @@ public class Configuration {
 
     private final boolean isReplaceMode;
 
-    public Configuration(int width, int height, double lineWidth, double lineLength, double liveBegin, double liveEnd, double birthBegin, double birthEnd, double firstImpact, double secondImpact, boolean isReplaceMode) {
+    public Configuration(int width, int height, int lineWidth, int lineLength, double liveBegin, double liveEnd, double birthBegin, double birthEnd, double firstImpact, double secondImpact, boolean isReplaceMode) {
         this.width = width;
         this.height = height;
         this.lineWidth = lineWidth;
@@ -49,6 +49,10 @@ public class Configuration {
         this.isReplaceMode = replaceMode;
         this.lineLength = lineLength;
         this.lineWidth = lineWidth;
+    }
+
+    public ModelConfiguration getModelConfiguration() {
+        return new ModelConfiguration(liveBegin, liveEnd, birthBegin, birthEnd, firstImpact, secondImpact, width, height);
     }
 
     public int getWidth() {
@@ -83,11 +87,11 @@ public class Configuration {
         return secondImpact;
     }
 
-    public double getLineWidth() {
+    public int getLineWidth() {
         return lineWidth;
     }
 
-    public double getLineLength() {
+    public int getLineLength() {
         return lineLength;
     }
 

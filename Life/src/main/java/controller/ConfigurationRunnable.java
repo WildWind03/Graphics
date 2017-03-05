@@ -1,7 +1,8 @@
 package controller;
 
+import model.ModelConfiguration;
 import view.Configuration;
 
 public interface ConfigurationRunnable {
-    void run(Configuration configuration);
+    void run(ModelConfiguration configuration);
 }

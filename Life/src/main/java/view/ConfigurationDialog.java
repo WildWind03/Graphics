@@ -63,7 +63,7 @@ public class ConfigurationDialog extends JDialog {
     private final JFormattedTextField lifeBeginsTextField;
 
     public ConfigurationDialog(JFrame jFrame)  {
-        super(jFrame, CONFIGURATION);
+        super(jFrame, CONFIGURATION, false);
 
         setLayout(new BorderLayout());
 
@@ -249,16 +249,20 @@ public class ConfigurationDialog extends JDialog {
 
         setMinimumSize(getPreferredSize());
 
-        okButton.addActionListener(e -> configuration = new Configuration(((Number) xField.getValue()).intValue(),
-                ((Number) yField.getValue()).intValue(),
-                ((Number) lineWidth.getValue()).doubleValue(),
-                ((Number) lineLength.getValue()).doubleValue(),
-                ((Number) lifeBeginsTextField.getValue()).doubleValue(),
-                ((Number) lifeEndsTextField.getValue()).doubleValue(),
-                ((Number) birthBeginsTextField.getValue()).doubleValue(),
-                ((Number) birthEndsTextField.getValue()).doubleValue(),
-                ((Number) firstImpact.getValue()).doubleValue(),
-                ((Number) secondImpact.getValue()).doubleValue(), replaceButton.isSelected()));
+        okButton.addActionListener(e -> {
+            configuration = new Configuration(((Number) xField.getValue()).intValue(),
+                    ((Number) yField.getValue()).intValue(),
+                    ((Number) lineWidth.getValue()).intValue(),
+                    ((Number) lineLength.getValue()).intValue(),
+                    ((Number) lifeBeginsTextField.getValue()).doubleValue(),
+                    ((Number) lifeEndsTextField.getValue()).doubleValue(),
+                    ((Number) birthBeginsTextField.getValue()).doubleValue(),
+                    ((Number) birthEndsTextField.getValue()).doubleValue(),
+                    ((Number) firstImpact.getValue()).doubleValue(),
+                    ((Number) secondImpact.getValue()).doubleValue(), replaceButton.isSelected());
+
+            setVisible(false);
+        });
 
 
         pack();
@@ -278,6 +282,14 @@ public class ConfigurationDialog extends JDialog {
         birthEndsTextField.setValue(configuration.getBirthEnd());
         firstImpact.setValue(configuration.getFirstImpact());
         secondImpact.setValue(configuration.getSecondImpact());
+
+        if (configuration.isReplaceMode()) {
+            replaceButton.setSelected(true);
+            xorButton.setSelected(false);
+        } else {
+            replaceButton.setSelected(false);
+            xorButton.setSelected(true);
+        }
 
         setVisible(true);
     }

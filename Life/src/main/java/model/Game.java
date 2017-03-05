@@ -1,7 +1,6 @@
 package model;
 
 import support.Point;
-import view.Configuration;
 
 import java.util.LinkedList;
 import java.util.Observable;
@@ -10,13 +9,13 @@ import java.util.logging.Logger;
 public class Game extends Observable {
     private static final Logger logger = Logger.getLogger(Game.class.getName());
 
-    private static double birthBegin = 2.3;
-    private static double birthEnd = 2.9;
-    private static double lifeBegin = 2.0;
-    private static double lifeEnd = 3.3;
+    private double birthBegin = 2.3;
+    private double birthEnd = 2.9;
+    private double lifeBegin = 2.0;
+    private double lifeEnd = 3.3;
 
-    private final double FIRST_IMPACT = 1;
-    private final double SECOND_IMPACT = 0.3F;
+    private double firstImpact = 1;
+    private double secondImpact = 0.3F;
 
     private final Field firstField;
     private final Field secondField;
@@ -93,7 +92,7 @@ public class Game extends Observable {
                         .filter(Cell::isAlive)
                         .count();
 
-                double newImpact = countOfAliveFirstNeighbours * FIRST_IMPACT + countOfAliveSecondNeighbours * SECOND_IMPACT;
+                double newImpact = countOfAliveFirstNeighbours * firstImpact + countOfAliveSecondNeighbours * secondImpact;
 
                 nextField.setImpact(i, k, newImpact);
                 if (currentField.isAlive(i, k)) {
@@ -129,11 +128,11 @@ public class Game extends Observable {
 
         getField()
                 .getFirstNeighbours(x, y)
-                .forEach(cell -> cell.addImpact(FIRST_IMPACT));
+                .forEach(cell -> cell.addImpact(firstImpact));
 
         getField()
                 .getSecondNeighbours(x, y)
-                .forEach(cell -> cell.addImpact(SECOND_IMPACT));
+                .forEach(cell -> cell.addImpact(secondImpact));
     }
 
     private void makeCellDead(int x, int y) {
@@ -145,11 +144,11 @@ public class Game extends Observable {
 
         getField()
                 .getFirstNeighbours(x, y)
-                .forEach(cell -> cell.subtractImpact(FIRST_IMPACT));
+                .forEach(cell -> cell.subtractImpact(firstImpact));
 
         getField()
                 .getSecondNeighbours(x, y)
-                .forEach(cell -> cell.subtractImpact(SECOND_IMPACT));
+                .forEach(cell -> cell.subtractImpact(secondImpact));
     }
 
     public void makeCellAlive(LinkedList<Point<Integer>> points) {
@@ -172,10 +171,21 @@ public class Game extends Observable {
     }
 
     public ModelConfiguration getConfiguration() {
-        return new ModelConfiguration(lifeBegin, lifeEnd, birthBegin, birthEnd, FIRST_IMPACT, SECOND_IMPACT, getField().getWidth(), getField().getHeight());
+        return new ModelConfiguration(lifeBegin, lifeEnd, birthBegin, birthEnd, firstImpact, secondImpact, getField().getWidth(), getField().getHeight());
     }
 
-    public void applyNewConfiguration(Configuration configuration) {
+    public void applyNewConfiguration(ModelConfiguration configuration) {
+        this.birthBegin = configuration.getBirthBegin();
+        this.birthEnd = configuration.getBirthEnd();
+        this.firstImpact = configuration.getFirstImpact();
+        this.secondImpact = configuration.getSecondImpact();
+        this.lifeBegin = configuration.getLiveBegin();
+        this.lifeEnd = configuration.getLiveEnd();
 
+        firstField.changeSize(configuration.getWidth(), configuration.getHeight());
+        secondField.changeSize(configuration.getWidth(), configuration.getHeight());
+
+        setChanged();
+        notifyObservers(getField());
     }
 }
