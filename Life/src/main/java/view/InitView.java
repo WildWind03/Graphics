@@ -18,19 +18,20 @@ class InitView extends JPanel {
     private BufferedImage bufferedImage;
 
     private int lineLength;
-    private int lineWidth = 1;
+    private int lineWidth;
 
     private Field currentField = null;
     private int[] fillColor = {0, 255, 0};
     private boolean isImpactShowing = false;
 
-    InitView(int width, int height, final int lineLength) {
+    InitView(int width, int height, final int lineLength, final int lineWidth) {
         setPreferredSize(new Dimension(width, height));
         setLayout(null);
         setBackground(Color.WHITE);
 
         bufferedImage = new BufferedImage(width, height, TYPE_INT_RGB);
         this.lineLength = lineLength;
+        this.lineWidth = lineWidth;
     }
 
     @Override

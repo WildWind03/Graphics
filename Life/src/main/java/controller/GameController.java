@@ -22,12 +22,18 @@ public class GameController {
     private Game game;
     private final MyJFrame myJFrame;
 
-    public GameController(final int fieldWidth, final int fieldHeight, final int lineLength) throws IOException {
+    private final int defaultLineWidth;
+    private final int defaultLineLength;
+
+    public GameController(final int fieldWidth, final int fieldHeight, final int lineLength, final int lineWidth) throws IOException {
+        this.defaultLineLength = lineLength;
+        this.defaultLineWidth = lineWidth;
+
         int windowWidth = fieldWidth * GraphicsUtil.getHorizontalLength(lineLength) + HORIZONTAL_MARGIN;
         int windowHeight = fieldHeight * (GraphicsUtil.getVerticalPart(lineLength) + lineLength) + GraphicsUtil.getVerticalPart(lineLength) + VERTICAL_MARGIN;
 
         game = new Game(fieldWidth, fieldHeight);
-        myJFrame = new MyJFrame(windowWidth, windowHeight, lineLength);
+        myJFrame = new MyJFrame(windowWidth, windowHeight, lineLength, lineWidth);
         myJFrame.repaintField(game.getField());
 
         setListeners(myJFrame, lineLength);
@@ -66,9 +72,11 @@ public class GameController {
         myJFrame.setOnNewGameListener((width, height) -> {
             game = new Game(width, height);
 
-            int windowWidth = width * GraphicsUtil.getHorizontalLength(lineLength) + HORIZONTAL_MARGIN;
-            int windowHeight = height * (GraphicsUtil.getVerticalPart(lineLength) + lineLength) + GraphicsUtil.getVerticalPart(lineLength) + VERTICAL_MARGIN;
+            int windowWidth = width * GraphicsUtil.getHorizontalLength(defaultLineLength) + HORIZONTAL_MARGIN;
+            int windowHeight = height * (GraphicsUtil.getVerticalPart(defaultLineLength) + defaultLineLength) + GraphicsUtil.getVerticalPart(defaultLineLength) + VERTICAL_MARGIN;
 
+            myJFrame.updateLineLength(defaultLineLength);
+            myJFrame.updateLineWidth(defaultLineWidth);
             myJFrame.updateSize(windowWidth, windowHeight);
             myJFrame.repaintField(game.getField());
             setListeners(myJFrame, lineLength);

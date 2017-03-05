@@ -94,10 +94,10 @@ public class MyJFrame extends JFrame {
 
     private Timer runTask;
 
-    public MyJFrame(int width, int height, int lineLength) {
+    public MyJFrame(int width, int height, int lineLength, int lineWidth) {
         super(TITLE);
 
-        initView = new InitView(width, height, lineLength);
+        initView = new InitView(width, height, lineLength, lineWidth);
 
         setVisible(true);
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
