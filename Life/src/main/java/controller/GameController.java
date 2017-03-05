@@ -63,7 +63,7 @@ public class GameController {
 
                 if (!point.equals(previousPoint)) {
                     previousPoint = point;
-                    
+
                     if (isReplaceMode) {
                         game.onClickOnFieldReplaceMode(point.getX(), point.getY());
                     } else {

@@ -19,7 +19,7 @@ public class Game extends Observable {
     private static double lifeEnd = 3.3;
 
     private final double FIRST_IMPACT = 1;
-    private final double SECOND_IMPACT = 0.3;
+    private final double SECOND_IMPACT = 0.3F;
 
     private final Field firstField;
     private final Field secondField;
