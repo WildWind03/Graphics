@@ -165,12 +165,19 @@ public class GameController {
         });
 
         myJFrame.setOnConfigurationChangedListener((configuration) -> {
-            int windowWidth = configuration.getWidth() * GraphicsUtil.getHorizontalLength(defaultLineLength) + HORIZONTAL_MARGIN;
-            int windowHeight = configuration.getHeight() * (GraphicsUtil.getVerticalPart(defaultLineLength) + defaultLineLength) + GraphicsUtil.getVerticalPart(defaultLineLength) + VERTICAL_MARGIN;
+            int newLineLength = configuration.getLineLength();
 
+            int windowWidth = configuration.getWidth() * GraphicsUtil.getHorizontalLength(newLineLength) + HORIZONTAL_MARGIN;
+            int windowHeight = configuration.getHeight() * (GraphicsUtil.getVerticalPart(newLineLength) + newLineLength) + GraphicsUtil.getVerticalPart(newLineLength) + VERTICAL_MARGIN;
+
+            myJFrame.updateLineLength(newLineLength);
+            myJFrame.updateLineWidth(configuration.getLineWidth());
+            myJFrame.setGameMode(configuration.isReplaceMode());
             myJFrame.updateSize(windowWidth, windowHeight);
-            game.applyNewConfiguration(configuration);
-        }, game.getConfiguration());
+
+            game.applyNewConfiguration(configuration.getModelConfiguration());
+            setListeners(myJFrame, newLineLength);
+        }, () -> game.getConfiguration());
     }
 
     private int getValue(String string) throws InvalidGameFile {

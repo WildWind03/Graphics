@@ -93,6 +93,9 @@ public class MyJFrame extends JFrame {
 
     private Timer runTask;
 
+    private boolean isChanged = true;
+    private Runnable saveFunction;
+
     public MyJFrame(int width, int height, int lineLength, int lineWidth) {
         super(TITLE);
 
@@ -298,6 +301,7 @@ public class MyJFrame extends JFrame {
                 if (!isRunningMode) {
                     if (initView.isCouldBeFilled(e.getX(), e.getY())) {
                         runnable.run(e.getX(), e.getY(), isReplaceMode);
+                        isChanged = true;
                     }
                 }
             }
@@ -332,6 +336,7 @@ public class MyJFrame extends JFrame {
                 if (!isRunningMode) {
                     if (initView.isCouldBeFilled(e.getX(), e.getY())) {
                         runnable.run(e.getX(), e.getY(), isReplaceMode);
+                        isChanged = true;
                     }
                 }
             }
@@ -344,12 +349,31 @@ public class MyJFrame extends JFrame {
     }
 
     public void setOnNextButtonListener(Runnable runnable) {
-        setOnActionListener(nextButton, runnable);
-        this.nextButtonAction = runnable;
+        Runnable nextButtonFunction = () -> {
+            isChanged = true;
+            runnable.run();
+        };
+
+        setOnActionListener(nextButton, nextButtonFunction);
+        this.nextButtonAction = nextButtonFunction;
     }
 
     private void onExit() {
-        System.exit(0);
+        if (isChanged) {
+            int result = JOptionPane.showConfirmDialog(this, "Do you want to save the field?", "Really exit?", JOptionPane.YES_NO_CANCEL_OPTION);
+
+            if (result == JOptionPane.NO_OPTION) {
+                System.exit(0);
+            }
+
+            if (result == JOptionPane.YES_OPTION) {
+                saveFunction.run();
+            }
+
+
+        } else {
+            System.exit(0);
+        }
     }
 
     private void showInformationAboutProgram() {
@@ -395,7 +419,7 @@ public class MyJFrame extends JFrame {
     }
 
     public void setOnSaveGameListener(StringRunnable runnable) {
-        setOnActionListener(saveButton, () -> {
+        saveFunction = () -> {
             JFileChooser jFileChooser = new JFileChooser();
             FileNameExtensionFilter fileFilter = new FileNameExtensionFilter("Map file", "txt");
 
@@ -417,11 +441,14 @@ public class MyJFrame extends JFrame {
                     }
 
                     runnable.run(jFileChooser.getSelectedFile().getCanonicalPath() + ".txt");
+                    isChanged = false;
                 } catch (FileException | IOException e) {
                     JOptionPane.showMessageDialog(this, e.getMessage());
                 }
             }
-        });
+        };
+
+        setOnActionListener(saveButton, saveFunction);
     }
 
     public void setOnOpenGameListener(StringRunnable runnable) {
@@ -454,20 +481,16 @@ public class MyJFrame extends JFrame {
         }
     }
 
-    public void setOnConfigurationChangedListener(ConfigurationRunnable runnable, ModelConfiguration modelConfiguration) {
+    public void setOnConfigurationChangedListener(ConfigurationRunnable runnable, ConfigurationGetter modelConfiguration) {
         setOnActionListener(propertiesButton, () -> {
-            Configuration currentConfiguration = new Configuration(modelConfiguration, getLineLength(), getLineWidth(), isReplaceMode);
+            Configuration currentConfiguration = new Configuration(modelConfiguration.getModelConfiguration(), getLineLength(), getLineWidth(), isReplaceMode);
 
             ConfigurationDialog configurationDialog = new ConfigurationDialog(this);
             configurationDialog.setModal(true);
             configurationDialog.apparate(currentConfiguration);
 
             Configuration configuration = configurationDialog.getConfiguration();
-            updateLineWidth(configuration.getLineWidth());
-            updateLineLength(configuration.getLineLength());
-            isReplaceMode = configuration.isReplaceMode();
-
-            runnable.run(configuration.getModelConfiguration());
+            runnable.run(configuration);
         });
     }
 
@@ -501,5 +524,9 @@ public class MyJFrame extends JFrame {
 
     public int getLineWidth() {
         return initView.getLineWidth();
+    }
+
+    public void setGameMode(boolean isReplaceMode) {
+        this.isReplaceMode = isReplaceMode;
     }
 }

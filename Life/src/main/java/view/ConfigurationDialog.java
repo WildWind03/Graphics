@@ -283,6 +283,8 @@ public class ConfigurationDialog extends JDialog {
         firstImpact.setValue(configuration.getFirstImpact());
         secondImpact.setValue(configuration.getSecondImpact());
 
+        jSlider.setValue(configuration.getLineLength());
+
         if (configuration.isReplaceMode()) {
             replaceButton.setSelected(true);
             xorButton.setSelected(false);
