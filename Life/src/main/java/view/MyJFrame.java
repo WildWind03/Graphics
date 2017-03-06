@@ -98,16 +98,21 @@ public class MyJFrame extends JFrame {
     private Timer runTask;
 
     private boolean isChanged = true;
-    private Runnable saveFunction;
     private final JMenuItem createMenuFileItem;
     private final JMenuItem openMenuFileItem;
-    private Runnable newGameFunction;
-    private Runnable openGameFunction;
-    private Runnable configurationChanged;
-    private Runnable clearFunction;
+    private final JCheckBoxMenuItem xorMenuItem;
+    private final JCheckBoxMenuItem replaceMenuItem;
+    private final JCheckBoxMenuItem runMenuItem;
+    private final JMenuItem propertiesMenuItem;
+    private final JMenuItem nextMenuItem;
+    private Runnable saveFunction;
+    private ConfigurationDialog configurationDialog;
 
     public MyJFrame(int width, int height, int lineLength, int lineWidth) {
         super(TITLE);
+
+        configurationDialog = new ConfigurationDialog(this);
+        configurationDialog.setModal(true);
 
         initView = new InitView(width, height, lineLength, lineWidth);
 
@@ -125,15 +130,12 @@ public class MyJFrame extends JFrame {
 
         JMenu fileMenu = new JMenu(FILE);
         createMenuFileItem = new JMenuItem(CREATE);
-        setOnItemClickListener(createMenuFileItem, newGameFunction);
         fileMenu.add(createMenuFileItem);
 
         openMenuFileItem = new JMenuItem(OPEN);
-        setOnItemClickListener(openMenuFileItem, openGameFunction);
         fileMenu.add(openMenuFileItem);
 
         saveMenuFileItem = new JMenuItem(SAVE);
-        setOnItemClickListener(saveMenuFileItem, saveFunction);
         fileMenu.add(saveMenuFileItem);
 
         fileMenu.addSeparator();
@@ -152,17 +154,15 @@ public class MyJFrame extends JFrame {
         editMenu.addSeparator();
 
         clearMenuItem = new JMenuItem(CLEAR);
-        setOnItemClickListener(clearMenuItem, clearFunction);
         editMenu.add(clearMenuItem);
 
-        JMenuItem nextMenuItem = new JMenuItem(NEXT);
+        nextMenuItem = new JMenuItem(NEXT);
         editMenu.add(nextMenuItem);
-        setOnItemClickListener(nextMenuItem, nextButtonAction);
 
         editMenu.addSeparator();
 
-        JCheckBoxMenuItem xorMenuItem = new JCheckBoxMenuItem(XOR_MODE);
-        JCheckBoxMenuItem replaceMenuItem = new JCheckBoxMenuItem(REPLACE);
+        xorMenuItem = new JCheckBoxMenuItem(XOR_MODE);
+        replaceMenuItem = new JCheckBoxMenuItem(REPLACE);
 
         setOnItemClickListener(xorMenuItem, this::onXORButtonClicked);
         setOnItemClickListener(replaceMenuItem, this::onReplaceButtonClicked);
@@ -170,7 +170,7 @@ public class MyJFrame extends JFrame {
         gameModeMenu.add(xorMenuItem);
         gameModeMenu.add(replaceMenuItem);
 
-        JCheckBoxMenuItem runMenuItem = new JCheckBoxMenuItem(RUN);
+        runMenuItem = new JCheckBoxMenuItem(RUN);
         setOnItemClickListener(runMenuItem, this::onRunButtonClicked);
         editMenu.add(runMenuItem);
 
@@ -183,8 +183,7 @@ public class MyJFrame extends JFrame {
 
         JMenu propertiesMenu = new JMenu(PROPERTIES);
         jMenuBar.add(propertiesMenu);
-        JMenuItem propertiesMenuItem = new JMenuItem(SETTINGS);
-        setOnItemClickListener(propertiesMenuItem, configurationChanged);
+        propertiesMenuItem = new JMenuItem(SETTINGS);
         propertiesMenu.add(propertiesMenuItem);
 
         JMenu helpMenu = new JMenu(HELP);
@@ -283,17 +282,31 @@ public class MyJFrame extends JFrame {
         isReplaceMode = false;
         replaceButton.setSelected(false);
         xorButton.setSelected(true);
+        xorMenuItem.setSelected(true);
+        replaceMenuItem.setSelected(false);
     }
 
     private void onReplaceButtonClicked() {
         isReplaceMode = true;
         replaceButton.setSelected(true);
         xorButton.setSelected(false);
+        replaceMenuItem.setSelected(true);
+        xorMenuItem.setSelected(false);
     }
 
     private void onRunButtonClicked() {
         if (!isRunningMode) {
             isRunningMode = true;
+            createMenuFileItem.setEnabled(false);
+            openMenuFileItem.setEnabled(false);
+            saveMenuFileItem.setEnabled(false);
+
+            clearMenuItem.setEnabled(false);
+            xorMenuItem.setEnabled(false);
+            replaceMenuItem.setEnabled(false);
+            propertiesMenuItem.setEnabled(false);
+            nextMenuItem.setEnabled(false);
+
             newDocumentButton.setEnabled(false);
             openButton.setEnabled(false);
             saveButton.setEnabled(false);
@@ -303,6 +316,9 @@ public class MyJFrame extends JFrame {
             replaceButton.setEnabled(false);
             propertiesButton.setEnabled(false);
             nextButton.setEnabled(false);
+
+            runButton.setSelected(true);
+            runMenuItem.setSelected(true);
 
             runTask = new Timer();
             runTask.schedule(new TimerTask() {
@@ -325,6 +341,19 @@ public class MyJFrame extends JFrame {
             replaceButton.setEnabled(true);
             propertiesButton.setEnabled(true);
             nextButton.setEnabled(true);
+
+            createMenuFileItem.setEnabled(true);
+            openMenuFileItem.setEnabled(true);
+            saveMenuFileItem.setEnabled(true);
+
+            clearMenuItem.setEnabled(true);
+            xorMenuItem.setEnabled(true);
+            replaceMenuItem.setEnabled(true);
+            propertiesMenuItem.setEnabled(true);
+            nextMenuItem.setEnabled(true);
+
+            runButton.setSelected(false);
+            runMenuItem.setSelected(false);
         }
     }
 
@@ -348,57 +377,35 @@ public class MyJFrame extends JFrame {
     public void setOnClickListener(TwoIntegerOneBooleanRunnable runnable) {
         deleteOnClickListener(initView);
 
-        initView.addMouseListener(new MouseListener() {
+        initView.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
                 if (!isRunningMode) {
                     if (initView.isCouldBeFilled(e.getX(), e.getY())) {
                         runnable.run(e.getX(), e.getY(), isReplaceMode);
                         isChanged = true;
                     }
                 }
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
             }
         });
     }
 
     public void setOnMoveListener(TwoIntegerOneBooleanRunnable runnable) {
         deleteMouseMotionListener(initView);
-        initView.addMouseMotionListener(new MouseMotionListener() {
+        initView.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
+                super.mouseDragged(e);
+
                 if (!isRunningMode) {
                     if (initView.isCouldBeFilled(e.getX(), e.getY())) {
                         runnable.run(e.getX(), e.getY(), isReplaceMode);
                         isChanged = true;
                     }
-                }
             }
-
-            @Override
-            public void mouseMoved(MouseEvent e) {
-
-            }
-        });
+        }});
     }
 
     public void setOnNextButtonListener(Runnable runnable) {
@@ -408,6 +415,7 @@ public class MyJFrame extends JFrame {
         };
 
         setOnActionListener(nextButton, nextButtonFunction);
+        setOnItemClickListener(nextMenuItem, nextButtonFunction);
         this.nextButtonAction = nextButtonFunction;
     }
 
@@ -448,12 +456,13 @@ public class MyJFrame extends JFrame {
     }
 
     private void setOnItemClickListener(JMenuItem jMenuItem, Runnable runnable) {
+        deleteActionListener(jMenuItem);
         jMenuItem.addActionListener(e -> runnable.run());
     }
 
     public void setOnClearButtonListener(Runnable runnable) {
-        clearFunction = runnable;
-        setOnActionListener(clearButton, clearFunction);
+        setOnActionListener(clearButton, runnable);
+        setOnItemClickListener(clearMenuItem, runnable);
     }
 
     private void setOnActionListener(AbstractButton jToggleButton, Runnable runnable) {
@@ -462,7 +471,7 @@ public class MyJFrame extends JFrame {
     }
 
     public void setOnNewGameListener(TwoIntegerRunnable runnable) {
-        newGameFunction = () -> {
+        Runnable newGameFunction = () -> {
             DialogMultipleInput.Result result = DialogMultipleInput.show(CHOOSE_NEW_FIELD_SIZE);
             if (null != result) {
                 runnable.run(result.getWidth(), result.getHeight());
@@ -470,6 +479,7 @@ public class MyJFrame extends JFrame {
         };
 
         setOnActionListener(newDocumentButton, newGameFunction);
+        setOnItemClickListener(createMenuFileItem, newGameFunction);
     }
 
     public void setOnSaveGameListener(StringRunnable runnable) {
@@ -503,10 +513,11 @@ public class MyJFrame extends JFrame {
         };
 
         setOnActionListener(saveButton, saveFunction);
+        setOnItemClickListener(saveMenuFileItem, saveFunction);
     }
 
     public void setOnOpenGameListener(StringRunnable runnable) {
-        openGameFunction = () -> {
+        Runnable openGameFunction = () -> {
             JFileChooser jFileChooser = new JFileChooser();
             FileNameExtensionFilter fileFilter = new FileNameExtensionFilter("Map file", "txt");
 
@@ -525,6 +536,7 @@ public class MyJFrame extends JFrame {
         };
 
         setOnActionListener(openButton, openGameFunction);
+        setOnItemClickListener(openMenuFileItem, openGameFunction);
     }
 
     public void deleteActionListener(AbstractButton abstractButton) {
@@ -536,11 +548,8 @@ public class MyJFrame extends JFrame {
     }
 
     public void setOnConfigurationChangedListener(ConfigurationRunnable runnable, ConfigurationGetter modelConfiguration) {
-        configurationChanged = () -> {
+        Runnable configurationChanged = () -> {
             Configuration currentConfiguration = new Configuration(modelConfiguration.getModelConfiguration(), getLineLength(), getLineWidth(), isReplaceMode);
-
-            ConfigurationDialog configurationDialog = new ConfigurationDialog(this);
-            configurationDialog.setModal(true);
             configurationDialog.apparate(currentConfiguration);
 
             Configuration configuration = configurationDialog.getConfiguration();
@@ -548,6 +557,7 @@ public class MyJFrame extends JFrame {
         };
 
         setOnActionListener(propertiesButton, configurationChanged);
+        setOnItemClickListener(propertiesMenuItem, configurationChanged);
     }
 
     public void deleteMouseMotionListener(JPanel jPanel) {
