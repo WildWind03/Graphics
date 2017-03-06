@@ -9,7 +9,7 @@ public class Field {
     private int width;
     private int height;
 
-    private final float DEFAULT_IMPACT = 0;
+    private static final float DEFAULT_IMPACT = 0;
 
     private Cell cells[][];
 

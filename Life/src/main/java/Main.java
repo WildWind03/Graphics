@@ -9,6 +9,6 @@ public class Main {
     private static final int FIELD_SIZE = 5;
 
     public static void main(String[] args) throws IOException {
-        GameController gameController = new GameController(FIELD_SIZE, FIELD_SIZE, lineLength, lineWidth);
+        new GameController(FIELD_SIZE, FIELD_SIZE, lineLength, lineWidth);
     }
 }
