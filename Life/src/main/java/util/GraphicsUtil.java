@@ -102,9 +102,9 @@ public class GraphicsUtil {
         }
     }
 
-    public static void fillHexagon(BufferedImage bufferedImage, int x, int y, int lineLength, int[] color, int lineWidth) {
+    public static void fillHexagon(BufferedImage bufferedImage, int x, int y, int lineLength, int[] color) {
         Point<Integer> point = fromCellPositionToCoordinatesUpd(x, y, lineLength);
-        SpanFiller spanFiller = new SpanFiller(bufferedImage, point.getX() + lineWidth, point.getY(), color);
+        SpanFiller spanFiller = new SpanFiller(bufferedImage, point.getX() + getHorizontalLength(lineLength) / 2, point.getY() + lineLength / 2, color);
         spanFiller.applyFiller();
     }
 

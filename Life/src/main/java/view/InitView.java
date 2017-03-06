@@ -58,7 +58,7 @@ class InitView extends JPanel {
 
                     for (int i = 0; i < width; ++i) {
                         if (currentField.isAlive(i, k)) {
-                            GraphicsUtil.fillHexagon(bufferedImage, i, k, lineLength, fillColor, lineWidth);
+                            GraphicsUtil.fillHexagon(bufferedImage, i, k, lineLength, fillColor);
                         }
 
                         if (isImpactShowing) {

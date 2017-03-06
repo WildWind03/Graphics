@@ -18,10 +18,10 @@ public class Field {
         this.width = width;
         this.height = height;
 
-        cells = new Cell[width][height];
+        cells = new Cell[height][width];
 
-        for (int k = 0; k < width; ++k) {
-            for (int i = 0; i < height; ++i) {
+        for (int k = 0; k < height; ++k) {
+            for (int i = 0; i < width; ++i) {
                 cells[k][i] = new Cell(DEFAULT_IMPACT);
             }
         }
@@ -41,27 +41,27 @@ public class Field {
     }
 
     public void makeAllCellsDead() {
-        for (int k = 0; k < width; ++k) {
-            for (int i = 0; i < height; ++i) {
+        for (int k = 0; k < height; ++k) {
+            for (int i = 0; i < width; ++i) {
                 cells[k][i].changeState(false);
             }
         }
     }
 
     public void resetCellsImpacts() {
-        for (int k = 0; k < width; ++k) {
-            for (int i = 0; i < height; ++i) {
+        for (int k = 0; k < height; ++k) {
+            for (int i = 0; i < width; ++i) {
                 cells[k][i].setImpact(0);
             }
         }
     }
 
     public void changeState(int x, int y, boolean newState) {
-        cells[x][y].changeState(newState);
+        cells[y][x].changeState(newState);
     }
 
     public void setImpact(int x, int y, double newImpact) {
-        cells[x][y].setImpact(newImpact);
+        cells[y][x].setImpact(newImpact);
     }
 
     public List<Cell> getFirstNeighbours(int x, int y) {
@@ -108,12 +108,12 @@ public class Field {
         int width = (0 == y % 2) ? getWidth() : getWidth() - 1;
 
         if (x >= 0 && y >= 0 && x < width && y < getHeight()) {
-            neighbours.add(cells[x][y]);
+            neighbours.add(cells[y][x]);
         }
     }
 
     public boolean isAlive(int x, int y) {
-        return cells[x][y].isAlive();
+        return cells[y][x].isAlive();
     }
 
     public boolean isDead(int x, int y) {
@@ -121,7 +121,7 @@ public class Field {
     }
 
     public double getImpact(int x, int y) {
-        return cells[x][y].getImpact();
+        return cells[y][x].getImpact();
     }
 
     public LinkedList<Point<Integer>> getLifeCells() {
@@ -129,7 +129,7 @@ public class Field {
         for (int i = 0; i < height; ++i) {
             int width = (0 == i % 2) ? getWidth() : getWidth() - 1;
             for (int k = 0; k < width; ++k) {
-                if (cells[k][i].isAlive()) {
+                if (cells[i][k].isAlive()) {
                     lifePoints.add(new Point<>(k, i));
                 }
             }
@@ -144,9 +144,9 @@ public class Field {
         for (int k = 0; k < newHeight; ++k) {
             for (int i = 0; i < newWidth; ++i) {
                 if (k < getHeight() && i < getWidth()) {
-                    newCells[i][k] = cells[i][k];
+                    newCells[k][i] = cells[k][i];
                 } else {
-                    newCells[i][k] = new Cell(DEFAULT_IMPACT);
+                    newCells[k][i] = new Cell(DEFAULT_IMPACT);
                 }
             }
         }

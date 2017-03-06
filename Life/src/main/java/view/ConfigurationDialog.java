@@ -11,10 +11,10 @@ public class ConfigurationDialog extends JDialog {
 
     private static final int TEXT_FIELD_SIZE = 3;
 
-    private static final int MAX_WIDTH_VALUE = 100;
+    private static final int MAX_WIDTH_VALUE = 60;
     private static final int MIN_WIDTH_VALUE = 1;
 
-    private static final int MAX_HEIGHT_VALUE = 100;
+    private static final int MAX_HEIGHT_VALUE = 60;
     private static final int MIN_HEIGHT_VALUE = 1;
 
     private static final String WIDTH = "width";
@@ -27,10 +27,10 @@ public class ConfigurationDialog extends JDialog {
     private static final String LINE_WIDTH = "line width";
     private static final String XOR = "XOR";
     private static final String REPLACE = "Replace";
-    private static final int LINE_LENGTH_MIN = 3;
-    private static final int LINE_LENGTH_MAX = 120;
+    private static final int LINE_LENGTH_MIN = 10;
+    private static final int LINE_LENGTH_MAX = 60;
     private static final int LINE_WIDTH_MIN = 1;
-    private static final int LINE_WIDTH_MAX = 20;
+    private static final int LINE_WIDTH_MAX = 10;
     private static final float MIN_GAME_PROPERTIES = 0.1F;
     private static final float MAX_GAME_PROPERTIES = 30F;
     private static final String LIFE_ENDS = "life ends";
