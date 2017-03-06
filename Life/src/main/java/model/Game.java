@@ -71,10 +71,8 @@ public class Game extends Observable {
                         field.changeState(i, k, false);
                     }
                 } else {
-                    System.out.println(currentImpact + " " + birthBegin + " " + birthEnd);
                     if (currentImpact >= birthBegin && currentImpact <= birthEnd) {
                         field.changeState(i, k, true);
-                        System.out.println(birthBegin + " " + currentImpact + " " + birthEnd + " ALIVE");
 
                     }
                 }

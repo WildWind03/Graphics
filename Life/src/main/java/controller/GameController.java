@@ -170,9 +170,9 @@ public class GameController {
             myJFrame.updateLineWidth(configuration.getLineWidth());
             myJFrame.setGameMode(configuration.isReplaceMode());
             myJFrame.updateSize(windowWidth, windowHeight);
+            setListeners(myJFrame, newLineLength);
 
             game.applyNewConfiguration(configuration.getModelConfiguration());
-            setListeners(myJFrame, newLineLength);
         }, () -> game.getConfiguration());
     }
 

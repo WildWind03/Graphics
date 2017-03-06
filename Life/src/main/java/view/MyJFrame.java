@@ -269,13 +269,12 @@ public class MyJFrame extends JFrame {
             int realWindowWidth = Math.min(width, MAX_SHOWING_WIDTH_START);
             int realWindowHeight = Math.min(height, MAX_SHOWING_HEIGHT_START);
 
-            scrollPane.setPreferredSize(new Dimension(realWindowWidth, realWindowHeight));
+            setPreferredSize(new Dimension(realWindowWidth, realWindowHeight));
         }
 
         add(scrollPane, BorderLayout.CENTER);
 
         pack();
-
         onReplaceButtonClicked();
     }
 
@@ -430,6 +429,9 @@ public class MyJFrame extends JFrame {
 
             if (result == JOptionPane.YES_OPTION) {
                 saveFunction.run();
+                if (!isChanged) {
+                    System.exit(0);
+                }
             }
 
 
