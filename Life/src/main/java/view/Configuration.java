@@ -2,10 +2,7 @@ package view;
 
 import model.ModelConfiguration;
 
-import java.util.logging.Logger;
-
 public class Configuration {
-    private static final Logger logger = Logger.getLogger(Configuration.class.getName());
 
     private final int width;
     private final int height;

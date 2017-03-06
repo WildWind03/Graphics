@@ -3,14 +3,11 @@ package util;
 import graphics.SpanFiller;
 import support.Point;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
-import java.util.logging.Logger;
 
 public class GraphicsUtil {
-    private static final Logger logger = Logger.getLogger(GraphicsUtil.class.getName());
 
     private static int DEFAULT_COLOR = 0x000000;
 

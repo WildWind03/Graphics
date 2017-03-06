@@ -1,9 +1,6 @@
 package model;
 
-import java.util.logging.Logger;
-
 public class ModelConfiguration {
-    private static final Logger logger = Logger.getLogger(ModelConfiguration.class.getName());
 
     private final double liveBegin;
     private final double liveEnd;

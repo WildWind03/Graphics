@@ -11,14 +11,12 @@ import java.util.LinkedList;
 import java.util.logging.Logger;
 
 public class GameController {
-    private static final Logger logger = Logger.getLogger(GameController.class.getName());
     private static final String CHARSET_NAME = "utf-8";
 
     private final int VERTICAL_MARGIN = 1;
     private final int HORIZONTAL_MARGIN = 1;
 
     private Game game;
-    private final MyJFrame myJFrame;
 
     private final int defaultLineWidth;
     private final int defaultLineLength;
@@ -31,7 +29,7 @@ public class GameController {
         int windowHeight = fieldHeight * (GraphicsUtil.getVerticalPart(lineLength) + lineLength) + GraphicsUtil.getVerticalPart(lineLength) + VERTICAL_MARGIN;
 
         game = new Game(fieldWidth, fieldHeight);
-        myJFrame = new MyJFrame(windowWidth, windowHeight, lineLength, lineWidth);
+        MyJFrame myJFrame = new MyJFrame(windowWidth, windowHeight, lineLength, lineWidth);
         myJFrame.repaintField(game.getField());
 
         setListeners(myJFrame, lineLength);
@@ -136,8 +134,6 @@ public class GameController {
                 myJFrame.repaintField(game.getField());
                 setListeners(myJFrame, newLineLength);
 
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         });
 

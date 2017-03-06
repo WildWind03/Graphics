@@ -7,8 +7,6 @@ import java.util.Observable;
 import java.util.logging.Logger;
 
 public class Game extends Observable {
-    private static final Logger logger = Logger.getLogger(Game.class.getName());
-
     private double birthBegin = 2.3;
     private double birthEnd = 2.9;
     private double lifeBegin = 2.0;

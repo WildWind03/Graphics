@@ -6,8 +6,6 @@ import java.util.Stack;
 import java.util.logging.Logger;
 
 public class SpanFiller {
-    private static final Logger logger = Logger.getLogger(SpanFiller.class.getName());
-
     private static class MyPoint {
         private int x, y;
 

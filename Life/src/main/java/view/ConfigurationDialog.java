@@ -8,7 +8,6 @@ import java.text.NumberFormat;
 import java.util.logging.Logger;
 
 public class ConfigurationDialog extends JDialog {
-    private static final Logger logger = Logger.getLogger(ConfigurationDialog.class.getName());
 
     private static final int TEXT_FIELD_SIZE = 3;
 
@@ -43,10 +42,6 @@ public class ConfigurationDialog extends JDialog {
     private static final String CANCEL = "Cancel";
     private static final String OK = "OK";
 
-    private final JPanel fieldSizePanel;
-    private final JPanel gameModePanel;
-    private final JPanel gamePropertiesPanel;
-
     private Configuration configuration;
     private final JFormattedTextField xField;
     private final JFormattedTextField yField;
@@ -67,9 +62,9 @@ public class ConfigurationDialog extends JDialog {
 
         setLayout(new BorderLayout());
 
-        fieldSizePanel = new JPanel();
-        gameModePanel = new JPanel();
-        gamePropertiesPanel = new JPanel();
+        JPanel fieldSizePanel = new JPanel();
+        JPanel gameModePanel = new JPanel();
+        JPanel gamePropertiesPanel = new JPanel();
 
         GridBagLayout fieldSizeLayout = new GridBagLayout();
         fieldSizePanel.setLayout(fieldSizeLayout);

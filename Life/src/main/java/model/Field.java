@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class Field {
-    private static final Logger logger = Logger.getLogger(Field.class.getName());
-
     private int width;
     private int height;
 
@@ -35,12 +33,6 @@ public class Field {
 
     public int getHeight() {
         return height;
-    }
-
-    public void addImpact(int x, int y, double count) {
-        if (x >= 0 && x < getWidth() && y >= 0 && y < getHeight()) {
-            cells[x][y].addImpact(count);
-        }
     }
 
     public void clear() {

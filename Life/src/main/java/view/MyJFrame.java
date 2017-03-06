@@ -63,6 +63,7 @@ public class MyJFrame extends JFrame {
     private static final String SAVE_REWRITE_WRNING_TITLE = "Rewrite the file?";
     private static final String MODE = "Mode";
     private static final String SETTINGS = "Settings";
+    private static final String ERROR_WHILE_OPENING = "Error while opening";
 
     private final JToolBar jToolBar;
     private final JButton newDocumentButton;
@@ -528,9 +529,27 @@ public class MyJFrame extends JFrame {
 
             if (JFileChooser.APPROVE_OPTION == returnVal) {
                 try {
-                    runnable.run(jFileChooser.getSelectedFile().toString());
+                    if (isChanged) {
+                        int result = JOptionPane.showConfirmDialog(this, "Do you want to save the field?", "Save or drop?", JOptionPane.YES_NO_OPTION);
+
+                        if (result == JOptionPane.NO_OPTION) {
+                            runnable.run(jFileChooser.getSelectedFile().toString());
+                        }
+
+                        if (result == JOptionPane.YES_OPTION) {
+                            saveFunction.run();
+                            if (!isChanged) {
+                                runnable.run(jFileChooser.getSelectedFile().toString());
+                            }
+                        }
+                    } else {
+                        runnable.run(jFileChooser.getSelectedFile().toString());
+                    }
+
                 } catch (FileException invalidGameFile) {
                     JOptionPane.showMessageDialog(this, invalidGameFile.getMessage());
+                } catch (IOException | NullPointerException e) {
+                    JOptionPane.showMessageDialog(this, ERROR_WHILE_OPENING);
                 }
             }
         };
