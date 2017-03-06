@@ -613,5 +613,10 @@ public class MyJFrame extends JFrame {
 
     public void setGameMode(boolean isReplaceMode) {
         this.isReplaceMode = isReplaceMode;
+        if (isReplaceMode) {
+            onReplaceButtonClicked();
+        } else {
+            onXORButtonClicked();
+        }
     }
 }

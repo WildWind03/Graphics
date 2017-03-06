@@ -10,16 +10,16 @@ public class Configuration {
     private final int lineWidth;
     private final int lineLength;
 
-    private final double liveBegin;
-    private final double liveEnd;
-    private final double birthBegin;
-    private final double birthEnd;
-    private final double firstImpact;
-    private final double secondImpact;
+    private final float liveBegin;
+    private final float liveEnd;
+    private final float birthBegin;
+    private final float birthEnd;
+    private final float firstImpact;
+    private final float secondImpact;
 
     private final boolean isReplaceMode;
 
-    public Configuration(int width, int height, int lineWidth, int lineLength, double liveBegin, double liveEnd, double birthBegin, double birthEnd, double firstImpact, double secondImpact, boolean isReplaceMode) {
+    public Configuration(int width, int height, int lineWidth, int lineLength, float liveBegin, float liveEnd, float birthBegin, float birthEnd, float firstImpact, float secondImpact, boolean isReplaceMode) {
         this.width = width;
         this.height = height;
         this.lineWidth = lineWidth;
@@ -60,27 +60,27 @@ public class Configuration {
         return height;
     }
 
-    public double getLiveBegin() {
+    public float getLiveBegin() {
         return liveBegin;
     }
 
-    public double getLiveEnd() {
+    public float getLiveEnd() {
         return liveEnd;
     }
 
-    public double getBirthBegin() {
+    public float getBirthBegin() {
         return birthBegin;
     }
 
-    public double getBirthEnd() {
+    public float getBirthEnd() {
         return birthEnd;
     }
 
-    public double getFirstImpact() {
+    public float getFirstImpact() {
         return firstImpact;
     }
 
-    public double getSecondImpact() {
+    public float getSecondImpact() {
         return secondImpact;
     }
 

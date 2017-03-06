@@ -7,13 +7,13 @@ import java.util.Observable;
 import java.util.logging.Logger;
 
 public class Game extends Observable {
-    private double birthBegin = 2.3F;
-    private double birthEnd = 2.9F;
-    private double lifeBegin = 2.0F;
-    private double lifeEnd = 3.3F;
+    private float birthBegin = 2.3f;
+    private float birthEnd = 2.9f;
+    private float lifeBegin = 2.0f;
+    private float lifeEnd = 3.3f;
 
-    private double firstImpact = 1F;
-    private double secondImpact = 0.3F;
+    private float firstImpact = 1f;
+    private float secondImpact = 0.3f;
 
     private final Field field;
 
@@ -64,15 +64,18 @@ public class Game extends Observable {
             int width = (0 == k % 2) ? field.getWidth() : field.getWidth() - 1;
 
             for (int i = 0; i < width; ++i) {
-                double currentImpact = field.getImpact(i, k);
+                float currentImpact = field.getImpact(i, k);
 
                 if (field.isAlive(i, k)) {
                     if (currentImpact < lifeBegin || currentImpact  > lifeEnd) {
                         field.changeState(i, k, false);
                     }
                 } else {
+                    System.out.println(currentImpact + " " + birthBegin + " " + birthEnd);
                     if (currentImpact >= birthBegin && currentImpact <= birthEnd) {
                         field.changeState(i, k, true);
+                        System.out.println(birthBegin + " " + currentImpact + " " + birthEnd + " ALIVE");
+
                     }
                 }
             }
@@ -94,7 +97,7 @@ public class Game extends Observable {
                         .filter(Cell::isAlive)
                         .count();
 
-                double newImpact = countOfAliveFirstNeighbours * firstImpact + countOfAliveSecondNeighbours * secondImpact;
+                float newImpact = countOfAliveFirstNeighbours * firstImpact + countOfAliveSecondNeighbours * secondImpact;
 
                 field.setImpact(i, k, newImpact);
             }

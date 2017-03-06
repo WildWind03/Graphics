@@ -1,17 +1,15 @@
 package model;
 
-import java.util.logging.Logger;
-
 public class Cell {
 
-    private double impact;
+    private float impact;
     private boolean isAlive;
 
-    Cell(double impact) {
+    Cell(float impact) {
         this.impact = impact;
     }
 
-    public double getImpact() {
+    public float getImpact() {
         return impact;
     }
 
@@ -19,11 +17,11 @@ public class Cell {
         this.isAlive = isAlive;
     }
 
-    void addImpact(double impact) {
+    void addImpact(float impact) {
         this.impact+=impact;
     }
 
-    void subtractImpact(double impact) {
+    void subtractImpact(float impact) {
         this.impact-=impact;
     }
 
@@ -31,7 +29,7 @@ public class Cell {
         return isAlive;
     }
 
-    void setImpact(double newImpact) {
+    void setImpact(float newImpact) {
         this.impact = newImpact;
     }
 

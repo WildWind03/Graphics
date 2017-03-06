@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 public class Main {
-    private static final Logger logger = Logger.getLogger(Main.class.getName());
-
     private static final int lineLength = 30;
     private static final int lineWidth = 1;
     private static final int FIELD_SIZE = 5;

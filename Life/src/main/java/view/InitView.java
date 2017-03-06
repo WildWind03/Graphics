@@ -77,12 +77,12 @@ class InitView extends JPanel {
         setPreferredSize(new Dimension(width, height));
     }
 
-    private void printImpact(int x, int y, double impact, BufferedImage bufferedImage) {
+    private void printImpact(int x, int y, float impact, BufferedImage bufferedImage) {
         Point<Integer> point = GraphicsUtil.fromCellPositionToCoordinatesUpd(x, y, lineLength);
         int centerX = point.getX() + lineLength / 2;
         int centerY = point.getY() + getHalfOfHorizontalLength(lineLength);
 
-        String impactStr = Double.toString(impact);
+        String impactStr = Float.toString(impact);
 
         int dotPos = impactStr.indexOf('.');
         String wholePart = impactStr.substring(0, dotPos);
@@ -92,7 +92,7 @@ class InitView extends JPanel {
 
         int fontSize = lineLength / 2;
         graphics2D.setFont(new Font(FONT_NAME, Font.PLAIN, fontSize));
-        graphics2D.setColor(new Color(0, 0, 0));
+        graphics2D.setColor(new Color(1, 1, 1));
 
         String impactToPrint;
         int startX;

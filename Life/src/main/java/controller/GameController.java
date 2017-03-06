@@ -13,8 +13,8 @@ import java.util.logging.Logger;
 public class GameController {
     private static final String CHARSET_NAME = "utf-8";
 
-    private final int VERTICAL_MARGIN = 1;
-    private final int HORIZONTAL_MARGIN = 1;
+    private static  final int VERTICAL_MARGIN = 1;
+    private static final int HORIZONTAL_MARGIN = 1;
 
     private Game game;
 

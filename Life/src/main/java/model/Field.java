@@ -4,13 +4,12 @@ import support.Point;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class Field {
     private int width;
     private int height;
 
-    private final double DEFAULT_IMPACT = 0;
+    private final float DEFAULT_IMPACT = 0;
 
     private Cell cells[][];
 
@@ -60,7 +59,7 @@ public class Field {
         cells[y][x].changeState(newState);
     }
 
-    public void setImpact(int x, int y, double newImpact) {
+    public void setImpact(int x, int y, float newImpact) {
         cells[y][x].setImpact(newImpact);
     }
 
@@ -120,7 +119,7 @@ public class Field {
         return !isAlive(x, y);
     }
 
-    public double getImpact(int x, int y) {
+    public float getImpact(int x, int y) {
         return cells[y][x].getImpact();
     }
 
@@ -139,7 +138,7 @@ public class Field {
     }
 
     public void changeSize(int newWidth, int newHeight) {
-        Cell[][] newCells = new Cell[newWidth][newHeight];
+        Cell[][] newCells = new Cell[newHeight][newWidth];
 
         for (int k = 0; k < newHeight; ++k) {
             for (int i = 0; i < newWidth; ++i) {

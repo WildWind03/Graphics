@@ -2,17 +2,17 @@ package model;
 
 public class ModelConfiguration {
 
-    private final double liveBegin;
-    private final double liveEnd;
-    private final double birthBegin;
-    private final double birthEnd;
-    private final double firstImpact;
-    private final double secondImpact;
+    private final float liveBegin;
+    private final float liveEnd;
+    private final float birthBegin;
+    private final float birthEnd;
+    private final float firstImpact;
+    private final float secondImpact;
 
     private final int width;
     private final int height;
 
-    public ModelConfiguration(double liveBegin, double liveEnd, double birthBegin, double birthEnd, double firstImpact, double secondImpact, int width, int height) {
+    public ModelConfiguration(float liveBegin, float liveEnd, float birthBegin, float birthEnd, float firstImpact, float secondImpact, int width, int height) {
         this.liveBegin = liveBegin;
         this.liveEnd = liveEnd;
         this.birthBegin = birthBegin;
@@ -23,27 +23,27 @@ public class ModelConfiguration {
         this.height = height;
     }
 
-    public double getLiveBegin() {
+    public float getLiveBegin() {
         return liveBegin;
     }
 
-    public double getLiveEnd() {
+    public float getLiveEnd() {
         return liveEnd;
     }
 
-    public double getBirthBegin() {
+    public float getBirthBegin() {
         return birthBegin;
     }
 
-    public double getBirthEnd() {
+    public float getBirthEnd() {
         return birthEnd;
     }
 
-    public double getFirstImpact() {
+    public float getFirstImpact() {
         return firstImpact;
     }
 
-    public double getSecondImpact() {
+    public float getSecondImpact() {
         return secondImpact;
     }
 

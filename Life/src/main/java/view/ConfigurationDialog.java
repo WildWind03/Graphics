@@ -3,9 +3,9 @@ package view;
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.text.NumberFormat;
-import java.util.logging.Logger;
 
 public class ConfigurationDialog extends JDialog {
 
@@ -142,10 +142,12 @@ public class ConfigurationDialog extends JDialog {
 
         xorButton.addActionListener(e -> {
             replaceButton.setSelected(false);
+            xorButton.setSelected(true);
         });
 
         replaceButton.addActionListener(e -> {
             xorButton.setSelected(false);
+            replaceButton.setSelected(true);
         });
 
         addComponent(gameModePanel, 0, 0, xorButton);
@@ -249,12 +251,12 @@ public class ConfigurationDialog extends JDialog {
                     ((Number) yField.getValue()).intValue(),
                     ((Number) lineWidth.getValue()).intValue(),
                     ((Number) lineLength.getValue()).intValue(),
-                    ((Number) lifeBeginsTextField.getValue()).doubleValue(),
-                    ((Number) lifeEndsTextField.getValue()).doubleValue(),
-                    ((Number) birthBeginsTextField.getValue()).doubleValue(),
-                    ((Number) birthEndsTextField.getValue()).doubleValue(),
-                    ((Number) firstImpact.getValue()).doubleValue(),
-                    ((Number) secondImpact.getValue()).doubleValue(), replaceButton.isSelected());
+                    ((Number) lifeBeginsTextField.getValue()).floatValue(),
+                    ((Number) lifeEndsTextField.getValue()).floatValue(),
+                    ((Number) birthBeginsTextField.getValue()).floatValue(),
+                    ((Number) birthEndsTextField.getValue()).floatValue(),
+                    ((Number) firstImpact.getValue()).floatValue(),
+                    ((Number) secondImpact.getValue()).floatValue(), replaceButton.isSelected());
 
             setVisible(false);
         });
