@@ -269,7 +269,7 @@ public class MyJFrame extends JFrame {
             int realWindowWidth = Math.min(width, MAX_SHOWING_WIDTH_START);
             int realWindowHeight = Math.min(height, MAX_SHOWING_HEIGHT_START);
 
-            setPreferredSize(new Dimension(realWindowWidth, realWindowHeight));
+            scrollPane.setPreferredSize(new Dimension(realWindowWidth, realWindowHeight));
         }
 
         add(scrollPane, BorderLayout.CENTER);
@@ -366,6 +366,8 @@ public class MyJFrame extends JFrame {
 
             scrollPane.setPreferredSize(new Dimension(realWindowWidth, realWindowHeight));
         }
+
+        scrollPane.updateUI();
 
         pack();
     }
