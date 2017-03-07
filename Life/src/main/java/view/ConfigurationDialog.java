@@ -11,10 +11,10 @@ public class ConfigurationDialog extends JDialog {
 
     private static final int TEXT_FIELD_SIZE = 3;
 
-    private static final int MAX_WIDTH_VALUE = 60;
+    private static final int MAX_WIDTH_VALUE = 250;
     private static final int MIN_WIDTH_VALUE = 1;
 
-    private static final int MAX_HEIGHT_VALUE = 60;
+    private static final int MAX_HEIGHT_VALUE = 250;
     private static final int MIN_HEIGHT_VALUE = 1;
 
     private static final String WIDTH = "width";
