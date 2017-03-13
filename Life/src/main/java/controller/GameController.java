@@ -8,13 +8,12 @@ import view.MyJFrame;
 
 import java.io.*;
 import java.util.LinkedList;
-import java.util.logging.Logger;
 
 public class GameController {
     private static final String CHARSET_NAME = "utf-8";
 
-    private static  final int VERTICAL_MARGIN = 1;
-    private static final int HORIZONTAL_MARGIN = 1;
+    private static final int ADDITIONAL_HEIGHT_FOR_FRAME = 1;
+    private static final int ADDITIONAL_WIDTH_FOR_FRAME = 1;
 
     private Game game;
 
@@ -25,8 +24,8 @@ public class GameController {
         this.defaultLineLength = lineLength;
         this.defaultLineWidth = lineWidth;
 
-        int windowWidth = fieldWidth * GraphicsUtil.getHorizontalLength(lineLength) + HORIZONTAL_MARGIN;
-        int windowHeight = fieldHeight * (GraphicsUtil.getVerticalPart(lineLength) + lineLength) + GraphicsUtil.getVerticalPart(lineLength) + VERTICAL_MARGIN;
+        int windowWidth = fieldWidth * GraphicsUtil.getHorizontalLength(lineLength) + ADDITIONAL_WIDTH_FOR_FRAME;
+        int windowHeight = fieldHeight * (GraphicsUtil.getVerticalPart(lineLength) + lineLength) + GraphicsUtil.getVerticalPart(lineLength) + ADDITIONAL_HEIGHT_FOR_FRAME;
 
         game = new Game(fieldWidth, fieldHeight);
         MyJFrame myJFrame = new MyJFrame(windowWidth, windowHeight, lineLength, lineWidth);
@@ -78,8 +77,8 @@ public class GameController {
         myJFrame.setOnNewGameListener((width, height) -> {
             game = new Game(width, height);
 
-            int windowWidth = width * GraphicsUtil.getHorizontalLength(defaultLineLength) + HORIZONTAL_MARGIN;
-            int windowHeight = height * (GraphicsUtil.getVerticalPart(defaultLineLength) + defaultLineLength) + GraphicsUtil.getVerticalPart(defaultLineLength) + VERTICAL_MARGIN;
+            int windowWidth = width * GraphicsUtil.getHorizontalLength(defaultLineLength) + ADDITIONAL_WIDTH_FOR_FRAME;
+            int windowHeight = height * (GraphicsUtil.getVerticalPart(defaultLineLength) + defaultLineLength) + GraphicsUtil.getVerticalPart(defaultLineLength) + ADDITIONAL_HEIGHT_FOR_FRAME;
 
             myJFrame.updateLineLength(defaultLineLength);
             myJFrame.updateLineWidth(defaultLineWidth);
@@ -117,12 +116,12 @@ public class GameController {
                 game = new Game(width, height);
 
                 int windowWidth = width * GraphicsUtil.getHorizontalLength(newLineLength)
-                        + HORIZONTAL_MARGIN
+                        + ADDITIONAL_WIDTH_FOR_FRAME
                         + lineWidth;
 
                 int windowHeight = height * (GraphicsUtil.getVerticalPart(newLineLength) + newLineLength)
                         + GraphicsUtil.getVerticalPart(newLineLength)
-                        + VERTICAL_MARGIN
+                        + ADDITIONAL_HEIGHT_FOR_FRAME
                         + lineWidth;
 
                 myJFrame.updateSize(windowWidth, windowHeight);
@@ -163,8 +162,8 @@ public class GameController {
         myJFrame.setOnConfigurationChangedListener((configuration) -> {
             int newLineLength = configuration.getLineLength();
 
-            int windowWidth = configuration.getWidth() * GraphicsUtil.getHorizontalLength(newLineLength) + HORIZONTAL_MARGIN;
-            int windowHeight = configuration.getHeight() * (GraphicsUtil.getVerticalPart(newLineLength) + newLineLength) + GraphicsUtil.getVerticalPart(newLineLength) + VERTICAL_MARGIN;
+            int windowWidth = configuration.getWidth() * GraphicsUtil.getHorizontalLength(newLineLength) + ADDITIONAL_WIDTH_FOR_FRAME;
+            int windowHeight = configuration.getHeight() * (GraphicsUtil.getVerticalPart(newLineLength) + newLineLength) + GraphicsUtil.getVerticalPart(newLineLength) + ADDITIONAL_HEIGHT_FOR_FRAME;
 
             myJFrame.updateLineLength(newLineLength);
             myJFrame.updateLineWidth(configuration.getLineWidth());
