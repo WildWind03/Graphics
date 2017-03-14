@@ -63,7 +63,7 @@ public class MyJFrame extends JFrame {
     private static final String MODE = "Mode";
     private static final String SETTINGS = "Settings";
     private static final String ERROR_WHILE_OPENING = "Error while opening";
-    private static final String MAPS_FOLDER = "./data";
+    private static final String MAPS_FOLDER = "./FIT_g14201_Chirikhin_Life_Data";
 
     private final JToolBar jToolBar;
     private final JButton newDocumentButton;

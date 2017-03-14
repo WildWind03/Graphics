@@ -1,5 +1,7 @@
 package ru.nsu.fit.g14201.chirikhin.graphics;
 
+import com.sun.deploy.util.ArrayUtil;
+
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Stack;
@@ -29,7 +31,7 @@ public class SpanFiller {
 
     public SpanFiller(BufferedImage bufferedImage, int x, int y, int[] fillColor) {
         myPoints = new Stack<>();
-        this.fillColor = fillColor;
+        this.fillColor = Arrays.copyOf(fillColor, fillColor.length);
         this.bufferedImage = bufferedImage;
         myPoints.push(new MyPoint(x, y));
 
