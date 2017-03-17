@@ -237,7 +237,5 @@ public class MyJFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, e.getMessage(), CAN_NOT_LOAD_THE_IMAGE, JOptionPane.ERROR_MESSAGE);
             }
         }
-
     }
-
 }

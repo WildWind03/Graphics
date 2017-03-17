@@ -10,24 +10,65 @@ import java.io.File;
 import java.io.IOException;
 
 public class MyJPanel extends JPanel {
-
-    //private static final int ZONE_HEIGHT = 350;
-    //private static final int ZONE_WIDTH = 350;
-
     private static final int ZONE_SIZE = 350;
 
     private static final int GAP_BETWEEN_ZONES = 20;
+    private static final String INVALID_FILE = "Invalid file";
+
+    private int selectRectSize = ZONE_SIZE;
+    private Point point;
 
     private BufferedImage zoneA;
     private BufferedImage zoneB;
     private BufferedImage zoneC;
 
     public MyJPanel() {
-        //zoneA = new BufferedImage(ZONE_WIDTH, ZONE_HEIGHT, BufferedImage.TYPE_INT_RGB);
-        //zoneB = new BufferedImage(ZONE_WIDTH, ZONE_HEIGHT, BufferedImage.TYPE_INT_RGB);
-       // zoneC = new BufferedImage(ZONE_WIDTH, ZONE_HEIGHT, BufferedImage.TYPE_INT_RGB);
 
         setPreferredSize(new Dimension(ZONE_SIZE * 3 + GAP_BETWEEN_ZONES * 3, ZONE_SIZE + GAP_BETWEEN_ZONES));
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+
+                if (null != zoneA) {
+                    int startX = e.getX() - selectRectSize / 2;
+
+                    if (startX < 1) {
+                        startX = 1;
+                    }
+
+                    if (e.getX() + selectRectSize / 2 > ZONE_SIZE) {
+                        startX -= (e.getX() + selectRectSize / 2 - (ZONE_SIZE));
+                    }
+
+                    int startY = e.getY() - selectRectSize / 2;
+
+                    if (startY < 1) {
+                        startY = 1;
+                    }
+
+                    if (e.getY() + selectRectSize / 2 > ZONE_SIZE) {
+                        startY -= (e.getY() + selectRectSize / 2 - (ZONE_SIZE));
+                    }
+
+                    point = new Point(startX, startY);
+                    repaint();
+                }
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                super.mouseDragged(e);
+                mousePressed(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                point = null;
+                repaint();
+            }
+        });
     }
 
     @Override
@@ -39,6 +80,10 @@ public class MyJPanel extends JPanel {
 
         if (null != zoneA) {
             g.drawImage(zoneA, 1, 1, null);
+        }
+
+        if (null != point) {
+            drawDashedRectangle(g, point.x, point.y, selectRectSize, selectRectSize);
         }
     }
 
@@ -54,7 +99,7 @@ public class MyJPanel extends JPanel {
         zoneA = ImageIO.read(file);
 
         if (null == zoneA) {
-            throw new LoadImageException ("Invalid file");
+            throw new LoadImageException (INVALID_FILE);
         }
 
         int height = zoneA.getHeight();
@@ -71,11 +116,15 @@ public class MyJPanel extends JPanel {
 
                 newWidth = ZONE_SIZE - 1;
                 newHeight = (int) (height / k);
+
+                selectRectSize = (int) (ZONE_SIZE / k);
             } else {
                 float k = height / ZONE_SIZE;
 
                 newHeight = ZONE_SIZE - 1;
                 newWidth = (int) (width / k);
+
+                selectRectSize = (int) (ZONE_SIZE / k);
             }
 
             Image image = zoneA.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
@@ -84,9 +133,7 @@ public class MyJPanel extends JPanel {
             Graphics2D g2d = zoneA.createGraphics();
             g2d.drawImage(image, 0, 0, null);
             g2d.dispose();
-
         }
-
 
         repaint();
     }
