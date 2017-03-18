@@ -1,6 +1,5 @@
 package view;
 
-import controller.FilterController;
 import util.ListenerUtil;
 import util.MenuUtil;
 import util.ToolBarUtil;
@@ -8,7 +7,6 @@ import util.ToolBarUtil;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 
 public class MyJFrame extends JFrame {
@@ -135,7 +133,6 @@ public class MyJFrame extends JFrame {
     private final MyJPanel myJPanel;
     private final JScrollPane scrollPane;
 
-
     public MyJFrame()  {
         super(APPLICATION_NAME);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -168,10 +165,10 @@ public class MyJFrame extends JFrame {
         zoom2XFilter = MenuUtil.addNewMenuItem(filterMenu, ITEM_ZOOM);
         robertsFilter = MenuUtil.addNewMenuItem(filterMenu, ROBERTS);
         sobelFilter = MenuUtil.addNewMenuItem(filterMenu, SOBEL);
-        edgeDetectionFilter = MenuUtil.addMenuToMenu(fileMenu, EDGE_DETECTION);
+        edgeDetectionFilter = MenuUtil.addMenuToMenu(filterMenu, EDGE_DETECTION);
         smoothingFilter = MenuUtil.addNewMenuItem(filterMenu, SMOOTHING);
         sharpingFilter = MenuUtil.addNewMenuItem(filterMenu, SHARPING);
-        embossFilter = MenuUtil.addNewMenuItem(fileMenu, EMBOSS);
+        embossFilter = MenuUtil.addNewMenuItem(filterMenu, EMBOSS);
         waterColor = MenuUtil.addNewMenuItem(filterMenu, ITEM_WATERCOLOR);
         rotationFilter = MenuUtil.addNewMenuItem(filterMenu, ROTATION);
         gammaFilter = MenuUtil.addNewMenuItem(filterMenu, GAMMA_FILTER);
@@ -214,13 +211,26 @@ public class MyJFrame extends JFrame {
 
         add(scrollPane, BorderLayout.CENTER);
 
-        ListenerUtil.setListener(openButton, openItem, this::setOnOpenFileListener);
+        ListenerUtil.setListener(openButton, openItem, this::onOpenFileButtonClicked);
+        ListenerUtil.setListener(selectButton, selectItem, this::onSelectButtonClicked);
 
         pack();
         setVisible(true);
     }
 
-    public void setOnOpenFileListener() {
+    private void onSelectButtonClicked() {
+        if (myJPanel.isSelectMode()) {
+            myJPanel.setSelectMode(false);
+            selectButton.setSelected(false);
+            selectItem.setSelected(false);
+        } else {
+            myJPanel.setSelectMode(true);
+            selectButton.setSelected(true);
+            selectItem.setSelected(true);
+        }
+    }
+
+    private void onOpenFileButtonClicked() {
         JFileChooser jFileChooser = new JFileChooser();
 
         FileNameExtensionFilter imageFilter = new FileNameExtensionFilter("*.png, *.bmp", "png", "bmp");
