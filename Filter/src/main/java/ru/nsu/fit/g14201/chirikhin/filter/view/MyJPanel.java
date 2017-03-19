@@ -112,14 +112,14 @@ public class MyJPanel extends JPanel {
                 newWidth = ZONE_SIZE;
                 newHeight = (int) (height / k);
 
-                selectRectSize = (int) (ZONE_SIZE / k);
+                selectRectSize = (int) (ZONE_SIZE / k) - 1;
             } else {
                 float k = (float) height / (float) ZONE_SIZE;
 
                 newHeight = ZONE_SIZE;
                 newWidth = (int) (width / k);
 
-                selectRectSize = (int) (ZONE_SIZE / k);
+                selectRectSize = (int) (ZONE_SIZE / k) - 1;
             }
 
             Image image = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
@@ -143,24 +143,28 @@ public class MyJPanel extends JPanel {
 
     private void onClickOnImage(MouseEvent e) {
         if (null != zoneA && isSelectMode()) {
-            int startX = e.getX() - selectRectSize / 2;
+            int startX = e.getX() - (int) ((float) selectRectSize / 2f);
+
+            if (e.getX() + (float) selectRectSize / 2f > zoneA.getWidth()) {
+                startX -= ((e.getX() + (float) selectRectSize / 2f - zoneA.getWidth()));
+            }
 
             if (startX < 1) {
                 startX = 1;
             }
 
-            if (e.getX() + selectRectSize / 2 > zoneA.getWidth()) {
-                startX -= (e.getX() + selectRectSize / 2 - zoneA.getWidth());
-            }
+            System.out.println(e.getX() + ((float) selectRectSize / 2f));
+            System.out.println(zoneA.getWidth());
+            System.out.println(startX);
 
-            int startY = e.getY() - selectRectSize / 2;
+            int startY = e.getY() - (int) ((float) selectRectSize / 2f);
+
+            if (e.getY() + (float) selectRectSize / 2f > zoneA.getHeight()) {
+                startY -= ((e.getY() + (float) selectRectSize / 2f - zoneA.getHeight()));
+            }
 
             if (startY < 1) {
                 startY = 1;
-            }
-
-            if (e.getY() + selectRectSize / 2 > zoneA.getHeight()) {
-                startY -= (e.getY() + selectRectSize / 2 - zoneA.getHeight());
             }
 
             point = new Point(startX, startY);
