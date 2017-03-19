@@ -1,13 +1,12 @@
-package graphics;
+package ru.nsu.fit.g14201.chirikhin.graphics;
+
+import com.sun.deploy.util.ArrayUtil;
 
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Stack;
-import java.util.logging.Logger;
 
 public class SpanFiller {
-    private static final Logger logger = Logger.getLogger(SpanFiller.class.getName());
-
     private static class MyPoint {
         private int x, y;
 
@@ -31,25 +30,13 @@ public class SpanFiller {
     private final int replacedColor[] = new int[3];
 
     public SpanFiller(BufferedImage bufferedImage, int x, int y, int[] fillColor) {
-        myPoints = new Stack<MyPoint>();
-        this.fillColor = fillColor;
+        myPoints = new Stack<>();
+        this.fillColor = Arrays.copyOf(fillColor, fillColor.length);
         this.bufferedImage = bufferedImage;
         myPoints.push(new MyPoint(x, y));
 
         bufferedImage.getRaster().getPixel(x, y, replacedColor);
     }
-
-    /*public void applyFiller() {
-        MyPoint point = myPoints.peek();
-        int x = point.getX();
-        int y = point.getY();
-
-        int[] currentColor = new int[3];
-
-        if (!Arrays.equals(bufferedImage.getRaster().getPixel(x, y, currentColor), fillColor)) {
-            fill();
-        }
-    }*/
 
     public void applyFiller() {
         MyPoint myPoint = myPoints.pop();
