@@ -213,21 +213,32 @@ public class MyJFrame extends JFrame {
 
         ListenerUtil.setListener(openButton, openItem, this::onOpenFileButtonClicked);
         ListenerUtil.setListener(selectButton, selectItem, this::onSelectButtonClicked);
+        ListenerUtil.setListener(newButton, newItem, this::onNewButtonClicked);
 
         pack();
         setVisible(true);
     }
 
+    private void onNewButtonClicked() {
+        myJPanel.clear();
+        changeSelectMode(false);
+
+        repaint();
+
+    }
+
     private void onSelectButtonClicked() {
         if (myJPanel.isSelectMode()) {
-            myJPanel.setSelectMode(false);
-            selectButton.setSelected(false);
-            selectItem.setSelected(false);
+            changeSelectMode(false);
         } else {
-            myJPanel.setSelectMode(true);
-            selectButton.setSelected(true);
-            selectItem.setSelected(true);
+            changeSelectMode(true);
         }
+    }
+
+    private void changeSelectMode(boolean selectMode) {
+        myJPanel.setSelectMode(selectMode);
+        selectButton.setSelected(selectMode);
+        selectItem.setSelected(selectMode);
     }
 
     private void onOpenFileButtonClicked() {

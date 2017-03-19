@@ -180,11 +180,16 @@ public class MyJPanel extends JPanel {
                 startYOriginal -= (yOriginalImage + ZONE_SIZE / 2 - originalImage.getHeight());
             }
 
-
-            //double widthPercent = (double) startX / (double) zoneA.getWidth();
-            //double heightPercent = (double) startY / (double) zoneA.getHeight();
             zoneB = originalImage.getSubimage(startXOriginal, startYOriginal , ZONE_SIZE, ZONE_SIZE);
             repaint();
         }
+    }
+
+    public void clear() {
+        zoneA = null;
+        zoneB = null;
+        zoneC = null;
+
+        originalImage = null;
     }
 }
