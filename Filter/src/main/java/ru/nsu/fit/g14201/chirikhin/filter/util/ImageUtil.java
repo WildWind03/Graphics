@@ -1,0 +1,18 @@
+package ru.nsu.fit.g14201.chirikhin.filter.util;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
+public class ImageUtil {
+    public static BufferedImage deepCopy(BufferedImage source) {
+        if (null == source) {
+            return null;
+        }
+
+        BufferedImage b = new BufferedImage(source.getWidth(), source.getHeight(), source.getType());
+        Graphics g = b.getGraphics();
+        g.drawImage(source, 0, 0, null);
+        g.dispose();
+        return b;
+    }
+}
