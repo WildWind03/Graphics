@@ -107,16 +107,16 @@ public class MyJPanel extends JPanel {
             int newHeight;
 
             if (width > height) {
-                float k = width / ZONE_SIZE;
+                float k = (float) width / (float) ZONE_SIZE;
 
                 newWidth = ZONE_SIZE;
                 newHeight = (int) (height / k);
 
                 selectRectSize = (int) (ZONE_SIZE / k);
             } else {
-                float k = height / ZONE_SIZE;
+                float k = (float) height / (float) ZONE_SIZE;
 
-                newHeight = ZONE_SIZE ;
+                newHeight = ZONE_SIZE;
                 newWidth = (int) (width / k);
 
                 selectRectSize = (int) (ZONE_SIZE / k);
@@ -205,5 +205,9 @@ public class MyJPanel extends JPanel {
 
     public void copyBToC() {
         zoneC = ImageUtil.deepCopy(zoneB);
+    }
+
+    public BufferedImage getFilteredImage() {
+        return zoneC;
     }
 }

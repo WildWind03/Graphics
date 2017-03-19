@@ -4,9 +4,12 @@ import util.ListenerUtil;
 import util.MenuUtil;
 import util.ToolBarUtil;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 public class MyJFrame extends JFrame {
@@ -70,6 +73,9 @@ public class MyJFrame extends JFrame {
     private static final String CONFIG_PNG = "/config.png";
     private static final String INFO_ICON_PNG = "/info_icon.png";
     private static final String CAN_NOT_LOAD_THE_IMAGE = "Can not load the image";
+    private static final String DATA_FOLDER = "./FIT_g14201_Chirikhin_Filter_Data";
+    private static final String ERROR_WHILE_SAVING = "Error while saving";
+    private static final String THERE_ISN_T_AN_IMAGE_THAT_COULD_BE_SAVED = "There isn't an image that could be saved";
 
     private final JMenuItem openItem;
     private final JMenuItem newItem;
@@ -212,13 +218,41 @@ public class MyJFrame extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
 
         ListenerUtil.setListener(openButton, openItem, this::onOpenFileButtonClicked);
-        ListenerUtil.setListener(selectButton, selectItem, this::onSelectButtonClicked);
         ListenerUtil.setListener(newButton, newItem, this::onNewButtonClicked);
+        ListenerUtil.setListener(saveButton, saveItem, this::onSaveButtonClicked);
+
+        ListenerUtil.setListener(selectButton, selectItem, this::onSelectButtonClicked);
         ListenerUtil.setListener(copyBToCButton, copyBToC, this::bToCCopy);
         ListenerUtil.setListener(copyCToBButton, copyCToB, this::cToBCopy);
 
         pack();
         setVisible(true);
+    }
+
+    private void onSaveButtonClicked() {
+        JFileChooser jFileChooser = new JFileChooser();
+
+        FileNameExtensionFilter fileFilter = new FileNameExtensionFilter("*.bmp", "bmp");
+
+        jFileChooser.setFileFilter(fileFilter);
+        jFileChooser.addChoosableFileFilter(fileFilter);
+        jFileChooser.setCurrentDirectory(new File(DATA_FOLDER));
+        jFileChooser.setAcceptAllFileFilterUsed(false);
+
+        int result = jFileChooser.showSaveDialog(this);
+
+        if (JFileChooser.APPROVE_OPTION == result) {
+            try {
+                BufferedImage imageToSave = myJPanel.getFilteredImage();
+                if (null != imageToSave) {
+                    ImageIO.write(myJPanel.getFilteredImage(), "bmp", new File(jFileChooser.getSelectedFile().getAbsolutePath() + ".bmp"));
+                } else {
+                    JOptionPane.showMessageDialog(this, THERE_ISN_T_AN_IMAGE_THAT_COULD_BE_SAVED, ERROR_WHILE_SAVING, JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(), ERROR_WHILE_SAVING, JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     private void cToBCopy() {
@@ -260,7 +294,7 @@ public class MyJFrame extends JFrame {
         FileNameExtensionFilter imageFilter = new FileNameExtensionFilter("*.png, *.bmp", "png", "bmp");
         jFileChooser.addChoosableFileFilter(imageFilter);
         jFileChooser.setAcceptAllFileFilterUsed(false);
-
+        jFileChooser.setCurrentDirectory(new File(DATA_FOLDER));
 
         int result = jFileChooser.showOpenDialog(this);
 
