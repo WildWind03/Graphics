@@ -214,9 +214,22 @@ public class MyJFrame extends JFrame {
         ListenerUtil.setListener(openButton, openItem, this::onOpenFileButtonClicked);
         ListenerUtil.setListener(selectButton, selectItem, this::onSelectButtonClicked);
         ListenerUtil.setListener(newButton, newItem, this::onNewButtonClicked);
+        ListenerUtil.setListener(copyBToCButton, copyBToC, this::bToCCopy);
+        ListenerUtil.setListener(copyCToBButton, copyCToB, this::cToBCopy);
 
         pack();
         setVisible(true);
+    }
+
+    private void cToBCopy() {
+        myJPanel.copyCToB();
+        repaint();
+    }
+
+    private void bToCCopy() {
+        myJPanel.copyBToC();
+        repaint();
+
     }
 
     private void onNewButtonClicked() {

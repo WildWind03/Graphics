@@ -1,5 +1,7 @@
 package view;
 
+import util.ImageUtil;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -73,6 +75,10 @@ public class MyJPanel extends JPanel {
 
         if (null != zoneB) {
             g.drawImage(zoneB, 1 + ZONE_SIZE + GAP_BETWEEN_ZONES + 1, 1, null);
+        }
+
+        if (null != zoneC) {
+            g.drawImage(zoneC, 3 + ZONE_SIZE + ZONE_SIZE + GAP_BETWEEN_ZONES + GAP_BETWEEN_ZONES, 1, null);
         }
     }
 
@@ -191,5 +197,13 @@ public class MyJPanel extends JPanel {
         zoneC = null;
 
         originalImage = null;
+    }
+
+    public void copyCToB() {
+        zoneB = ImageUtil.deepCopy(zoneC);
+    }
+
+    public void copyBToC() {
+        zoneC = ImageUtil.deepCopy(zoneB);
     }
 }
