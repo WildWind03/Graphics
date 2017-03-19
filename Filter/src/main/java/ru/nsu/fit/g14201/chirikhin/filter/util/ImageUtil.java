@@ -1,9 +1,7 @@
-package util;
+package ru.nsu.fit.g14201.chirikhin.filter.util;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
 
 public class ImageUtil {
     public static BufferedImage deepCopy(BufferedImage source) {

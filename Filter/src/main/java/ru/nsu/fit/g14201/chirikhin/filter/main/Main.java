@@ -1,6 +1,6 @@
-package main;
+package ru.nsu.fit.g14201.chirikhin.filter.main;
 
-import controller.FilterController;
+import ru.nsu.fit.g14201.chirikhin.filter.controller.FilterController;
 
 public class Main {
     public static void main(String[] args) {

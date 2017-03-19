@@ -1,8 +1,6 @@
-package util;
+package ru.nsu.fit.g14201.chirikhin.filter.util;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class MenuUtil {
     private MenuUtil() {

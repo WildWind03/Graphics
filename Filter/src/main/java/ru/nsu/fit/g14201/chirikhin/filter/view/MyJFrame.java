@@ -1,8 +1,8 @@
-package view;
+package ru.nsu.fit.g14201.chirikhin.filter.view;
 
-import util.ListenerUtil;
-import util.MenuUtil;
-import util.ToolBarUtil;
+import ru.nsu.fit.g14201.chirikhin.filter.util.ListenerUtil;
+import ru.nsu.fit.g14201.chirikhin.filter.util.MenuUtil;
+import ru.nsu.fit.g14201.chirikhin.filter.util.ToolBarUtil;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -76,10 +76,14 @@ public class MyJFrame extends JFrame {
     private static final String DATA_FOLDER = "./FIT_g14201_Chirikhin_Filter_Data";
     private static final String ERROR_WHILE_SAVING = "Error while saving";
     private static final String THERE_ISN_T_AN_IMAGE_THAT_COULD_BE_SAVED = "There isn't an image that could be saved";
+    private static final String ITEM_EXIT = "Exit";
+    private static final String FILTER_MADE_BY_CHIRIKHIN_ALEXANDER_3_19_2017 = "Filter \n Made by Chirikhin Alexander, 3.19.2017";
+    private static final String ABOUT_THE_PROGRAM = "About the program";
 
     private final JMenuItem openItem;
     private final JMenuItem newItem;
     private final JMenuItem saveItem;
+    private final JMenuItem exitItem;
 
     private final JCheckBoxMenuItem selectItem;
     private final JMenuItem copyBToC;
@@ -156,6 +160,7 @@ public class MyJFrame extends JFrame {
         newItem = MenuUtil.addNewMenuItem(fileMenu, ITEM_NEW);
         openItem = MenuUtil.addNewMenuItem(fileMenu, ITEM_OPEN);
         saveItem = MenuUtil.addNewMenuItem(fileMenu, ITEM_SAVE);
+        exitItem = MenuUtil.addNewMenuItem(fileMenu, ITEM_EXIT);
 
         newButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(CREATE_ICON_PNG)), ITEM_NEW);
         openButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(OPEN_ICON_PNG)), ITEM_OPEN);
@@ -220,13 +225,24 @@ public class MyJFrame extends JFrame {
         ListenerUtil.setListener(openButton, openItem, this::onOpenFileButtonClicked);
         ListenerUtil.setListener(newButton, newItem, this::onNewButtonClicked);
         ListenerUtil.setListener(saveButton, saveItem, this::onSaveButtonClicked);
+        ListenerUtil.setListener(exitItem, this::onExitButtonClicked);
 
         ListenerUtil.setListener(selectButton, selectItem, this::onSelectButtonClicked);
-        ListenerUtil.setListener(copyBToCButton, copyBToC, this::bToCCopy);
-        ListenerUtil.setListener(copyCToBButton, copyCToB, this::cToBCopy);
+        ListenerUtil.setListener(copyBToCButton, copyBToC, this::onBToCButtonClicked);
+        ListenerUtil.setListener(copyCToBButton, copyCToB, this::onCToBButtonClicked);
+
+        ListenerUtil.setListener(aboutAuthorButton, aboutAuthor, this::onAboutButtonClicked);
 
         pack();
         setVisible(true);
+    }
+
+    private void onAboutButtonClicked() {
+        JOptionPane.showMessageDialog(this, FILTER_MADE_BY_CHIRIKHIN_ALEXANDER_3_19_2017, ABOUT_THE_PROGRAM, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void onExitButtonClicked() {
+        System.exit(0);
     }
 
     private void onSaveButtonClicked() {
@@ -255,12 +271,12 @@ public class MyJFrame extends JFrame {
         }
     }
 
-    private void cToBCopy() {
+    private void onCToBButtonClicked() {
         myJPanel.copyCToB();
         repaint();
     }
 
-    private void bToCCopy() {
+    private void onBToCButtonClicked() {
         myJPanel.copyBToC();
         repaint();
 

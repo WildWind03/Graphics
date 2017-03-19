@@ -1,6 +1,6 @@
-package view;
+package ru.nsu.fit.g14201.chirikhin.filter.view;
 
-import util.ImageUtil;
+import ru.nsu.fit.g14201.chirikhin.filter.util.ImageUtil;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
