@@ -235,11 +235,16 @@ public class MyJFrame extends JFrame {
         ListenerUtil.setListener(smoothButton, smoothingFilter, this::onSmoothFilterButtonClicked);
         ListenerUtil.setListener(sharpButton, sharpingFilter, this::onSharpFilterButtonClicked);
         ListenerUtil.setListener(embossButton, embossFilter, this::onEmbossButtonClicked);
+        ListenerUtil.setListener(orderedButton, orderedDitheringFilter, this::onOrderedDitheringButtonClicked);
 
         ListenerUtil.setListener(aboutAuthorButton, aboutAuthor, this::onAboutButtonClicked);
 
         pack();
         setVisible(true);
+    }
+
+    private void onOrderedDitheringButtonClicked() {
+        myJPanel.applyOrderedDitheringFilter();
     }
 
     private void onEmbossButtonClicked() {

@@ -12,7 +12,6 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MyJPanel extends JPanel {
@@ -251,6 +250,13 @@ public class MyJPanel extends JPanel {
             CompositeFilter embossWithShiftFilter = new CompositeFilter(Arrays.asList(embossFilter, brightnessShiftFilter));
 
             zoneC = embossWithShiftFilter.apply(zoneB);
+            repaint();
+        }
+    }
+
+    public void applyOrderedDitheringFilter() {
+        if (null != zoneB) {
+            zoneC = new OrderedDitheringFilter().apply(zoneB);
             repaint();
         }
     }
