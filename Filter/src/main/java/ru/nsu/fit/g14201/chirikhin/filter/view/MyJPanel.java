@@ -1,5 +1,6 @@
 package ru.nsu.fit.g14201.chirikhin.filter.view;
 
+import ru.nsu.fit.g14201.chirikhin.filter.model.*;
 import ru.nsu.fit.g14201.chirikhin.filter.util.ImageUtil;
 
 import javax.imageio.ImageIO;
@@ -209,5 +210,34 @@ public class MyJPanel extends JPanel {
 
     public BufferedImage getFilteredImage() {
         return zoneC;
+    }
+
+    public void applyGrayscaleFilter() {
+        if (null != zoneB) {
+            OnePixelFilter grayscaleFilter = new OnePixelFilter(new GrayscaleFunctor());
+            zoneC = grayscaleFilter.apply(zoneB);
+            repaint();
+        }
+    }
+
+    public void applyNegativeFilter() {
+        if (null != zoneB) {
+            zoneC = new OnePixelFilter(new NegativeFunctor()).apply(zoneB);
+            repaint();
+        }
+    }
+
+    public void applyBlurFilter() {
+        if (null != zoneB) {
+            zoneC = new MatrixFilter(new BlurMatrix(5, 2)).apply(zoneB);
+            repaint();
+        }
+    }
+
+    public void applySharpFilter() {
+        if (null != zoneB) {
+            zoneC = new MatrixFilter(new SharpMatrix(5)).apply(zoneB);
+            repaint();
+        }
     }
 }

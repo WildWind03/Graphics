@@ -230,11 +230,31 @@ public class MyJFrame extends JFrame {
         ListenerUtil.setListener(selectButton, selectItem, this::onSelectButtonClicked);
         ListenerUtil.setListener(copyBToCButton, copyBToC, this::onBToCButtonClicked);
         ListenerUtil.setListener(copyCToBButton, copyCToB, this::onCToBButtonClicked);
+        ListenerUtil.setListener(blackAndWhiteFilterButton, blackAndWhiteFilter, this::onGrayscaleFilterButtonClicked);
+        ListenerUtil.setListener(negativeFilterButton, negativeFilter, this::onNegativeFilterButtonClicked);
+        ListenerUtil.setListener(smoothButton, smoothingFilter, this::onSmoothFilterButtonClicked);
+        ListenerUtil.setListener(sharpButton, sharpingFilter, this::onSharpFilterButttonClicked);
 
         ListenerUtil.setListener(aboutAuthorButton, aboutAuthor, this::onAboutButtonClicked);
 
         pack();
         setVisible(true);
+    }
+
+    private void onSharpFilterButttonClicked() {
+        myJPanel.applySharpFilter();
+    }
+
+    private void onSmoothFilterButtonClicked() {
+        myJPanel.applyBlurFilter();
+    }
+
+    private void onNegativeFilterButtonClicked() {
+        myJPanel.applyNegativeFilter();
+    }
+
+    private void onGrayscaleFilterButtonClicked() {
+        myJPanel.applyGrayscaleFilter();
     }
 
     private void onAboutButtonClicked() {
