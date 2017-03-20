@@ -236,11 +236,26 @@ public class MyJFrame extends JFrame {
         ListenerUtil.setListener(sharpButton, sharpingFilter, this::onSharpFilterButtonClicked);
         ListenerUtil.setListener(embossButton, embossFilter, this::onEmbossButtonClicked);
         ListenerUtil.setListener(orderedButton, orderedDitheringFilter, this::onOrderedDitheringButtonClicked);
+        ListenerUtil.setListener(floydButton, orderedDitheringFilter, this::onFloydDitheringButtonClicked);
+        ListenerUtil.setListener(zoom2XButton, zoom2XFilter, this::onZoomButtonClicked);
 
         ListenerUtil.setListener(aboutAuthorButton, aboutAuthor, this::onAboutButtonClicked);
 
         pack();
         setVisible(true);
+    }
+
+    private void onZoomButtonClicked() {
+        myJPanel.applyZoomFilter();
+    }
+
+    private void onFloydDitheringButtonClicked() {
+        FloydDitheringFilterConfigurationDialog dialog = new FloydDitheringFilterConfigurationDialog(this);
+        dialog.apparate();
+
+        if (!dialog.isCancelled()) {
+            myJPanel.applyFloydDitheringClicked(dialog.getRedDivision(), dialog.getGreenDivision(), dialog.getBlueDivision());
+        }
     }
 
     private void onOrderedDitheringButtonClicked() {

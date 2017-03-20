@@ -260,4 +260,18 @@ public class MyJPanel extends JPanel {
             repaint();
         }
     }
+
+    public void applyFloydDitheringClicked(int redDivision, int greenDivision, int blueDivision) {
+        if (null != zoneB) {
+            zoneC = new FloydDitheringFilter(redDivision, greenDivision, blueDivision).apply(zoneB);
+            repaint();
+        }
+    }
+
+    public void applyZoomFilter() {
+        if (null != zoneB) {
+            zoneC = new ZoomFilter().apply(zoneB);
+            repaint();
+        }
+    }
 }
