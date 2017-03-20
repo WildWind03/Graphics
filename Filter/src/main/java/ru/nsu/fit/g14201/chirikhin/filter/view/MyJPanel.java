@@ -12,6 +12,8 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MyJPanel extends JPanel {
     private static final int ZONE_SIZE = 350;
@@ -237,6 +239,18 @@ public class MyJPanel extends JPanel {
     public void applySharpFilter() {
         if (null != zoneB) {
             zoneC = new MatrixFilter(new SharpMatrix(5)).apply(zoneB);
+            repaint();
+        }
+    }
+
+    public void applyEmbossFilter() {
+
+        if (null != zoneB) {
+            MatrixFilter embossFilter = new MatrixFilter(new EmbossMatrix());
+            OnePixelFilter brightnessShiftFilter = new OnePixelFilter(new BrightnessShiftFunctor());
+            CompositeFilter embossWithShiftFilter = new CompositeFilter(Arrays.asList(embossFilter, brightnessShiftFilter));
+
+            zoneC = embossWithShiftFilter.apply(zoneB);
             repaint();
         }
     }

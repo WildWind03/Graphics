@@ -233,7 +233,8 @@ public class MyJFrame extends JFrame {
         ListenerUtil.setListener(blackAndWhiteFilterButton, blackAndWhiteFilter, this::onGrayscaleFilterButtonClicked);
         ListenerUtil.setListener(negativeFilterButton, negativeFilter, this::onNegativeFilterButtonClicked);
         ListenerUtil.setListener(smoothButton, smoothingFilter, this::onSmoothFilterButtonClicked);
-        ListenerUtil.setListener(sharpButton, sharpingFilter, this::onSharpFilterButttonClicked);
+        ListenerUtil.setListener(sharpButton, sharpingFilter, this::onSharpFilterButtonClicked);
+        ListenerUtil.setListener(embossButton, embossFilter, this::onEmbossButtonClicked);
 
         ListenerUtil.setListener(aboutAuthorButton, aboutAuthor, this::onAboutButtonClicked);
 
@@ -241,7 +242,12 @@ public class MyJFrame extends JFrame {
         setVisible(true);
     }
 
-    private void onSharpFilterButttonClicked() {
+    private void onEmbossButtonClicked() {
+        myJPanel.applyEmbossFilter();
+    }
+
+
+    private void onSharpFilterButtonClicked() {
         myJPanel.applySharpFilter();
     }
 
