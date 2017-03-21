@@ -274,4 +274,11 @@ public class MyJPanel extends JPanel {
             repaint();
         }
     }
+
+    public void applyRobertsFilter(int threshold) {
+        if (null != zoneB) {
+            zoneC = new RobertsFilter(threshold).apply(zoneB);
+            repaint();
+        }
+    }
 }

@@ -238,12 +238,18 @@ public class MyJFrame extends JFrame {
         ListenerUtil.setListener(orderedButton, orderedDitheringFilter, this::onOrderedDitheringButtonClicked);
         ListenerUtil.setListener(floydButton, orderedDitheringFilter, this::onFloydDitheringButtonClicked);
         ListenerUtil.setListener(zoom2XButton, zoom2XFilter, this::onZoomButtonClicked);
+        ListenerUtil.setListener(robertsButton, robertsFilter, this::onRobertsFilterClicked);
 
         ListenerUtil.setListener(aboutAuthorButton, aboutAuthor, this::onAboutButtonClicked);
 
         pack();
         setVisible(true);
     }
+
+    private void onRobertsFilterClicked() {
+        myJPanel.applyRobertsFilter(80);
+    }
+
 
     private void onZoomButtonClicked() {
         myJPanel.applyZoomFilter();
