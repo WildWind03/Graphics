@@ -12,6 +12,10 @@ public abstract class MyDialog extends JDialog {
 
     public MyDialog(JFrame jFrame, String title) {
         super(jFrame, title, true);
+
+        GridBagLayout gridBagLayout = new GridBagLayout();
+        setLayout(gridBagLayout);
+
         onDialogCreated();
         addOkAndCancelButtons();
         pack();

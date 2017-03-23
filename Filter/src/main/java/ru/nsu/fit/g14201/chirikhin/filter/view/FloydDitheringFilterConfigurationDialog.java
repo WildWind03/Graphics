@@ -35,9 +35,6 @@ public class FloydDitheringFilterConfigurationDialog extends MyDialog {
 
     @Override
     void onDialogCreated() {
-        GridBagLayout gridBagLayout = new GridBagLayout();
-        setLayout(gridBagLayout);
-
         JLabel redDivisionLabel = new JLabel("Red divisions");
         redDivisionTextField = FormattedTextFieldUtil.getFormattedTextField(MIN, MAX, TEXT_FIELD_SIZE);
         redDivisionTextField.setColumns(TEXT_FIELD_SIZE);

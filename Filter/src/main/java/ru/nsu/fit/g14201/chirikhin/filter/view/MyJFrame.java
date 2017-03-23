@@ -79,6 +79,7 @@ public class MyJFrame extends JFrame {
     private static final String ITEM_EXIT = "Exit";
     private static final String FILTER_MADE_BY_CHIRIKHIN_ALEXANDER_3_19_2017 = "Filter \n Made by Chirikhin Alexander, 3.19.2017";
     private static final String ABOUT_THE_PROGRAM = "About the program";
+    private static final String ROBERT_S_FILTER_CONFIGURATION = "Robert's filter configuration";
 
     private final JMenuItem openItem;
     private final JMenuItem newItem;
@@ -247,7 +248,12 @@ public class MyJFrame extends JFrame {
     }
 
     private void onRobertsFilterClicked() {
-        myJPanel.applyRobertsFilter(80);
+        SliderTextFiledDialog sliderTextFiledDialog = new SliderTextFiledDialog(this, ROBERT_S_FILTER_CONFIGURATION);
+        sliderTextFiledDialog.apparate();
+
+        if (!sliderTextFiledDialog.isCancelled()) {
+            myJPanel.applyRobertsFilter(sliderTextFiledDialog.getValue());
+        }
     }
 
 

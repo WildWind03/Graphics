@@ -188,7 +188,6 @@ public class MyJPanel extends JPanel {
                 startYOriginal -= (yOriginalImage + ZONE_SIZE / 2 - originalImage.getHeight());
             }
 
-            //zoneB = originalImage.getSubimage(startXOriginal, startYOriginal , ZONE_SIZE, ZONE_SIZE);
             zoneB = ImageUtil.getSubimage(originalImage, startXOriginal, startYOriginal, ZONE_SIZE, ZONE_SIZE);
             repaint();
         }

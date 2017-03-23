@@ -25,8 +25,6 @@ public class ImageUtil {
     public static BufferedImage getSubimage(BufferedImage bufferedImage, int startX, int startY, int width, int height) {
         byte[] imageBytes = getByteData(bufferedImage);
 
-        System.out.println(imageBytes.length);
-
         int currentSrcPosition = (startY * bufferedImage.getWidth() + startX) * 3;
         int currentDstPosition = 0;
         byte[] newImageBytes = new byte[width * height * 3];
