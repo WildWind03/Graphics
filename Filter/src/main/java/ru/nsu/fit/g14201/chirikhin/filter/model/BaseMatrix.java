@@ -2,6 +2,7 @@ package ru.nsu.fit.g14201.chirikhin.filter.model;
 
 public abstract class BaseMatrix {
     protected final double[][] matrix;
+
     private final int width;
     private final int height;
 

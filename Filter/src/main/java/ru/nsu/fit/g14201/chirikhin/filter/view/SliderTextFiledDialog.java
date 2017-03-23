@@ -26,7 +26,6 @@ public class SliderTextFiledDialog extends MyDialog {
 
         addComponent(0, 0, slider);
         addComponent(0, 1, jTextField);
-
     }
 
     @Override
