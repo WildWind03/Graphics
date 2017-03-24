@@ -35,7 +35,6 @@ public class MyJFrame extends JFrame {
     private static final String ORDERED_DITHERING = "Ordered dithering";
     private static final String ROBERTS = "Robert's operator";
     private static final String SOBEL = "Sobel's operator";
-    private static final String EDGE_DETECTION = "Edge detection";
     private static final String SMOOTHING = "Smoothing";
     private static final String SHARPING = "Sharping";
     private static final String EMBOSS = "Emboss";
@@ -60,7 +59,6 @@ public class MyJFrame extends JFrame {
     private static final String MAGNIFIER_ICON_PNG = "/magnifier_icon.png";
     private static final String ROBERT_ICON_PNG = "/robert_icon.png";
     private static final String SOBEL_ICON_PNG = "/sobel_icon.png";
-    private static final String EDGE_DETECTION_ICON_PNG = "/edge_detection_icon.png";
     private static final String BLUR_ICON_PNG = "/blur_icon.png";
     private static final String SHARP_ICON_PNG = "/sharp_icon.png";
     private static final String BLACK_AND_WHITE_ICON_PNG1 = "/black_and_white_icon.png";
@@ -80,6 +78,7 @@ public class MyJFrame extends JFrame {
     private static final String FILTER_MADE_BY_CHIRIKHIN_ALEXANDER_3_19_2017 = "Filter \n Made by Chirikhin Alexander, 3.19.2017";
     private static final String ABOUT_THE_PROGRAM = "About the program";
     private static final String ROBERT_S_FILTER_CONFIGURATION = "Robert's filter configuration";
+    private static final String SOBEL_CONFIGURATION_DIALOG = "Sobel configuration dialog";
 
     private final JMenuItem openItem;
     private final JMenuItem newItem;
@@ -97,7 +96,6 @@ public class MyJFrame extends JFrame {
     private final JMenuItem zoom2XFilter;
     private final JMenuItem robertsFilter;
     private final JMenuItem sobelFilter;
-    private final JMenuItem edgeDetectionFilter;
     private final JMenuItem smoothingFilter;
     private final JMenuItem sharpingFilter;
     private final JMenuItem embossFilter;
@@ -127,7 +125,6 @@ public class MyJFrame extends JFrame {
     private final JButton zoom2XButton;
     private final JButton robertsButton;
     private final JButton sobelButton;
-    private final JButton edgeDetectingButton;
     private final JButton smoothButton;
     private final JButton sharpButton;
     private final JButton embossButton;
@@ -177,7 +174,6 @@ public class MyJFrame extends JFrame {
         zoom2XFilter = MenuUtil.addNewMenuItem(filterMenu, ITEM_ZOOM);
         robertsFilter = MenuUtil.addNewMenuItem(filterMenu, ROBERTS);
         sobelFilter = MenuUtil.addNewMenuItem(filterMenu, SOBEL);
-        edgeDetectionFilter = MenuUtil.addMenuToMenu(filterMenu, EDGE_DETECTION);
         smoothingFilter = MenuUtil.addNewMenuItem(filterMenu, SMOOTHING);
         sharpingFilter = MenuUtil.addNewMenuItem(filterMenu, SHARPING);
         embossFilter = MenuUtil.addNewMenuItem(filterMenu, EMBOSS);
@@ -195,7 +191,6 @@ public class MyJFrame extends JFrame {
         zoom2XButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(MAGNIFIER_ICON_PNG)), ITEM_ZOOM);
         robertsButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(ROBERT_ICON_PNG)), ROBERTS);
         sobelButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(SOBEL_ICON_PNG)), SOBEL);
-        edgeDetectingButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(EDGE_DETECTION_ICON_PNG)), EDGE_DETECTION);
         smoothButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(BLUR_ICON_PNG)), SMOOTHING);
         sharpButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(SHARP_ICON_PNG)), SHARPING);
         embossButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(BLACK_AND_WHITE_ICON_PNG1)), EMBOSS);
@@ -237,14 +232,24 @@ public class MyJFrame extends JFrame {
         ListenerUtil.setListener(sharpButton, sharpingFilter, this::onSharpFilterButtonClicked);
         ListenerUtil.setListener(embossButton, embossFilter, this::onEmbossButtonClicked);
         ListenerUtil.setListener(orderedButton, orderedDitheringFilter, this::onOrderedDitheringButtonClicked);
-        ListenerUtil.setListener(floydButton, orderedDitheringFilter, this::onFloydDitheringButtonClicked);
+        ListenerUtil.setListener(floydButton, ditheringFloydFilter, this::onFloydDitheringButtonClicked);
         ListenerUtil.setListener(zoom2XButton, zoom2XFilter, this::onZoomButtonClicked);
         ListenerUtil.setListener(robertsButton, robertsFilter, this::onRobertsFilterClicked);
+        ListenerUtil.setListener(sobelButton, sobelFilter, this::onSobelFilterClicked);
 
         ListenerUtil.setListener(aboutAuthorButton, aboutAuthor, this::onAboutButtonClicked);
 
         pack();
         setVisible(true);
+    }
+
+    private void onSobelFilterClicked() {
+        SliderTextFiledDialog sobelConfigDialog = new SliderTextFiledDialog(this, SOBEL_CONFIGURATION_DIALOG);
+        sobelConfigDialog.apparate();
+
+        if (!sobelConfigDialog.isCancelled()) {
+            myJPanel.applySobelFilter(sobelConfigDialog.getValue());
+        }
     }
 
     private void onRobertsFilterClicked() {

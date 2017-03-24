@@ -281,4 +281,11 @@ public class MyJPanel extends JPanel {
             repaint();
         }
     }
+
+    public void applySobelFilter(int value) {
+        if (null != zoneB) {
+            zoneC = new SobelFilter(value).apply(zoneB);
+            repaint();
+        }
+    }
 }
