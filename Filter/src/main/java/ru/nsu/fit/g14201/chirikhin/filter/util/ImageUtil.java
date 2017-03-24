@@ -23,23 +23,7 @@ public class ImageUtil {
     }
 
     public static BufferedImage getSubimage(BufferedImage bufferedImage, int startX, int startY, int width, int height) {
-        byte[] imageBytes = getByteData(bufferedImage);
-
-        int currentSrcPosition = (startY * bufferedImage.getWidth() + startX) * 3;
-        int currentDstPosition = 0;
-        byte[] newImageBytes = new byte[width * height * 3];
-
-        for (int currentHeight = startY; currentHeight < startY + height; currentHeight++) {
-            for (int k = currentSrcPosition; k < currentSrcPosition + width * 3; k+=3) {
-                newImageBytes[currentDstPosition++] = imageBytes[k + 2];
-                newImageBytes[currentDstPosition++] = imageBytes[k + 1];
-                newImageBytes[currentDstPosition++] = imageBytes[k];
-            }
-
-            currentSrcPosition += (bufferedImage.getWidth() * 3);
-        }
-
-        return createImageFromBytes(newImageBytes, width, height);
+        return createImageFromBytes(getSubimageBytes(bufferedImage, startX, startY, width, height), width, height);
     }
 
     private static byte[] getByteData(BufferedImage userSpaceImage) {
@@ -58,6 +42,26 @@ public class ImageUtil {
                         null),
                 colorModel.isAlphaPremultiplied(),
                 null);
+    }
+
+    public static byte[] getSubimageBytes(BufferedImage bufferedImage, int startX, int startY, int width, int height) {
+        byte[] imageBytes = getByteData(bufferedImage);
+
+        int currentSrcPosition = (startY * bufferedImage.getWidth() + startX) * 3;
+        int currentDstPosition = 0;
+        byte[] newImageBytes = new byte[width * height * 3];
+
+        for (int currentHeight = startY; currentHeight < startY + height; currentHeight++) {
+            for (int k = currentSrcPosition; k < currentSrcPosition + width * 3; k+=3) {
+                newImageBytes[currentDstPosition++] = imageBytes[k + 2];
+                newImageBytes[currentDstPosition++] = imageBytes[k + 1];
+                newImageBytes[currentDstPosition++] = imageBytes[k];
+            }
+
+            currentSrcPosition += (bufferedImage.getWidth() * 3);
+        }
+
+        return newImageBytes;
     }
 
 }

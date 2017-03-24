@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 public class MyJPanel extends JPanel {
     private static final int ZONE_SIZE = 350;
@@ -285,6 +286,16 @@ public class MyJPanel extends JPanel {
     public void applySobelFilter(int value) {
         if (null != zoneB) {
             zoneC = new SobelFilter(value).apply(zoneB);
+            repaint();
+        }
+    }
+
+    public void applyWatercolorFilter() {
+        if (null != zoneB) {
+            LinkedList<BaseFilter> filters = new LinkedList<>();
+            filters.add(new WatercolorFilter());
+            filters.add(new MatrixFilter(new SharpMatrix(3)));
+            zoneC = new CompositeFilter(filters).apply(zoneB);
             repaint();
         }
     }

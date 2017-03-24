@@ -236,11 +236,16 @@ public class MyJFrame extends JFrame {
         ListenerUtil.setListener(zoom2XButton, zoom2XFilter, this::onZoomButtonClicked);
         ListenerUtil.setListener(robertsButton, robertsFilter, this::onRobertsFilterClicked);
         ListenerUtil.setListener(sobelButton, sobelFilter, this::onSobelFilterClicked);
+        ListenerUtil.setListener(waterColorButton, waterColor, this::onWaterColorClicked);
 
         ListenerUtil.setListener(aboutAuthorButton, aboutAuthor, this::onAboutButtonClicked);
 
         pack();
         setVisible(true);
+    }
+
+    private void onWaterColorClicked() {
+        myJPanel.applyWatercolorFilter();
     }
 
     private void onSobelFilterClicked() {
