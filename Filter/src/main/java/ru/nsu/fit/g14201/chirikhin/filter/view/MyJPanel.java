@@ -299,4 +299,11 @@ public class MyJPanel extends JPanel {
             repaint();
         }
     }
+
+    public void applyRotationFilter() {
+        if (null != zoneB) {
+            zoneC = new RotationFilter(-30).apply(zoneB);
+            repaint();
+        }
+    }
 }
