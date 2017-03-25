@@ -300,9 +300,16 @@ public class MyJPanel extends JPanel {
         }
     }
 
-    public void applyRotationFilter() {
+    public void applyRotationFilter(int value) {
         if (null != zoneB) {
-            zoneC = new RotationFilter(-30).apply(zoneB);
+            zoneC = new RotationFilter(value).apply(zoneB);
+            repaint();
+        }
+    }
+
+    public void applyGammaFilter(int value) {
+        if (null != zoneB) {
+            zoneC = new GammaFilter(value).apply(zoneB);
             repaint();
         }
     }

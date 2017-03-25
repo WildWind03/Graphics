@@ -7,8 +7,8 @@ public class RotationFilter implements BaseFilter {
     private final double sinX;
 
     public RotationFilter(int degree) {
-        cosX = Math.cos(degree);
-        sinX = Math.sin(degree);
+        cosX = Math.cos(Math.toRadians(degree));
+        sinX = Math.sin(Math.toRadians(degree));
     }
 
     @Override
@@ -22,21 +22,12 @@ public class RotationFilter implements BaseFilter {
             for (int k = 0; k < bufferedImage.getWidth(); ++k) {
                 int[] pixel = new int[3];
 
-//                int oldX = (int) (centerX + (k - centerX) * cosX - (i - centerY) * sinX);
-//                int oldY = (int) (centerY + (-i - centerY) * sinX + (k - centerX) * cosX);
-
-                int oldX = (int) (centerX * cosX * cosX + centerX * sinX * sinX - centerX * sinX + centerY * cosX - cosX * i + sinX * k);
-                int oldY = (int) (-centerX * cosX + centerY * cosX * cosX + centerY * sinX * sinX - centerY * sinX + cosX * k + sinX * i);
-
-//                int oldX = (int) (centerX + (k - centerX) * cosX - (i - centerY) * sinX);
-//                int oldY = (int) (-centerY + (-k - centerX) * sinX + (i - centerY) * cosX);
-
-//                int newX = (int) (centerX + (k - centerX) * cosX + (i - centerY) * sinX);
-//                int newY = (int) (centerY + (i - centerY) * cosX - (k - centerX) * sinX);
+                int oldX = (int) (centerX - centerX * sinX + centerY * cosX - cosX * i + sinX * k);
+                int oldY = (int) (-centerX * cosX + centerY - centerY * sinX + cosX * k + sinX * i);
 
                 if (oldX >= 0 && oldX < bufferedImage.getWidth() && oldY >= 0 && oldY < bufferedImage.getHeight()) {
                     bufferedImage.getRaster().getPixel(oldX, oldY, pixel);
-                    bufferedImage1.getRaster().setPixel(k, i, pixel);
+                    bufferedImage1.getRaster().setPixel(i, k, pixel);
                 }
             }
         }

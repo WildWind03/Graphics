@@ -79,6 +79,8 @@ public class MyJFrame extends JFrame {
     private static final String ABOUT_THE_PROGRAM = "About the program";
     private static final String ROBERT_S_FILTER_CONFIGURATION = "Robert's filter configuration";
     private static final String SOBEL_CONFIGURATION_DIALOG = "Sobel configuration dialog";
+    private static final String ROTATION_CONFIGURATION = "Rotation configuration";
+    private static final String GAMMA_CONFIGURATION = "Gamma configuration";
 
     private final JMenuItem openItem;
     private final JMenuItem newItem;
@@ -238,6 +240,7 @@ public class MyJFrame extends JFrame {
         ListenerUtil.setListener(sobelButton, sobelFilter, this::onSobelFilterClicked);
         ListenerUtil.setListener(waterColorButton, waterColor, this::onWaterColorClicked);
         ListenerUtil.setListener(rotationButton, rotationFilter, this::onRotationFilter);
+        ListenerUtil.setListener(gammaButton, gammaFilter, this::onGammaFilter);
 
         ListenerUtil.setListener(aboutAuthorButton, aboutAuthor, this::onAboutButtonClicked);
 
@@ -245,8 +248,22 @@ public class MyJFrame extends JFrame {
         setVisible(true);
     }
 
+    private void onGammaFilter() {
+        GammaDialog gammaDialog = new GammaDialog(this, GAMMA_CONFIGURATION);
+        gammaDialog.apparate();
+
+        if (!gammaDialog.isCancelled()) {
+            myJPanel.applyGammaFilter(gammaDialog.getValue());
+        }
+    }
+
     private void onRotationFilter() {
-        myJPanel.applyRotationFilter();
+        SliderTextFiledDialog rotationFilter = new SliderTextFiledDialog(this, ROTATION_CONFIGURATION, -180, 180, 30);
+        rotationFilter.apparate();
+
+        if (!rotationFilter.isCancelled()) {
+            myJPanel.applyRotationFilter(rotationFilter.getValue());
+        }
     }
 
     private void onWaterColorClicked() {

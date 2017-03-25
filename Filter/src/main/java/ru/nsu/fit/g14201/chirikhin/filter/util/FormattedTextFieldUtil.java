@@ -20,4 +20,17 @@ public class FormattedTextFieldUtil {
 
         return jFormattedTextField;
     }
+
+    public static JFormattedTextField getFormattedDoubleTextField(double min, double max, int textFiledSize) {
+        NumberFormatter lineWidthFormatter = new NumberFormatter(NumberFormat.getNumberInstance());
+
+        lineWidthFormatter.setMinimum(min);
+        lineWidthFormatter.setMaximum(max);
+        lineWidthFormatter.setCommitsOnValidEdit(true);
+
+        JFormattedTextField jFormattedTextField = new JFormattedTextField(lineWidthFormatter);
+        jFormattedTextField.setColumns(textFiledSize);
+
+        return jFormattedTextField;
+    }
 }

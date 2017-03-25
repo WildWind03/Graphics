@@ -3,7 +3,7 @@ package ru.nsu.fit.g14201.chirikhin.filter.view;
 import ru.nsu.fit.g14201.chirikhin.filter.util.FormattedTextFieldUtil;
 
 import javax.swing.*;
-import java.awt.*;
+import java.util.HashMap;
 
 public class FloydDitheringFilterConfigurationDialog extends MyDialog {
 
@@ -34,7 +34,7 @@ public class FloydDitheringFilterConfigurationDialog extends MyDialog {
 
 
     @Override
-    void onDialogCreated() {
+    void onDialogCreated(HashMap<String, Object> propertyResourceBundle) {
         JLabel redDivisionLabel = new JLabel("Red divisions");
         redDivisionTextField = FormattedTextFieldUtil.getFormattedTextField(MIN, MAX, TEXT_FIELD_SIZE);
         redDivisionTextField.setColumns(TEXT_FIELD_SIZE);
