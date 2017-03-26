@@ -1,5 +1,7 @@
 package ru.nsu.fit.g14201.chirikhin.filter.view;
 
+import ru.nsu.fit.g14201.chirikhin.filter.controller.ConfigLoader;
+import ru.nsu.fit.g14201.chirikhin.filter.controller.InvalidConfigException;
 import ru.nsu.fit.g14201.chirikhin.filter.util.ListenerUtil;
 import ru.nsu.fit.g14201.chirikhin.filter.util.MenuUtil;
 import ru.nsu.fit.g14201.chirikhin.filter.util.ToolBarUtil;
@@ -11,6 +13,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 
 public class MyJFrame extends JFrame {
     private static final String APPLICATION_NAME = "Filter";
@@ -143,6 +146,9 @@ public class MyJFrame extends JFrame {
     private final MyJPanel myJPanel;
     private final JScrollPane scrollPane;
 
+    private boolean isEmission = false;
+    private boolean isAbsorption = false;
+
     public MyJFrame()  {
         super(APPLICATION_NAME);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -241,11 +247,63 @@ public class MyJFrame extends JFrame {
         ListenerUtil.setListener(waterColorButton, waterColor, this::onWaterColorClicked);
         ListenerUtil.setListener(rotationButton, rotationFilter, this::onRotationFilter);
         ListenerUtil.setListener(gammaButton, gammaFilter, this::onGammaFilter);
+        ListenerUtil.setListener(absorptionButton, absorptionCheckBoxMenuItem, this::onAbsorptionButtonClicked);
+        ListenerUtil.setListener(emissionButton, emissionCheckBoxMenuItem, this::onEmissionButtonClicked);
+        ListenerUtil.setListener(openConfigButton, openConfigMenuItem, this::onConfigButtonClicked);
 
         ListenerUtil.setListener(aboutAuthorButton, aboutAuthor, this::onAboutButtonClicked);
 
         pack();
         setVisible(true);
+    }
+
+    private void onConfigButtonClicked() {
+        JFileChooser jFileChooser = new JFileChooser();
+
+        FileNameExtensionFilter imageFilter = new FileNameExtensionFilter("*.txt", "txt");
+        jFileChooser.addChoosableFileFilter(imageFilter);
+        jFileChooser.setAcceptAllFileFilterUsed(false);
+        jFileChooser.setCurrentDirectory(new File(DATA_FOLDER));
+
+        int result = jFileChooser.showOpenDialog(this);
+
+        if (JFileChooser.APPROVE_OPTION == result) {
+            try {
+                ConfigLoader configLoader = new ConfigLoader(jFileChooser.getSelectedFile());
+                LinkedList<ConfigLoader.Point<Integer, Float>> absorptionPoints = isAbsorption ? configLoader.getAbsorptionPoints() : null;
+                LinkedList<int[]> emissionPoints = isEmission ? configLoader.getEmissionPoints() : null;
+                myJPanel.applyVisualizationFilter(absorptionPoints,
+                        emissionPoints, configLoader.getChargePoints());
+            } catch (InvalidConfigException | IOException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(), "Invalid file", JOptionPane.ERROR_MESSAGE);
+            }
+            //myJPanel.loadNewConfiguration(jFileChooser.getSelectedFile());
+        }
+    }
+
+    private void onEmissionButtonClicked() {
+        if (isEmission) {
+            isEmission = false;
+            emissionButton.setSelected(false);
+            emissionCheckBoxMenuItem.setSelected(false);
+        } else {
+            isEmission = true;
+            emissionButton.setSelected(true);
+            emissionCheckBoxMenuItem.setSelected(true);
+        }
+    }
+
+    private void onAbsorptionButtonClicked() {
+        if (isAbsorption) {
+            isAbsorption = false;
+            absorptionButton.setSelected(false);
+            absorptionCheckBoxMenuItem.setSelected(false);
+        } else {
+            isAbsorption = true;
+            absorptionButton.setSelected(true);
+            absorptionCheckBoxMenuItem.setSelected(true);
+        }
+
     }
 
     private void onGammaFilter() {

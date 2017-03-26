@@ -1,5 +1,6 @@
 package ru.nsu.fit.g14201.chirikhin.filter.view;
 
+import ru.nsu.fit.g14201.chirikhin.filter.controller.ConfigLoader;
 import ru.nsu.fit.g14201.chirikhin.filter.model.*;
 import ru.nsu.fit.g14201.chirikhin.filter.util.ImageUtil;
 
@@ -313,4 +314,9 @@ public class MyJPanel extends JPanel {
             repaint();
         }
     }
+
+    public void applyVisualizationFilter(LinkedList<ConfigLoader.Point<Integer, Float>> absorptionPoints, LinkedList<int[]> emissionPoints, LinkedList<int[]> chargePoints) {
+
+    }
+
 }
