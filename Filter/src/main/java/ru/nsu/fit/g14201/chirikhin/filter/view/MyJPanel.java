@@ -42,9 +42,6 @@ public class MyJPanel extends JPanel {
     private BufferedImage absorptionImage;
     private BufferedImage emissionImage;
 
-    private LinkedList<MyPoint<Integer, Double>> absorptionPoints;
-    private LinkedList<MyPoint<Integer, int[]>> emissionPoints;
-
     public MyJPanel() {
         setPreferredSize(new Dimension(ZONE_SIZE * 3 + GAP_BETWEEN_ZONES * 3, ZONE_SIZE + GAP_BETWEEN_ZONES * 2 + GRAPHIC_HEIGHT_IMAGE));
 
@@ -339,44 +336,42 @@ public class MyJPanel extends JPanel {
         }
     }
 
-    public void applyVisualizationFilter(LinkedList<MyPoint<Integer, Float>> absorptionPoints, LinkedList<int[]> emissionPoints, LinkedList<int[]> chargePoints) {
-
+    public void applyVisualizationFilter(LinkedList<MyPoint<Integer, Double>> absorptionPoints, LinkedList<int[]> emissionPoints, LinkedList<double[]> chargePoints, int nx, int ny, int nz) {
+        if (null != zoneB) {
+            zoneC = new VisualizationFilter(absorptionPoints, emissionPoints, chargePoints, nx, ny, nz).apply(zoneB);
+            repaint();
+        }
     }
 
     public void applyGraphicBuilding(LinkedList<MyPoint<Integer, Double>> absorptionPoints, LinkedList<int[]> emissionPoints, LinkedList<double[]> chargePoints) {
         final int GRAPHIC_X_WIDTH = 100;
 
-        if (null != absorptionPoints) {
-            ImageUtil.makeWhiteAndEmpty(absorptionImage);
-            ImageUtil.drawDashedLine(absorptionImage, 0, 0, 0, absorptionImage.getHeight());
-            ImageUtil.drawDashedLine(absorptionImage, 0, absorptionImage.getHeight() - 1, absorptionImage.getWidth(), absorptionImage.getHeight() - 1);
+        ImageUtil.makeWhiteAndEmpty(absorptionImage);
+        ImageUtil.drawDashedLine(absorptionImage, 0, 0, 0, absorptionImage.getHeight());
+        ImageUtil.drawDashedLine(absorptionImage, 0, absorptionImage.getHeight() - 1, absorptionImage.getWidth(), absorptionImage.getHeight() - 1);
 
-            OneValueFunctionInflater functionInflater = new OneValueFunctionInflater();
-            functionInflater.paint(absorptionImage, absorptionPoints, Color.BLACK, GRAPHIC_X_WIDTH, 1, 0, MARGIN_GRAPHIC_X, MARGIN_GRAPHIC_Y, GRAPHIC_WIDTH, GRAPHIC_HEIGHT);
-        }
+        OneValueFunctionInflater functionInflater = new OneValueFunctionInflater();
+        functionInflater.paint(absorptionImage, absorptionPoints, Color.BLACK, GRAPHIC_X_WIDTH, 1, 0, MARGIN_GRAPHIC_X, MARGIN_GRAPHIC_Y, GRAPHIC_WIDTH, GRAPHIC_HEIGHT);
 
-        if (null != emissionPoints) {
-            ImageUtil.makeWhiteAndEmpty(emissionImage);
-            ImageUtil.drawDashedLine(emissionImage, 0, 0, 0, emissionImage.getHeight());
-            ImageUtil.drawDashedLine(emissionImage, 0, emissionImage.getHeight() - 1, emissionImage.getWidth(), emissionImage.getHeight() - 1);
+        ImageUtil.makeWhiteAndEmpty(emissionImage);
+        ImageUtil.drawDashedLine(emissionImage, 0, 0, 0, emissionImage.getHeight());
+        ImageUtil.drawDashedLine(emissionImage, 0, emissionImage.getHeight() - 1, emissionImage.getWidth(), emissionImage.getHeight() - 1);
 
-            LinkedList<MyPoint<Integer, Double>> redPoints = new LinkedList<>();
-            LinkedList<MyPoint<Integer, Double>> greenPoints = new LinkedList<>();
-            LinkedList<MyPoint<Integer, Double>> bluePoints = new LinkedList<>();
+        LinkedList<MyPoint<Integer, Double>> redPoints = new LinkedList<>();
+        LinkedList<MyPoint<Integer, Double>> greenPoints = new LinkedList<>();
+        LinkedList<MyPoint<Integer, Double>> bluePoints = new LinkedList<>();
 
-            emissionPoints.forEach(ints -> {
-                redPoints.add(new MyPoint<>(ints[0], (double) ints[1]));
-                greenPoints.add(new MyPoint<>(ints[0], (double) ints[2]));
-                bluePoints.add(new MyPoint<>(ints[0], (double) ints[3]));
+        emissionPoints.forEach(ints -> {
+            redPoints.add(new MyPoint<>(ints[0], (double) ints[1]));
+            greenPoints.add(new MyPoint<>(ints[0], (double) ints[2]));
+            bluePoints.add(new MyPoint<>(ints[0], (double) ints[3]));
 
-            });
+        });
 
-            OneValueFunctionInflater functionInflater = new OneValueFunctionInflater();
-            int GRAPHIC_MAX_Y = 255;
-            functionInflater.paint(emissionImage, redPoints, Color.RED, GRAPHIC_X_WIDTH, GRAPHIC_MAX_Y, 0, MARGIN_GRAPHIC_X, MARGIN_GRAPHIC_Y, GRAPHIC_WIDTH, GRAPHIC_HEIGHT);
-            functionInflater.paint(emissionImage, greenPoints, Color.GREEN, GRAPHIC_X_WIDTH, GRAPHIC_MAX_Y, 1, MARGIN_GRAPHIC_X, MARGIN_GRAPHIC_Y, GRAPHIC_WIDTH, GRAPHIC_HEIGHT);
-            functionInflater.paint(emissionImage, bluePoints, Color.BLUE, GRAPHIC_X_WIDTH, GRAPHIC_MAX_Y, 2, MARGIN_GRAPHIC_X, MARGIN_GRAPHIC_Y, GRAPHIC_WIDTH, GRAPHIC_HEIGHT);
-        }
+        int GRAPHIC_MAX_Y = 255;
+        functionInflater.paint(emissionImage, redPoints, Color.RED, GRAPHIC_X_WIDTH, GRAPHIC_MAX_Y, 0, MARGIN_GRAPHIC_X, MARGIN_GRAPHIC_Y, GRAPHIC_WIDTH, GRAPHIC_HEIGHT);
+        functionInflater.paint(emissionImage, greenPoints, Color.GREEN, GRAPHIC_X_WIDTH, GRAPHIC_MAX_Y, 1, MARGIN_GRAPHIC_X, MARGIN_GRAPHIC_Y, GRAPHIC_WIDTH, GRAPHIC_HEIGHT);
+        functionInflater.paint(emissionImage, bluePoints, Color.BLUE, GRAPHIC_X_WIDTH, GRAPHIC_MAX_Y, 2, MARGIN_GRAPHIC_X, MARGIN_GRAPHIC_Y, GRAPHIC_WIDTH, GRAPHIC_HEIGHT);
 
         repaint();
     }

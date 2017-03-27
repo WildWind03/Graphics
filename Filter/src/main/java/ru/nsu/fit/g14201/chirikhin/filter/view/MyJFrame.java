@@ -3,6 +3,7 @@ package ru.nsu.fit.g14201.chirikhin.filter.view;
 import ru.nsu.fit.g14201.chirikhin.filter.controller.ConfigLoader;
 import ru.nsu.fit.g14201.chirikhin.filter.controller.InvalidConfigException;
 import ru.nsu.fit.g14201.chirikhin.filter.controller.MyPoint;
+import ru.nsu.fit.g14201.chirikhin.util.ListUtil;
 import ru.nsu.fit.g14201.chirikhin.util.ListenerUtil;
 import ru.nsu.fit.g14201.chirikhin.util.MenuUtil;
 import ru.nsu.fit.g14201.chirikhin.util.ToolBarUtil;
@@ -85,6 +86,7 @@ public class MyJFrame extends JFrame {
     private static final String SOBEL_CONFIGURATION_DIALOG = "Sobel configuration dialog";
     private static final String ROTATION_CONFIGURATION = "Rotation configuration";
     private static final String GAMMA_CONFIGURATION = "Gamma configuration";
+    private static final String VOLUME_RENDERING_CONFIGURATION = "Volume rendering configuration";
 
     private final JMenuItem openItem;
     private final JMenuItem newItem;
@@ -149,6 +151,10 @@ public class MyJFrame extends JFrame {
 
     private boolean isEmission = false;
     private boolean isAbsorption = false;
+
+    private LinkedList<MyPoint<Integer, Double>> absorptionPoints;
+    private LinkedList<int[]> emissionPoints;
+    private LinkedList<double[]> chargePoints;
 
     public MyJFrame()  {
         super(APPLICATION_NAME);
@@ -251,11 +257,26 @@ public class MyJFrame extends JFrame {
         ListenerUtil.setListener(absorptionButton, absorptionCheckBoxMenuItem, this::onAbsorptionButtonClicked);
         ListenerUtil.setListener(emissionButton, emissionCheckBoxMenuItem, this::onEmissionButtonClicked);
         ListenerUtil.setListener(openConfigButton, openConfigMenuItem, this::onConfigButtonClicked);
+        ListenerUtil.setListener(runButton, runMenuItem, this::onRunButtonClicked);
 
         ListenerUtil.setListener(aboutAuthorButton, aboutAuthor, this::onAboutButtonClicked);
 
         pack();
         setVisible(true);
+    }
+
+    private void onRunButtonClicked() {
+        VolumeRenderingDialog volumeRenderingDialog = new VolumeRenderingDialog(this, VOLUME_RENDERING_CONFIGURATION);
+        volumeRenderingDialog.apparate();
+
+        if (!volumeRenderingDialog.isCancelled()) {
+            myJPanel.applyVisualizationFilter(absorptionPoints,
+                    emissionPoints,
+                    chargePoints,
+                    volumeRenderingDialog.getNx(),
+                    volumeRenderingDialog.getNy(),
+                    volumeRenderingDialog.getNz());
+        }
     }
 
     private void onConfigButtonClicked() {
@@ -271,10 +292,26 @@ public class MyJFrame extends JFrame {
         if (JFileChooser.APPROVE_OPTION == result) {
             try {
                 ConfigLoader configLoader = new ConfigLoader(jFileChooser.getSelectedFile());
-                LinkedList<MyPoint<Integer, Double>> absorptionPoints = isAbsorption ? configLoader.getAbsorptionPoints() : null;
-                LinkedList<int[]> emissionPoints = isEmission ? configLoader.getEmissionPoints() : null;
+
+                this.absorptionPoints = configLoader.getAbsorptionPoints();
+                this.emissionPoints = configLoader.getEmissionPoints();
+                this.chargePoints = configLoader.getChargePoints();
+
+                LinkedList<MyPoint<Integer, Double>> redFunctionPoints = new LinkedList<>();
+
+                emissionPoints.forEach(ints -> {
+                    redFunctionPoints.add(new MyPoint<>(ints[0], (double) ints[1]));
+                });
+
+
+                if (!ListUtil.isSorted(absorptionPoints) ||
+                        !ListUtil.isSorted(redFunctionPoints)) {
+                    throw new InvalidConfigException("Points in the config file must be ordered");
+                }
+
+
                 myJPanel.applyGraphicBuilding(absorptionPoints,
-                        emissionPoints, configLoader.getChargePoints());
+                        emissionPoints, chargePoints);
             } catch (InvalidConfigException | IOException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(), "Invalid file", JOptionPane.ERROR_MESSAGE);
             }

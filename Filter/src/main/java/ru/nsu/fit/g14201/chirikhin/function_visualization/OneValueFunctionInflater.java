@@ -5,14 +5,9 @@ import ru.nsu.fit.g14201.chirikhin.util.ImageUtil;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Collections;
 import java.util.LinkedList;
 
 public class OneValueFunctionInflater {
-    //public void paint(BufferedImage bufferedImage, LinkedList<MyPoint<Integer, Double>> points) {
-    //    paint(bufferedImage, points, Color.BLACK, 100, 1, 0, 5, 5, 440, 190);
-    //}
-
     public void paint(BufferedImage bufferedImage,
                       LinkedList<MyPoint<Integer, Double>> points,
                       Color color,
@@ -24,18 +19,17 @@ public class OneValueFunctionInflater {
                       int width,
                       int height) {
 
-        Collections.sort(points);
-
         int prevX = startX;
         int prevY = startY;
 
+        int counter = 0;
         boolean isFirst = true;
         for (MyPoint<Integer, Double> point : points) {
             int x = startX + point.getValue1() * (int) ((double) (width) / maxWidth);
             int y = (int) ((point.getValue2() / maxHeight) * height);
 
-            if (isFirst && 0 != x) {
-                prevX = startX + shift;
+            if (isFirst && startX != x) {
+                prevX = startX + width - 1 + shift;
                 prevY = y + shift;
                 isFirst = false;
             }
@@ -60,7 +54,7 @@ public class OneValueFunctionInflater {
             ImageUtil.drawLine(bufferedImage,
                     prevX + shift,
                     startY + height - prevY + shift,
-                    startX + width - 1 + shift,
+                    startX,
                     startY + height - prevY + shift,
                     color);
         }
