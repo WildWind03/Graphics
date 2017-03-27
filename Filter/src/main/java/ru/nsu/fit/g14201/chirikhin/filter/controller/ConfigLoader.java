@@ -8,7 +8,7 @@ public class ConfigLoader {
 
     private final LinkedList<int[]> emissionPoints;
     private final LinkedList<MyPoint<Integer, Double>> absorptionPoints;
-    private final LinkedList<int[]> chargePoints;
+    private final LinkedList<double[]> chargePoints;
 
     public ConfigLoader(File file) throws InvalidConfigException, IOException {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
@@ -30,7 +30,7 @@ public class ConfigLoader {
             int countOfPointsInEmission = getOneValue(pointInEmissionString, value -> ((value >= 0) && (value < 1000)));
             for (int k = 0; k < countOfPointsInEmission; ++k) {
                 String nextString = bufferedReader.readLine();
-                int[] values = getFourValues(nextString, value -> ((value >= 0) && (value <= 100)),
+                int[] values = getFourIntegerValues(nextString, value -> ((value >= 0) && (value <= 100)),
                         value -> ((value >= 0) && (value <= 255)),
                         value -> ((value >= 0) && (value <= 255)),
                         value -> ((value >= 0) && (value <= 255)));
@@ -44,7 +44,7 @@ public class ConfigLoader {
             for (int k = 0; k < chargeCount; ++k) {
                 String nextString = bufferedReader.readLine();
 
-                int[] values = getFourValues(nextString,
+                double[] values = getFourDoubleValues(nextString,
                         value -> ((value >= -100) && (value <= 100)),
                         value -> ((value >= -100) && (value <= 100)),
                         value -> ((value >= -100) && (value <= 100)),
@@ -71,7 +71,7 @@ public class ConfigLoader {
         return absorptionPoints;
     }
 
-    public LinkedList<int[]> getChargePoints() {
+    public LinkedList<double[]> getChargePoints() {
         return chargePoints;
     }
 
@@ -131,7 +131,46 @@ public class ConfigLoader {
         return countOfPoints;
     }
 
-    private int[] getFourValues(String string, Predicate<Integer> predicate1,
+
+    private double[] getFourDoubleValues(String string, Predicate<Double> predicate1,
+                                Predicate<Double> predicate2,
+                                Predicate<Double> predicate3,
+                                Predicate<Double> predicate4) throws InvalidConfigException {
+        String[] params = string.split(" ");
+
+        if (params.length < 4) {
+            throw new InvalidConfigException("Invalid count of args in a string: " + params.length + ". Min length is 4");
+        }
+
+        double value1;
+        double value2;
+        double value3;
+        double value4;
+
+        try {
+            value1 = Double.parseDouble(params[0]);
+            value2 = Double.parseDouble(params[1]);
+            value3 = Double.parseDouble(params[2]);
+            value4 = Double.parseDouble(params[3]);
+        } catch (NumberFormatException e) {
+            throw new InvalidConfigException(e.getMessage());
+        }
+
+        if (params.length > 4) {
+            String otherSymbols = params[4];
+            if (!otherSymbols.substring(0, 2).equals("//")) {
+                throw new InvalidConfigException("Invalid config. Extra lines");
+            }
+        }
+
+        if (!predicate1.test(value1) || !predicate2.test(value2) || !predicate3.test(value3) || !predicate4.test(value4)) {
+            throw new InvalidConfigException("Invalid config! According to predicate, it's not appropriate!");
+        }
+
+        return new double[] {value1, value2, value3, value4};
+    }
+
+    private int[] getFourIntegerValues(String string, Predicate<Integer> predicate1,
                                 Predicate<Integer> predicate2,
                                 Predicate<Integer> predicate3,
                                 Predicate<Integer> predicate4) throws InvalidConfigException {

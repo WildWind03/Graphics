@@ -19,6 +19,6 @@ public class MyPoint<T1 extends Comparable<T1>, T2> implements Comparable<MyPoin
 
     @Override
     public int compareTo(MyPoint<T1, T2> o) {
-        return 0;
+        return value1.compareTo(o.value1);
     }
 }

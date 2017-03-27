@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class MyJPanel extends JPanel {
     private static final int ZONE_SIZE = 350;
@@ -93,12 +95,11 @@ public class MyJPanel extends JPanel {
         }
 
         if (null != absorptionImage) {
-            g.drawImage(absorptionImage, 1, ZONE_SIZE + GAP_BETWEEN_ZONES, null);
+            g.drawImage(absorptionImage, 0, ZONE_SIZE + GAP_BETWEEN_ZONES, null);
         }
 
         if (null != emissionImage) {
-            g.drawImage(emissionImage, 1, ZONE_SIZE + GAP_BETWEEN_ZONES, null);
-            //new OneValueFunctionInflater().paint(emissionImage, emissionPoints);
+            g.drawImage(emissionImage, 500 + GAP_BETWEEN_ZONES, ZONE_SIZE + GAP_BETWEEN_ZONES, null);
         }
     }
 
@@ -327,7 +328,7 @@ public class MyJPanel extends JPanel {
 
     }
 
-    public void applyGraphicBuilding(LinkedList<MyPoint<Integer, Double>> absorptionPoints, LinkedList<int[]> emissionPoints, LinkedList<int[]> chargePoints) {
+    public void applyGraphicBuilding(LinkedList<MyPoint<Integer, Double>> absorptionPoints, LinkedList<int[]> emissionPoints, LinkedList<double[]> chargePoints) {
         if (null != absorptionPoints) {
             absorptionImage = new BufferedImage(500, 200, BufferedImage.TYPE_INT_RGB);
 
@@ -336,16 +337,39 @@ public class MyJPanel extends JPanel {
             graphics2D.fillRect(0, 0, absorptionImage.getWidth(), absorptionImage.getHeight());
             graphics2D.dispose();
 
-            /*Graphics2D graphics2D1 = absorptionImage.createGraphics();
-            graphics2D1.setColor(Color.BLACK);
-            graphics2D1.drawLine(0, 0, 200, 200);
-            graphics2D1.dispose();*/
+            ImageUtil.drawDashedLine(absorptionImage, 0, 0, 0, absorptionImage.getHeight());
+            ImageUtil.drawDashedLine(absorptionImage, 0, absorptionImage.getHeight() - 1, absorptionImage.getWidth(), absorptionImage.getHeight() - 1);
 
-            //absorptionImage.getGraphics().setColor(Color.BLACK);
-            //((Graphics2D) absorptionImage.getGraphics()).drawLine(100, 100, 0, 200);
-            //emissionImage = new BufferedImage(500, 200, BufferedImage.TYPE_INT_RGB);
             OneValueFunctionInflater functionInflater = new OneValueFunctionInflater();
             functionInflater.paint(absorptionImage, absorptionPoints);
+        }
+
+        if (null != emissionPoints) {
+            emissionImage = new BufferedImage(500, 200, BufferedImage.TYPE_INT_RGB);
+
+            Graphics2D graphics2D = emissionImage.createGraphics();
+            graphics2D.setColor(Color.WHITE);
+            graphics2D.fillRect(0, 0, emissionImage.getWidth(), emissionImage.getHeight());
+            graphics2D.dispose();
+
+            ImageUtil.drawDashedLine(emissionImage, 0, 0, 0, emissionImage.getHeight());
+            ImageUtil.drawDashedLine(emissionImage, 0, emissionImage.getHeight() - 1, emissionImage.getWidth(), emissionImage.getHeight() - 1);
+
+            LinkedList<MyPoint<Integer, Double>> redPoints = new LinkedList<>();
+            LinkedList<MyPoint<Integer, Double>> greenPoints = new LinkedList<>();
+            LinkedList<MyPoint<Integer, Double>> bluePoints = new LinkedList<>();
+
+            emissionPoints.forEach(ints -> {
+                redPoints.add(new MyPoint<>(ints[0], (double) ints[1]));
+                greenPoints.add(new MyPoint<>(ints[0], (double) ints[2]));
+                bluePoints.add(new MyPoint<>(ints[0], (double) ints[3]));
+
+            });
+
+            OneValueFunctionInflater functionInflater = new OneValueFunctionInflater();
+            functionInflater.paint(emissionImage, redPoints, Color.RED, 100, 255, 0);
+            functionInflater.paint(emissionImage, greenPoints, Color.GREEN, 100, 255, 1);
+            functionInflater.paint(emissionImage, bluePoints, Color.BLUE, 100, 255, 2);
         }
     }
 }

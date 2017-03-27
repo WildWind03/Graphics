@@ -76,4 +76,15 @@ public class ImageUtil {
         g2d.dispose();
     }
 
+    public static void drawLine(BufferedImage bufferedImage, int x, int y, int endX, int endY) {
+        drawLine(bufferedImage, x, y, endX, endY, Color.BLACK);
+    }
+
+    public static void drawLine(BufferedImage bufferedImage, int x, int y, int endX, int endY, Color color) {
+        Graphics2D g2d = bufferedImage.createGraphics();
+        g2d.setColor(color);
+        g2d.drawLine(x, y, endX, endY);
+        g2d.dispose();
+    }
+
 }
