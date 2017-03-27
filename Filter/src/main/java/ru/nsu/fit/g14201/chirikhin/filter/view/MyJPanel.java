@@ -44,7 +44,6 @@ public class MyJPanel extends JPanel {
 
     public MyJPanel() {
         setPreferredSize(new Dimension(ZONE_SIZE * 3 + GAP_BETWEEN_ZONES * 3, ZONE_SIZE + GAP_BETWEEN_ZONES * 2 + GRAPHIC_HEIGHT_IMAGE));
-
         absorptionImage = new BufferedImage(GRAPHIC_WIDTH_IMAGE, GRAPHIC_HEIGHT_IMAGE, BufferedImage.TYPE_INT_RGB);
         emissionImage = new BufferedImage(GRAPHIC_WIDTH_IMAGE, GRAPHIC_HEIGHT_IMAGE, BufferedImage.TYPE_INT_RGB);
 
@@ -53,9 +52,6 @@ public class MyJPanel extends JPanel {
 
         ImageUtil.drawDashedLine(emissionImage, 0, 0, 0, emissionImage.getHeight());
         ImageUtil.drawDashedLine(emissionImage, 0, emissionImage.getHeight() - 1, emissionImage.getWidth(), emissionImage.getHeight() - 1);
-
-        ImageUtil.drawDashedLine(absorptionImage, 0, 0, 0, absorptionImage.getHeight());
-        ImageUtil.drawDashedLine(absorptionImage, 0, absorptionImage.getHeight() - 1, absorptionImage.getWidth(), absorptionImage.getHeight() - 1);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -222,6 +218,9 @@ public class MyJPanel extends JPanel {
         zoneC = null;
 
         originalImage = null;
+
+        absorptionImage = null;
+        emissionImage = null;
     }
 
     public void copyCToB() {
@@ -345,6 +344,12 @@ public class MyJPanel extends JPanel {
 
     public void applyGraphicBuilding(LinkedList<MyPoint<Integer, Double>> absorptionPoints, LinkedList<int[]> emissionPoints, LinkedList<double[]> chargePoints) {
         final int GRAPHIC_X_WIDTH = 100;
+
+        absorptionImage = new BufferedImage(GRAPHIC_WIDTH_IMAGE, GRAPHIC_HEIGHT_IMAGE, BufferedImage.TYPE_INT_RGB);
+        emissionImage = new BufferedImage(GRAPHIC_WIDTH_IMAGE, GRAPHIC_HEIGHT_IMAGE, BufferedImage.TYPE_INT_RGB);
+
+        ImageUtil.drawDashedLine(absorptionImage, 0, 0, 0, absorptionImage.getHeight());
+        ImageUtil.drawDashedLine(absorptionImage, 0, absorptionImage.getHeight() - 1, absorptionImage.getWidth(), absorptionImage.getHeight() - 1);
 
         ImageUtil.makeWhiteAndEmpty(absorptionImage);
         ImageUtil.drawDashedLine(absorptionImage, 0, 0, 0, absorptionImage.getHeight());

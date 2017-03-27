@@ -75,28 +75,24 @@ public class VisualizationFilter implements BaseFilter {
             for (int y = 0; y < bufferedImage.getHeight(); ++y) {
 
                 Color color = new Color(bufferedImage.getRGB(x, y));
-                double red = color.getRed();
-                double green = color.getGreen();
-                double blue = color.getBlue();
+                double red = ((double) (color.getRed())) / 255d;
+                double green = ((double) (color.getGreen())) / 255d;
+                double blue = ((double) (color.getBlue())) / 255d;
 
                 for (int z = 0; z < maxZ; ++z) {
-                    double value = calculateF(x * maxX / IMAGE_SIZE, y * maxY / IMAGE_SIZE, z);
+                    double value = calculateF((double) x * (double) maxX / (double) IMAGE_SIZE, (double) y * (double) maxY / (double) IMAGE_SIZE, z);
 
                     int graphValue = (int) Math.round((value - minF) / (maxF - minF) * 100);
                     double absorption = isAbsorptionEnabled() ? Math.exp(-(absorptionFunction.getValue(graphValue) * dz)) : 1.;
 
-                    red = red * absorption + (isEmissionEnabled() ? redFunction.getValue(graphValue) / 255 * dz : 0);
-                    green = green * absorption + (isEmissionEnabled() ? greenFunction.getValue(graphValue) / 255 * dz : 0);
-                    blue = blue * absorption + (isEmissionEnabled() ? blueFunction.getValue(graphValue) / 255 * dz : 0);
+                    red = red * absorption + (isEmissionEnabled() ? redFunction.getValue(graphValue) / 255d * dz : 0);
+                    green = green * absorption + (isEmissionEnabled() ? greenFunction.getValue(graphValue) / 255d * dz : 0);
+                    blue = blue * absorption + (isEmissionEnabled() ? blueFunction.getValue(graphValue) / 255d * dz : 0);
                 }
-
-                red /= 255;
-                green /= 255;
-                blue /= 255;
 
                 newImage.setRGB(x,
                         y,
-                        new Color(getRightValue(red), getRightValue(green), getRightValue(blue)).getRGB());
+                        new Color(getRightValue(red * 255), getRightValue(green * 255), getRightValue(blue * 255)).getRGB());
 
 
             }

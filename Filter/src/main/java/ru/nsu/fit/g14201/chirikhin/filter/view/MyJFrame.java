@@ -113,7 +113,7 @@ public class MyJFrame extends JFrame {
 
     private final JCheckBoxMenuItem absorptionCheckBoxMenuItem;
     private final JCheckBoxMenuItem emissionCheckBoxMenuItem;
-    private final JCheckBoxMenuItem runMenuItem;
+    private final JMenuItem runMenuItem;
     private final JMenuItem openConfigMenuItem;
 
     private final JMenuItem aboutAuthor;
@@ -141,7 +141,7 @@ public class MyJFrame extends JFrame {
     private final JButton gammaButton;
     private final JToggleButton absorptionButton;
     private final JToggleButton emissionButton;
-    private final JToggleButton runButton;
+    private final JButton runButton;
     private final JButton openConfigButton;
 
     private final JButton aboutAuthorButton;
@@ -216,12 +216,12 @@ public class MyJFrame extends JFrame {
         JMenu volumeVisualization = MenuUtil.addMenuToMenu(filterMenu, VOLUME_VISUALIZATION);
         absorptionCheckBoxMenuItem = MenuUtil.addNewCheckBoxMenuItem(volumeVisualization, ABSORPTION);
         emissionCheckBoxMenuItem = MenuUtil.addNewCheckBoxMenuItem(volumeVisualization, EMISSION);
-        runMenuItem = MenuUtil.addNewCheckBoxMenuItem(volumeVisualization, RUN);
+        runMenuItem = MenuUtil.addNewMenuItem(volumeVisualization, RUN);
         openConfigMenuItem = MenuUtil.addNewMenuItem(volumeVisualization, OPEN_CONFIG);
 
         absorptionButton = ToolBarUtil.addNewToggleButton(jToolBar, new ImageIcon(getClass().getResource(ABSORPTION_PNG)), ABSORPTION);
         emissionButton = ToolBarUtil.addNewToggleButton(jToolBar, new ImageIcon(getClass().getResource(EMISSION_PNG)), EMISSION);
-        runButton = ToolBarUtil.addNewToggleButton(jToolBar, new ImageIcon(getClass().getResource(RUN_PNG)), RUN);
+        runButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(RUN_PNG)), RUN);
         openConfigButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(CONFIG_PNG)), OPEN_CONFIG);
 
         aboutAuthor = MenuUtil.addNewMenuItem(aboutMenu, ABOUT_THE_APPLICATION);
@@ -260,6 +260,15 @@ public class MyJFrame extends JFrame {
         ListenerUtil.setListener(runButton, runMenuItem, this::onRunButtonClicked);
 
         ListenerUtil.setListener(aboutAuthorButton, aboutAuthor, this::onAboutButtonClicked);
+
+        runButton.setEnabled(false);
+        runMenuItem.setEnabled(false);
+
+        emissionButton.setEnabled(false);
+        emissionCheckBoxMenuItem.setEnabled(false);
+
+        absorptionButton.setEnabled(false);
+        absorptionCheckBoxMenuItem.setEnabled(false);
 
         pack();
         setVisible(true);
@@ -309,6 +318,15 @@ public class MyJFrame extends JFrame {
                     throw new InvalidConfigException("Points in the config file must be ordered");
                 }
 
+
+                runButton.setEnabled(true);
+                runMenuItem.setEnabled(true);
+
+                emissionButton.setEnabled(true);
+                emissionCheckBoxMenuItem.setEnabled(true);
+
+                absorptionButton.setEnabled(true);
+                absorptionCheckBoxMenuItem.setEnabled(true);
 
                 myJPanel.applyGraphicBuilding(absorptionPoints,
                         emissionPoints, chargePoints);
@@ -470,6 +488,15 @@ public class MyJFrame extends JFrame {
     private void onNewButtonClicked() {
         myJPanel.clear();
         changeSelectMode(false);
+
+        runButton.setEnabled(false);
+        runMenuItem.setEnabled(false);
+
+        emissionButton.setEnabled(false);
+        emissionCheckBoxMenuItem.setEnabled(false);
+
+        absorptionButton.setEnabled(false);
+        absorptionCheckBoxMenuItem.setEnabled(false);
 
         repaint();
 

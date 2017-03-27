@@ -28,6 +28,9 @@ public class VolumeRenderingDialog extends MyDialog {
         nxEdit = FormattedTextFieldUtil.getFormattedTextField(MIN_TEXT_FIELD_VALUE, MAX_TEXT_FIELD_VALUE, TEXT_FILED_SIZE);
         nyEdit = FormattedTextFieldUtil.getFormattedTextField(MIN_TEXT_FIELD_VALUE, MAX_TEXT_FIELD_VALUE, TEXT_FILED_SIZE);
         nzEdit = FormattedTextFieldUtil.getFormattedTextField(MIN_TEXT_FIELD_VALUE, MAX_TEXT_FIELD_VALUE, TEXT_FILED_SIZE);
+        nxEdit.setValue(MAX_TEXT_FIELD_VALUE);
+        nyEdit.setValue(MAX_TEXT_FIELD_VALUE);
+        nzEdit.setValue(MAX_TEXT_FIELD_VALUE);
 
         addComponent(0, 0, nxLabel);
         addComponent(1, 0, nxEdit);

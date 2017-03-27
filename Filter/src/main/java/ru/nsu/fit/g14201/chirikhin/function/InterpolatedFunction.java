@@ -5,7 +5,6 @@ import ru.nsu.fit.g14201.chirikhin.filter.controller.MyPoint;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 public class InterpolatedFunction <A extends Comparable<A>, V> {
     private final ArrayList<MyPoint<A, V>> points;
@@ -15,8 +14,6 @@ public class InterpolatedFunction <A extends Comparable<A>, V> {
     public InterpolatedFunction(LinkedList<MyPoint<A, V>> points, Interpolator interpolator, DataInterpolator<A, V> dataInterpolator) {
         this.points = new ArrayList<>(points);
         Collections.sort(this.points);
-
-        Collections.sort(points);
 
         this.interpolator = interpolator;
         this.dataInterpolator = dataInterpolator;
@@ -28,7 +25,7 @@ public class InterpolatedFunction <A extends Comparable<A>, V> {
             if (arg == point.getValue1()) {
                 return point.getValue2();
             }
-            if (1 == arg.compareTo(point.getValue1())) {
+            if (-1 == arg.compareTo(point.getValue1())) {
                 break;
             }
 
@@ -50,12 +47,4 @@ public class InterpolatedFunction <A extends Comparable<A>, V> {
             }
         }
     }
-
-    public List<MyPoint<A, V>> getSortedValues() {
-        ArrayList<MyPoint<A,V>> list = new ArrayList<>(points);
-        Collections.sort(list);
-        return list;
-    }
-
-
 }
