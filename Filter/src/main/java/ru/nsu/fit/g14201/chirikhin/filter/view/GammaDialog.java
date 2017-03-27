@@ -1,6 +1,6 @@
 package ru.nsu.fit.g14201.chirikhin.filter.view;
 
-import ru.nsu.fit.g14201.chirikhin.filter.util.FormattedTextFieldUtil;
+import ru.nsu.fit.g14201.chirikhin.util.FormattedTextFieldUtil;
 
 import javax.swing.*;
 import java.awt.event.FocusAdapter;

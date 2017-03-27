@@ -1,6 +1,5 @@
 package ru.nsu.fit.g14201.chirikhin.filter.controller;
 
-import java.awt.*;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.function.Predicate;
@@ -8,26 +7,8 @@ import java.util.function.Predicate;
 public class ConfigLoader {
 
     private final LinkedList<int[]> emissionPoints;
-    private final LinkedList<Point<Integer, Float>> absorptionPoints;
+    private final LinkedList<MyPoint<Integer, Double>> absorptionPoints;
     private final LinkedList<int[]> chargePoints;
-
-    public class Point<T1, T2> {
-        private T1 value1;
-        private T2 value2;
-
-        public Point(T1 value1, T2 value2) {
-            this.value1 = value1;
-            this.value2 = value2;
-        }
-
-        public T1 getValue1() {
-            return value1;
-        }
-
-        public T2 getValue2() {
-            return value2;
-        }
-    }
 
     public ConfigLoader(File file) throws InvalidConfigException, IOException {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
@@ -37,7 +18,7 @@ public class ConfigLoader {
             int countOfPointsInAbsorption = getOneValue(pointInAbsorptionString, value -> ((value >= 0) && (value < 1000)));
             for (int k = 0; k < countOfPointsInAbsorption; ++k) {
                 String nextString = bufferedReader.readLine();
-                Point<Integer, Float> absorptionPoint = getPoint(nextString,
+                MyPoint<Integer, Double> absorptionPoint = getPoint(nextString,
                         value -> ((value >= 0) && (value <= 100)),
                         value -> (value >= 0.0d) && (value <= 1d));
 
@@ -86,7 +67,7 @@ public class ConfigLoader {
         return emissionPoints;
     }
 
-    public LinkedList<Point<Integer, Float>> getAbsorptionPoints() {
+    public LinkedList<MyPoint<Integer, Double>> getAbsorptionPoints() {
         return absorptionPoints;
     }
 
@@ -94,7 +75,7 @@ public class ConfigLoader {
         return chargePoints;
     }
 
-    private Point<Integer, Float> getPoint(String string, Predicate<Integer> integerPredicate, Predicate<Float> floatPredicate) throws InvalidConfigException {
+    private MyPoint<Integer, Double> getPoint(String string, Predicate<Integer> integerPredicate, Predicate<Double> doublePredicate) throws InvalidConfigException {
         String[] params = string.split(" ");
 
         if (params.length < 2) {
@@ -102,11 +83,11 @@ public class ConfigLoader {
         }
 
         int firstValue;
-        float secondValue;
+        double secondValue;
 
         try {
             firstValue = Integer.parseInt(params[0]);
-            secondValue = Float.parseFloat(params[1]);
+            secondValue = Double.parseDouble(params[1]);
         } catch (NumberFormatException e) {
             throw new InvalidConfigException(e.getMessage());
         }
@@ -118,11 +99,11 @@ public class ConfigLoader {
             }
         }
 
-        if (!integerPredicate.test(firstValue) || !floatPredicate.test(secondValue)) {
+        if (!integerPredicate.test(firstValue) || !doublePredicate.test(secondValue)) {
             throw new InvalidConfigException("Invalid config! According to predicate, it's not appropriate!");
         }
 
-        return new Point<>(firstValue, secondValue);
+        return new MyPoint<>(firstValue, secondValue);
     }
 
     private int getOneValue(String string, Predicate<Integer> predicate) throws InvalidConfigException {

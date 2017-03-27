@@ -1,8 +1,9 @@
 package ru.nsu.fit.g14201.chirikhin.filter.view;
 
-import ru.nsu.fit.g14201.chirikhin.filter.controller.ConfigLoader;
+import ru.nsu.fit.g14201.chirikhin.filter.controller.MyPoint;
 import ru.nsu.fit.g14201.chirikhin.filter.model.*;
-import ru.nsu.fit.g14201.chirikhin.filter.util.ImageUtil;
+import ru.nsu.fit.g14201.chirikhin.function_visualization.OneValueFunctionInflater;
+import ru.nsu.fit.g14201.chirikhin.util.ImageUtil;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -10,6 +11,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.Arc2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +34,11 @@ public class MyJPanel extends JPanel {
     private BufferedImage zoneC;
 
     private BufferedImage originalImage;
+    private BufferedImage absorptionImage;
+    private BufferedImage emissionImage;
+
+    private LinkedList<MyPoint<Integer, Double>> absorptionPoints;
+    private LinkedList<MyPoint<Integer, int[]>> emissionPoints;
 
     public MyJPanel() {
         setPreferredSize(new Dimension(ZONE_SIZE * 3 + GAP_BETWEEN_ZONES * 3, ZONE_SIZE + GAP_BETWEEN_ZONES));
@@ -65,16 +72,16 @@ public class MyJPanel extends JPanel {
         super.paintComponent(g);
         int rectSize = ZONE_SIZE + 1;
 
-        drawDashedRectangle(g, 0, 0, rectSize, rectSize);
-        drawDashedRectangle(g, rectSize + GAP_BETWEEN_ZONES, 0, rectSize, rectSize);
-        drawDashedRectangle(g, rectSize + rectSize + GAP_BETWEEN_ZONES + GAP_BETWEEN_ZONES, 0, rectSize, rectSize);
+        ImageUtil.drawDashedRectangle(g, 0, 0, rectSize, rectSize);
+        ImageUtil.drawDashedRectangle(g, rectSize + GAP_BETWEEN_ZONES, 0, rectSize, rectSize);
+        ImageUtil.drawDashedRectangle(g, rectSize + rectSize + GAP_BETWEEN_ZONES + GAP_BETWEEN_ZONES, 0, rectSize, rectSize);
 
         if (null != zoneA) {
             g.drawImage(zoneA, 1, 1, null);
         }
 
         if (null != point) {
-            drawDashedRectangle(g, point.x, point.y, selectRectSize, selectRectSize);
+            ImageUtil.drawDashedRectangle(g, point.x, point.y, selectRectSize, selectRectSize);
         }
 
         if (null != zoneB) {
@@ -84,14 +91,15 @@ public class MyJPanel extends JPanel {
         if (null != zoneC) {
             g.drawImage(zoneC, 3 + ZONE_SIZE + ZONE_SIZE + GAP_BETWEEN_ZONES + GAP_BETWEEN_ZONES, 1, null);
         }
-    }
 
-    public void drawDashedRectangle(Graphics g, int x, int y, int width, int height){
-        Graphics2D g2d = (Graphics2D) g.create();
-        Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
-        g2d.setStroke(dashed);
-        g2d.drawRect(x, y, width, height);
-        g2d.dispose();
+        if (null != absorptionImage) {
+            g.drawImage(absorptionImage, 1, ZONE_SIZE + GAP_BETWEEN_ZONES, null);
+        }
+
+        if (null != emissionImage) {
+            g.drawImage(emissionImage, 1, ZONE_SIZE + GAP_BETWEEN_ZONES, null);
+            //new OneValueFunctionInflater().paint(emissionImage, emissionPoints);
+        }
     }
 
     public void loadNewImage(File file) throws IOException, LoadImageException {
@@ -315,8 +323,29 @@ public class MyJPanel extends JPanel {
         }
     }
 
-    public void applyVisualizationFilter(LinkedList<ConfigLoader.Point<Integer, Float>> absorptionPoints, LinkedList<int[]> emissionPoints, LinkedList<int[]> chargePoints) {
+    public void applyVisualizationFilter(LinkedList<MyPoint<Integer, Float>> absorptionPoints, LinkedList<int[]> emissionPoints, LinkedList<int[]> chargePoints) {
 
     }
 
+    public void applyGraphicBuilding(LinkedList<MyPoint<Integer, Double>> absorptionPoints, LinkedList<int[]> emissionPoints, LinkedList<int[]> chargePoints) {
+        if (null != absorptionPoints) {
+            absorptionImage = new BufferedImage(500, 200, BufferedImage.TYPE_INT_RGB);
+
+            Graphics2D graphics2D = absorptionImage.createGraphics();
+            graphics2D.setColor(Color.WHITE);
+            graphics2D.fillRect(0, 0, absorptionImage.getWidth(), absorptionImage.getHeight());
+            graphics2D.dispose();
+
+            /*Graphics2D graphics2D1 = absorptionImage.createGraphics();
+            graphics2D1.setColor(Color.BLACK);
+            graphics2D1.drawLine(0, 0, 200, 200);
+            graphics2D1.dispose();*/
+
+            //absorptionImage.getGraphics().setColor(Color.BLACK);
+            //((Graphics2D) absorptionImage.getGraphics()).drawLine(100, 100, 0, 200);
+            //emissionImage = new BufferedImage(500, 200, BufferedImage.TYPE_INT_RGB);
+            OneValueFunctionInflater functionInflater = new OneValueFunctionInflater();
+            functionInflater.paint(absorptionImage, absorptionPoints);
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package ru.nsu.fit.g14201.chirikhin.filter.util;
+package ru.nsu.fit.g14201.chirikhin.util;
 
 import javax.swing.*;
 

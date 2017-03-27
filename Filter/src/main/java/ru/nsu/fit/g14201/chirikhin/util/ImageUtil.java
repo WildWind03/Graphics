@@ -1,13 +1,8 @@
-package ru.nsu.fit.g14201.chirikhin.filter.util;
+package ru.nsu.fit.g14201.chirikhin.util;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Hashtable;
 
 public class ImageUtil {
     public static BufferedImage deepCopy(BufferedImage source) {
@@ -62,6 +57,23 @@ public class ImageUtil {
         }
 
         return newImageBytes;
+    }
+
+    public static void drawDashedRectangle(Graphics g, int x, int y, int width, int height){
+        Graphics2D g2d = (Graphics2D) g.create();
+        Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+        g2d.setStroke(dashed);
+        g2d.drawRect(x, y, width, height);
+        g2d.dispose();
+    }
+
+    public static void drawDashedLine(BufferedImage g, int x, int y, int endX, int endY){
+        Graphics2D g2d = g.createGraphics();
+        g2d.setColor(Color.BLACK);
+        Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+        g2d.setStroke(dashed);
+        g2d.drawLine(x, y, endX, endY);
+        g2d.dispose();
     }
 
 }

@@ -1,7 +1,5 @@
 package ru.nsu.fit.g14201.chirikhin.filter.model;
 
-import ru.nsu.fit.g14201.chirikhin.filter.util.ImageUtil;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
@@ -34,9 +32,6 @@ public class WatercolorFilter implements BaseFilter {
                     y = bufferedImage.getHeight() - 5;
                 }
 
-                //byte[] bytes = ImageUtil.getSubimageBytes(bufferedImage, x, y, 5, 5);
-                //BufferedImage bufferedImage1 = ImageUtil.getSubimage(bufferedImage, x, y, 5, 5);
-
                 LinkedList<Integer> redList = new LinkedList<>();
                 LinkedList<Integer> greenList = new LinkedList<>();
                 LinkedList<Integer> blueList = new LinkedList<>();
@@ -57,17 +52,7 @@ public class WatercolorFilter implements BaseFilter {
                 Collections.sort(greenList);
                 Collections.sort(blueList);
 
-                //redList.sort(Byte::compareTo);
-                //greenList.sort(Byte::compareTo);
-                //blueList.sort(Byte::compareTo);
-
-                try {
-                    filteredBufferedImage.setRGB(i, k, new Color(redList.get(12), greenList.get(12), blueList.get(12)).getRGB());
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                    System.out.println(redList.get(12) + " " + greenList.get(12) + " " + blueList.get(12));
-                }
-                    //filteredBufferedImage.getRaster().setPixel(i, k, new int[] {blueList.get(12).intValue(), greenList.get(12).intValue(), redList.get(12).intValue()});
+                filteredBufferedImage.setRGB(i, k, new Color(redList.get(12), greenList.get(12), blueList.get(12)).getRGB());
             }
 
         }

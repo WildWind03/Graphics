@@ -1,4 +1,4 @@
-package ru.nsu.fit.g14201.chirikhin.functions;
+package ru.nsu.fit.g14201.chirikhin.function;
 
 public class LinearInterpolator implements Interpolator {
     @Override

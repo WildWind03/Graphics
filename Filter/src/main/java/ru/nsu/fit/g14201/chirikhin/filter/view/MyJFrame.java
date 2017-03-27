@@ -2,9 +2,10 @@ package ru.nsu.fit.g14201.chirikhin.filter.view;
 
 import ru.nsu.fit.g14201.chirikhin.filter.controller.ConfigLoader;
 import ru.nsu.fit.g14201.chirikhin.filter.controller.InvalidConfigException;
-import ru.nsu.fit.g14201.chirikhin.filter.util.ListenerUtil;
-import ru.nsu.fit.g14201.chirikhin.filter.util.MenuUtil;
-import ru.nsu.fit.g14201.chirikhin.filter.util.ToolBarUtil;
+import ru.nsu.fit.g14201.chirikhin.filter.controller.MyPoint;
+import ru.nsu.fit.g14201.chirikhin.util.ListenerUtil;
+import ru.nsu.fit.g14201.chirikhin.util.MenuUtil;
+import ru.nsu.fit.g14201.chirikhin.util.ToolBarUtil;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -270,14 +271,13 @@ public class MyJFrame extends JFrame {
         if (JFileChooser.APPROVE_OPTION == result) {
             try {
                 ConfigLoader configLoader = new ConfigLoader(jFileChooser.getSelectedFile());
-                LinkedList<ConfigLoader.Point<Integer, Float>> absorptionPoints = isAbsorption ? configLoader.getAbsorptionPoints() : null;
+                LinkedList<MyPoint<Integer, Double>> absorptionPoints = isAbsorption ? configLoader.getAbsorptionPoints() : null;
                 LinkedList<int[]> emissionPoints = isEmission ? configLoader.getEmissionPoints() : null;
-                myJPanel.applyVisualizationFilter(absorptionPoints,
+                myJPanel.applyGraphicBuilding(absorptionPoints,
                         emissionPoints, configLoader.getChargePoints());
             } catch (InvalidConfigException | IOException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(), "Invalid file", JOptionPane.ERROR_MESSAGE);
             }
-            //myJPanel.loadNewConfiguration(jFileChooser.getSelectedFile());
         }
     }
 
