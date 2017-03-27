@@ -11,20 +11,23 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.geom.Arc2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class MyJPanel extends JPanel {
     private static final int ZONE_SIZE = 350;
 
     private static final int GAP_BETWEEN_ZONES = 20;
     private static final String INVALID_FILE = "Invalid file";
+    private static final int GRAPHIC_WIDTH_IMAGE = 535;
+    private static final int GRAPHIC_HEIGHT_IMAGE = 230;
+    private static final int MARGIN_GRAPHIC_X = 5;
+    private static final int MARGIN_GRAPHIC_Y = 5;
+    private static final int GRAPHIC_WIDTH = 525;
+    private static final int GRAPHIC_HEIGHT = 220;
 
     private int selectRectSize = ZONE_SIZE;
     private Point point;
@@ -43,7 +46,19 @@ public class MyJPanel extends JPanel {
     private LinkedList<MyPoint<Integer, int[]>> emissionPoints;
 
     public MyJPanel() {
-        setPreferredSize(new Dimension(ZONE_SIZE * 3 + GAP_BETWEEN_ZONES * 3, ZONE_SIZE + GAP_BETWEEN_ZONES));
+        setPreferredSize(new Dimension(ZONE_SIZE * 3 + GAP_BETWEEN_ZONES * 3, ZONE_SIZE + GAP_BETWEEN_ZONES * 2 + GRAPHIC_HEIGHT_IMAGE));
+
+        absorptionImage = new BufferedImage(GRAPHIC_WIDTH_IMAGE, GRAPHIC_HEIGHT_IMAGE, BufferedImage.TYPE_INT_RGB);
+        emissionImage = new BufferedImage(GRAPHIC_WIDTH_IMAGE, GRAPHIC_HEIGHT_IMAGE, BufferedImage.TYPE_INT_RGB);
+
+        ImageUtil.makeWhiteAndEmpty(absorptionImage);
+        ImageUtil.makeWhiteAndEmpty(emissionImage);
+
+        ImageUtil.drawDashedLine(emissionImage, 0, 0, 0, emissionImage.getHeight());
+        ImageUtil.drawDashedLine(emissionImage, 0, emissionImage.getHeight() - 1, emissionImage.getWidth(), emissionImage.getHeight() - 1);
+
+        ImageUtil.drawDashedLine(absorptionImage, 0, 0, 0, absorptionImage.getHeight());
+        ImageUtil.drawDashedLine(absorptionImage, 0, absorptionImage.getHeight() - 1, absorptionImage.getWidth(), absorptionImage.getHeight() - 1);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -99,7 +114,7 @@ public class MyJPanel extends JPanel {
         }
 
         if (null != emissionImage) {
-            g.drawImage(emissionImage, 500 + GAP_BETWEEN_ZONES, ZONE_SIZE + GAP_BETWEEN_ZONES, null);
+            g.drawImage(emissionImage, GRAPHIC_WIDTH_IMAGE + GAP_BETWEEN_ZONES, ZONE_SIZE + GAP_BETWEEN_ZONES, null);
         }
     }
 
@@ -317,7 +332,7 @@ public class MyJPanel extends JPanel {
         }
     }
 
-    public void applyGammaFilter(int value) {
+    public void applyGammaFilter(double value) {
         if (null != zoneB) {
             zoneC = new GammaFilter(value).apply(zoneB);
             repaint();
@@ -329,29 +344,19 @@ public class MyJPanel extends JPanel {
     }
 
     public void applyGraphicBuilding(LinkedList<MyPoint<Integer, Double>> absorptionPoints, LinkedList<int[]> emissionPoints, LinkedList<double[]> chargePoints) {
+        final int GRAPHIC_X_WIDTH = 100;
+
         if (null != absorptionPoints) {
-            absorptionImage = new BufferedImage(500, 200, BufferedImage.TYPE_INT_RGB);
-
-            Graphics2D graphics2D = absorptionImage.createGraphics();
-            graphics2D.setColor(Color.WHITE);
-            graphics2D.fillRect(0, 0, absorptionImage.getWidth(), absorptionImage.getHeight());
-            graphics2D.dispose();
-
+            ImageUtil.makeWhiteAndEmpty(absorptionImage);
             ImageUtil.drawDashedLine(absorptionImage, 0, 0, 0, absorptionImage.getHeight());
             ImageUtil.drawDashedLine(absorptionImage, 0, absorptionImage.getHeight() - 1, absorptionImage.getWidth(), absorptionImage.getHeight() - 1);
 
             OneValueFunctionInflater functionInflater = new OneValueFunctionInflater();
-            functionInflater.paint(absorptionImage, absorptionPoints);
+            functionInflater.paint(absorptionImage, absorptionPoints, Color.BLACK, GRAPHIC_X_WIDTH, 1, 0, MARGIN_GRAPHIC_X, MARGIN_GRAPHIC_Y, GRAPHIC_WIDTH, GRAPHIC_HEIGHT);
         }
 
         if (null != emissionPoints) {
-            emissionImage = new BufferedImage(500, 200, BufferedImage.TYPE_INT_RGB);
-
-            Graphics2D graphics2D = emissionImage.createGraphics();
-            graphics2D.setColor(Color.WHITE);
-            graphics2D.fillRect(0, 0, emissionImage.getWidth(), emissionImage.getHeight());
-            graphics2D.dispose();
-
+            ImageUtil.makeWhiteAndEmpty(emissionImage);
             ImageUtil.drawDashedLine(emissionImage, 0, 0, 0, emissionImage.getHeight());
             ImageUtil.drawDashedLine(emissionImage, 0, emissionImage.getHeight() - 1, emissionImage.getWidth(), emissionImage.getHeight() - 1);
 
@@ -367,9 +372,12 @@ public class MyJPanel extends JPanel {
             });
 
             OneValueFunctionInflater functionInflater = new OneValueFunctionInflater();
-            functionInflater.paint(emissionImage, redPoints, Color.RED, 100, 255, 0);
-            functionInflater.paint(emissionImage, greenPoints, Color.GREEN, 100, 255, 1);
-            functionInflater.paint(emissionImage, bluePoints, Color.BLUE, 100, 255, 2);
+            int GRAPHIC_MAX_Y = 255;
+            functionInflater.paint(emissionImage, redPoints, Color.RED, GRAPHIC_X_WIDTH, GRAPHIC_MAX_Y, 0, MARGIN_GRAPHIC_X, MARGIN_GRAPHIC_Y, GRAPHIC_WIDTH, GRAPHIC_HEIGHT);
+            functionInflater.paint(emissionImage, greenPoints, Color.GREEN, GRAPHIC_X_WIDTH, GRAPHIC_MAX_Y, 1, MARGIN_GRAPHIC_X, MARGIN_GRAPHIC_Y, GRAPHIC_WIDTH, GRAPHIC_HEIGHT);
+            functionInflater.paint(emissionImage, bluePoints, Color.BLUE, GRAPHIC_X_WIDTH, GRAPHIC_MAX_Y, 2, MARGIN_GRAPHIC_X, MARGIN_GRAPHIC_Y, GRAPHIC_WIDTH, GRAPHIC_HEIGHT);
         }
+
+        repaint();
     }
 }

@@ -87,4 +87,11 @@ public class ImageUtil {
         g2d.dispose();
     }
 
+    public static void makeWhiteAndEmpty(BufferedImage bufferedImage) {
+        Graphics2D graphics2D = bufferedImage.createGraphics();
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
+        graphics2D.dispose();
+    }
+
 }

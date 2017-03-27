@@ -8,12 +8,12 @@ import java.awt.event.FocusEvent;
 import java.util.HashMap;
 
 public class GammaDialog extends MyDialog {
-    private static final int SLIDER_MIN = 12;
+    private static final int SLIDER_MIN = 1;
     private static final int SLIDER_MAX = 50;
 
     private static final int SLIDER_START = 25;
 
-    private static final double TEXT_FIELD_MIN = 1.2;
+    private static final double TEXT_FIELD_MIN = 0.1;
     private static final double TEXT_FIELD_MAX = 5;
 
     private final int TEXT_FIELD_SIZE = 8;
@@ -54,7 +54,7 @@ public class GammaDialog extends MyDialog {
         return 1;
     }
 
-    public int getValue() {
-        return ((Number) jTextField.getValue()).intValue();
+    public double getValue() {
+        return ((Number) jTextField.getValue()).doubleValue();
     }
 }

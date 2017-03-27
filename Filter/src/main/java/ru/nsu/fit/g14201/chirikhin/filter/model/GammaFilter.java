@@ -23,9 +23,9 @@ public class GammaFilter implements BaseFilter {
                 double blue = (double) pixel[2] / 255d;
 
                 double inverseGamma = 1d / gamma;
-                int newRed = (int) (Math.pow(red, inverseGamma) * 255);
-                int newGreen = (int) (Math.pow(green, inverseGamma) * 255);
-                int newBlue = (int) (Math.pow(blue, inverseGamma) * 255);
+                int newRed = (int) (Math.pow(red, inverseGamma) * 255d);
+                int newGreen = (int) (Math.pow(green, inverseGamma) * 255d);
+                int newBlue = (int) (Math.pow(blue, inverseGamma) * 255d);
 
                 filteredImage.getRaster().setPixel(i, k, new int[] {newRed, newGreen, newBlue});
             }

@@ -9,28 +9,34 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 public class OneValueFunctionInflater {
+    //public void paint(BufferedImage bufferedImage, LinkedList<MyPoint<Integer, Double>> points) {
+    //    paint(bufferedImage, points, Color.BLACK, 100, 1, 0, 5, 5, 440, 190);
+    //}
 
-    private static final int MAX_SHIFT = 2;
-
-    public void paint(BufferedImage bufferedImage, LinkedList<MyPoint<Integer, Double>> points) {
-        paint(bufferedImage, points, Color.BLACK, 100, 1, 0);
-    }
-
-    public void paint(BufferedImage bufferedImage, LinkedList<MyPoint<Integer, Double>> points, Color color, double maxWidth, double maxHeight, int shift) {
+    public void paint(BufferedImage bufferedImage,
+                      LinkedList<MyPoint<Integer, Double>> points,
+                      Color color,
+                      double maxWidth,
+                      double maxHeight,
+                      int shift,
+                      int startX,
+                      int startY,
+                      int width,
+                      int height) {
 
         Collections.sort(points);
 
-        int prevX = 0;
-        int prevY = 0;
+        int prevX = startX;
+        int prevY = startY;
 
         boolean isFirst = true;
         for (MyPoint<Integer, Double> point : points) {
-            int x = point.getValue1() * (int) ((double) (bufferedImage.getWidth() - MAX_SHIFT) / maxWidth) + shift;
-            int y = (int) ((point.getValue2() / maxHeight) * (bufferedImage.getHeight() - MAX_SHIFT)) + shift;
+            int x = startX + point.getValue1() * (int) ((double) (width) / maxWidth);
+            int y = (int) ((point.getValue2() / maxHeight) * height);
 
             if (isFirst && 0 != x) {
-                prevX = 0;
-                prevY = y;
+                prevX = startX + shift;
+                prevY = y + shift;
                 isFirst = false;
             }
 
@@ -41,21 +47,21 @@ public class OneValueFunctionInflater {
 
             ImageUtil.drawLine(bufferedImage,
                     prevX + shift,
-                    bufferedImage.getHeight() + MAX_SHIFT - shift - prevY,
+                    startY + height - prevY + shift,
                     x + shift,
-                    bufferedImage.getHeight() + MAX_SHIFT - shift - y,
+                    startY + height - y + shift,
                     color);
 
             prevX = x;
             prevY = y;
         }
 
-        if (prevX < bufferedImage.getWidth() - MAX_SHIFT) {
+        if (prevX < startX + width) {
             ImageUtil.drawLine(bufferedImage,
                     prevX + shift,
-                    bufferedImage.getHeight() + MAX_SHIFT - shift - prevY,
-                    bufferedImage.getWidth() - MAX_SHIFT - 1 + shift,
-                    bufferedImage.getHeight() + MAX_SHIFT - shift - prevY,
+                    startY + height - prevY + shift,
+                    startX + width - 1 + shift,
+                    startY + height - prevY + shift,
                     color);
         }
     }
