@@ -41,7 +41,7 @@ public class VisualizationFilter implements BaseFilter {
 
         dx = 1d / maxX;
         dy = 1d / maxY;
-        dz = 1d / maxY;
+        dz = 1d / maxZ;
     }
 
     @Override
@@ -83,11 +83,11 @@ public class VisualizationFilter implements BaseFilter {
                     double value = calculateF((double) x * (double) maxX / (double) IMAGE_SIZE, (double) y * (double) maxY / (double) IMAGE_SIZE, z);
 
                     int graphValue = (int) Math.round((value - minF) / (maxF - minF) * 100);
-                    double absorption = isAbsorptionEnabled() ? Math.exp(-(absorptionFunction.getValue(graphValue) * dz)) : 1.;
+                    double ti = isAbsorptionEnabled() ? Math.exp(-(absorptionFunction.getValue(graphValue) * dz)) : 1;
 
-                    red = red * absorption + (isEmissionEnabled() ? redFunction.getValue(graphValue) / 255d * dz : 0);
-                    green = green * absorption + (isEmissionEnabled() ? greenFunction.getValue(graphValue) / 255d * dz : 0);
-                    blue = blue * absorption + (isEmissionEnabled() ? blueFunction.getValue(graphValue) / 255d * dz : 0);
+                    red = red * ti + (isEmissionEnabled() ? redFunction.getValue(graphValue) / 255d * dz : 0);
+                    green = green * ti + (isEmissionEnabled() ? greenFunction.getValue(graphValue) / 255d * dz : 0);
+                    blue = blue * ti + (isEmissionEnabled() ? blueFunction.getValue(graphValue) / 255d * dz : 0);
                 }
 
                 newImage.setRGB(x,

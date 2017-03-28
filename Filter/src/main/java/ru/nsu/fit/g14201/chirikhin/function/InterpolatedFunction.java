@@ -13,7 +13,6 @@ public class InterpolatedFunction <A extends Comparable<A>, V> {
 
     public InterpolatedFunction(LinkedList<MyPoint<A, V>> points, Interpolator interpolator, DataInterpolator<A, V> dataInterpolator) {
         this.points = new ArrayList<>(points);
-        Collections.sort(this.points);
 
         this.interpolator = interpolator;
         this.dataInterpolator = dataInterpolator;
@@ -25,7 +24,7 @@ public class InterpolatedFunction <A extends Comparable<A>, V> {
             if (arg == point.getValue1()) {
                 return point.getValue2();
             }
-            if (-1 == arg.compareTo(point.getValue1())) {
+            if (1 == arg.compareTo(point.getValue1())) {
                 break;
             }
 
