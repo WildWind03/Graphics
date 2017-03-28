@@ -35,8 +35,10 @@ public class RobertsFilter implements BaseFilter {
                 int newRed = (int) Math.sqrt(tmp[0] * tmp[0] + tmp2[0] * tmp2[0]);
                 int newGreen = (int) Math.sqrt(tmp[1] * tmp[1] + tmp2[1] * tmp2[1]);
                 int newBlue = (int) Math.sqrt(tmp[2] * tmp[2] + tmp2[2] * tmp2[2]);
+                GrayscaleFunctor grayscaleFunctor = new GrayscaleFunctor();
+                int pixelValue = grayscaleFunctor.apply(new int[] {newRed, newGreen, newBlue})[0];
 
-                if (newRed > threshold || newGreen > threshold || newBlue > threshold) {
+                if (pixelValue > threshold) {
                     filteredImage.getRaster().setPixel(k, i, new int[] {255, 255, 255});
                 } else {
                     filteredImage.getRaster().setPixel(k, i, new int[] {0, 0, 0});

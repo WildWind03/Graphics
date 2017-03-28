@@ -8,9 +8,9 @@ import java.awt.event.FocusEvent;
 import java.util.HashMap;
 
 public class SliderTextFiledDialog extends MyDialog {
-    private int startValue = 80;
-    private int min = 2;
-    private int max = 255;
+    private int startValue;
+    private int min;
+    private int max;
     private final int TEXT_FIELD_SIZE = 8;
 
     private static final String MIN_TAG = "MIN_TAG";
@@ -19,10 +19,6 @@ public class SliderTextFiledDialog extends MyDialog {
 
     private JSlider slider;
     private JFormattedTextField jTextField;
-
-    public SliderTextFiledDialog(JFrame jFrame, String title) {
-        super(jFrame, title);
-    }
 
     public SliderTextFiledDialog(JFrame jFrame, String title, int min, int max, int startValue) {
         super(jFrame, title, getMap(min, max, startValue));

@@ -63,7 +63,10 @@ public class SobelFilter implements BaseFilter {
                     newPixel[z] = (int) Math.sqrt(pixelFromFirstImage[z] * pixelFromFirstImage[z] + pixelFromSecondImage[z] * pixelFromSecondImage[z]);
                 }
 
-                if (newPixel[0] > threshold || newPixel[1] > threshold || newPixel[2] > threshold) {
+                GrayscaleFunctor grayscaleFunctor = new GrayscaleFunctor();
+                int pixelValue = grayscaleFunctor.apply(newPixel)[0];
+
+                if (pixelValue > threshold) {
                     outputImage.getRaster().setPixel(i, k, new int[] {255, 255, 255});
                 } else {
                     outputImage.getRaster().setPixel(i, k, new int[] {0, 0, 0});

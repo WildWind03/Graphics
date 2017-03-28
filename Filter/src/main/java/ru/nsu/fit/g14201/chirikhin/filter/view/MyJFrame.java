@@ -156,6 +156,10 @@ public class MyJFrame extends JFrame {
     private LinkedList<int[]> emissionPoints;
     private LinkedList<double[]> chargePoints;
 
+    private final int START_VALUE_THRESHOLD = 80;
+    private final int MIN_THRESHOLD = 2;
+    private final int MAX_THRESHOLD = 255;
+
     public MyJFrame()  {
         super(APPLICATION_NAME);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -384,7 +388,7 @@ public class MyJFrame extends JFrame {
     }
 
     private void onSobelFilterClicked() {
-        SliderTextFiledDialog sobelConfigDialog = new SliderTextFiledDialog(this, SOBEL_CONFIGURATION_DIALOG);
+        SliderTextFiledDialog sobelConfigDialog = new SliderTextFiledDialog(this, SOBEL_CONFIGURATION_DIALOG, MIN_THRESHOLD, MAX_THRESHOLD, START_VALUE_THRESHOLD);
         sobelConfigDialog.apparate();
 
         if (!sobelConfigDialog.isCancelled()) {
@@ -393,7 +397,7 @@ public class MyJFrame extends JFrame {
     }
 
     private void onRobertsFilterClicked() {
-        SliderTextFiledDialog sliderTextFiledDialog = new SliderTextFiledDialog(this, ROBERT_S_FILTER_CONFIGURATION);
+        SliderTextFiledDialog sliderTextFiledDialog = new SliderTextFiledDialog(this, ROBERT_S_FILTER_CONFIGURATION, MIN_THRESHOLD, MAX_THRESHOLD, START_VALUE_THRESHOLD);
         sliderTextFiledDialog.apparate();
 
         if (!sliderTextFiledDialog.isCancelled()) {
