@@ -5,8 +5,8 @@ import java.awt.image.BufferedImage;
 public class SobelFilter implements BaseFilter {
 
     private final int threshold;
-    private final int MATRIX_HEIGHT = 3;
-    private final int MATRIX_WIDTH = 3;
+    private static final int MATRIX_HEIGHT = 3;
+    private static final int MATRIX_WIDTH = 3;
 
     public SobelFilter(int threshold) {
         this.threshold = threshold;

@@ -24,7 +24,7 @@ public class InterpolatedFunction <A extends Comparable<A>, V> {
             if (arg == point.getValue1()) {
                 return point.getValue2();
             }
-            if (1 == arg.compareTo(point.getValue1())) {
+            if (arg.compareTo(point.getValue1()) > 0) {
                 break;
             }
 

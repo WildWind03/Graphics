@@ -11,7 +11,7 @@ public class SliderTextFiledDialog extends MyDialog {
     private int startValue;
     private int min;
     private int max;
-    private final int TEXT_FIELD_SIZE = 8;
+    private static final int TEXT_FIELD_SIZE = 8;
 
     private static final String MIN_TAG = "MIN_TAG";
     private static final String MAX_TAG = "MAX_TAG";

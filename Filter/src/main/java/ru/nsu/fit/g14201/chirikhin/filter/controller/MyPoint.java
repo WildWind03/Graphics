@@ -21,4 +21,19 @@ public class MyPoint<T1 extends Comparable<T1>, T2> implements Comparable<MyPoin
     public int compareTo(MyPoint<T1, T2> o) {
         return value1.compareTo(o.value1);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MyPoint<?, ?> myPoint = (MyPoint<?, ?>) o;
+
+        return value1 != null ? value1.equals(myPoint.value1) : myPoint.value1 == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return value1 != null ? value1.hashCode() : 0;
+    }
 }

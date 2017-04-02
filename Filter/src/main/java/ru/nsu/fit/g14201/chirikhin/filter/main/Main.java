@@ -4,6 +4,6 @@ import ru.nsu.fit.g14201.chirikhin.filter.controller.FilterController;
 
 public class Main {
     public static void main(String[] args) {
-        FilterController filterController = new FilterController();
+        new FilterController();
     }
 }

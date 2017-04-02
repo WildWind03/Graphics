@@ -16,7 +16,7 @@ public class GammaDialog extends MyDialog {
     private static final double TEXT_FIELD_MIN = 0.1;
     private static final double TEXT_FIELD_MAX = 5;
 
-    private final int TEXT_FIELD_SIZE = 8;
+    private static final int TEXT_FIELD_SIZE = 8;
 
     private JSlider slider;
     private JFormattedTextField jTextField;

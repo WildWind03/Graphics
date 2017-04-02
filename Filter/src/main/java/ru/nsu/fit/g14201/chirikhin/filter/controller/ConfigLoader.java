@@ -1,6 +1,7 @@
 package ru.nsu.fit.g14201.chirikhin.filter.controller;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.function.Predicate;
 
@@ -11,13 +12,21 @@ public class ConfigLoader {
     private final LinkedList<double[]> chargePoints;
 
     public ConfigLoader(File file) throws InvalidConfigException, IOException {
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8")))) {
             String pointInAbsorptionString = bufferedReader.readLine();
+            if (null == pointInAbsorptionString) {
+                throw new InvalidConfigException("Invalid file. Got null string");
+            }
             absorptionPoints = new LinkedList<>();
 
             int countOfPointsInAbsorption = getOneValue(pointInAbsorptionString, value -> ((value >= 0) && (value < 1000)));
             for (int k = 0; k < countOfPointsInAbsorption; ++k) {
                 String nextString = bufferedReader.readLine();
+
+                if (null == nextString) {
+                    throw new InvalidConfigException("Invalid file. Got null string");
+                }
+
                 MyPoint<Integer, Double> absorptionPoint = getPoint(nextString,
                         value -> ((value >= 0) && (value <= 100)),
                         value -> (value >= 0.0d) && (value <= 1d));
@@ -27,9 +36,17 @@ public class ConfigLoader {
 
             emissionPoints = new LinkedList<>();
             String pointInEmissionString = bufferedReader.readLine();
+            if (null == pointInEmissionString) {
+                throw new InvalidConfigException("Invalid file. Got null string");
+            }
+
             int countOfPointsInEmission = getOneValue(pointInEmissionString, value -> ((value >= 0) && (value < 1000)));
             for (int k = 0; k < countOfPointsInEmission; ++k) {
                 String nextString = bufferedReader.readLine();
+
+                if (null == nextString) {
+                    throw new InvalidConfigException("Invalid file. Got null string");
+                }
                 int[] values = getFourIntegerValues(nextString, value -> ((value >= 0) && (value <= 100)),
                         value -> ((value >= 0) && (value <= 255)),
                         value -> ((value >= 0) && (value <= 255)),
@@ -40,9 +57,18 @@ public class ConfigLoader {
 
             chargePoints = new LinkedList<>();
             String chargeCountString = bufferedReader.readLine();
+
+            if (null == chargeCountString) {
+                throw new InvalidConfigException("Invalid file. Got null string");
+            }
+
             int chargeCount = getOneValue(chargeCountString, value -> ((value >= 0) && (value < 1000)));
             for (int k = 0; k < chargeCount; ++k) {
                 String nextString = bufferedReader.readLine();
+
+                if (null == nextString) {
+                    throw new InvalidConfigException("Invalid file. Got null string");
+                }
 
                 double[] values = getFourDoubleValues(nextString,
                         value -> ((value >= -100) && (value <= 100)),
@@ -107,6 +133,9 @@ public class ConfigLoader {
     }
 
     private int getOneValue(String string, Predicate<Integer> predicate) throws InvalidConfigException {
+        if (null == string) {
+            throw new InvalidConfigException("Null instead of a string");
+        }
         String[] params = string.split(" ");
 
         int countOfPoints;

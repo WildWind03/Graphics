@@ -156,9 +156,9 @@ public class MyJFrame extends JFrame {
     private LinkedList<int[]> emissionPoints;
     private LinkedList<double[]> chargePoints;
 
-    private final int START_VALUE_THRESHOLD = 80;
-    private final int MIN_THRESHOLD = 2;
-    private final int MAX_THRESHOLD = 255;
+    private static final int START_VALUE_THRESHOLD = 80;
+    private static final int MIN_THRESHOLD = 2;
+    private static final int MAX_THRESHOLD = 255;
 
     public MyJFrame()  {
         super(APPLICATION_NAME);
@@ -282,9 +282,11 @@ public class MyJFrame extends JFrame {
         VolumeRenderingDialog volumeRenderingDialog = new VolumeRenderingDialog(this, VOLUME_RENDERING_CONFIGURATION);
         volumeRenderingDialog.apparate();
 
+
+
         if (!volumeRenderingDialog.isCancelled()) {
-            myJPanel.applyVisualizationFilter(absorptionPoints,
-                    emissionPoints,
+            myJPanel.applyVisualizationFilter(isAbsorption ? absorptionPoints : null,
+                    isEmission ? emissionPoints : null,
                     chargePoints,
                     volumeRenderingDialog.getNx(),
                     volumeRenderingDialog.getNy(),

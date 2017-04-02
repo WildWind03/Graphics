@@ -6,8 +6,8 @@ import java.util.function.Predicate;
 
 public class MatrixFilter implements BaseFilter {
     private final BaseMatrix baseMatrix;
-    private final int MAX_COLOR = 255;
-    private final int MIN_COLOR = 0;
+    private static final int MAX_COLOR = 255;
+    private static final int MIN_COLOR = 0;
 
     public MatrixFilter(BaseMatrix baseMatrix) {
         this.baseMatrix = baseMatrix;

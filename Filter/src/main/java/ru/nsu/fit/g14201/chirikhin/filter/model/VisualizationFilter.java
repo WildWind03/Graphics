@@ -54,20 +54,31 @@ public class VisualizationFilter implements BaseFilter {
         LinkedList<MyPoint<Integer, Double>> greenFunctionPoints = new LinkedList<>();
         LinkedList<MyPoint<Integer, Double>> blueFunctionPoints = new LinkedList<>();
 
-        emissionPoints.forEach(ints -> {
-            redFunctionPoints.add(new MyPoint<>(ints[0], (double) ints[1]));
-            greenFunctionPoints.add(new MyPoint<>(ints[0], (double) ints[2]));
-            blueFunctionPoints.add(new MyPoint<>(ints[0], (double) ints[3]));
-        });
+        InterpolatedFunction<Integer, Double> redFunction = null;
+        InterpolatedFunction<Integer, Double> blueFunction = null;
+        InterpolatedFunction<Integer, Double> greenFunction = null;
 
-        InterpolatedFunction<Integer, Double> absorptionFunction = new InterpolatedFunction<>(absorptionPoints,
-                new LinearInterpolator(), (DataInterpolator<Integer, Double>) Interpolator::get);
-        InterpolatedFunction<Integer, Double> redFunction = new InterpolatedFunction<>(redFunctionPoints,
-                new LinearInterpolator(), (DataInterpolator<Integer, Double>) Interpolator::get);
-        InterpolatedFunction<Integer, Double> greenFunction = new InterpolatedFunction<>(greenFunctionPoints,
-                new LinearInterpolator(), (DataInterpolator<Integer, Double>) Interpolator::get);
-        InterpolatedFunction<Integer, Double> blueFunction = new InterpolatedFunction<>(blueFunctionPoints,
-                new LinearInterpolator(), (DataInterpolator<Integer, Double>) Interpolator::get);
+        if (null != emissionPoints) {
+            emissionPoints.forEach(ints -> {
+                redFunctionPoints.add(new MyPoint<>(ints[0], (double) ints[1]));
+                greenFunctionPoints.add(new MyPoint<>(ints[0], (double) ints[2]));
+                blueFunctionPoints.add(new MyPoint<>(ints[0], (double) ints[3]));
+            });
+
+            redFunction = new InterpolatedFunction<>(redFunctionPoints,
+                    new LinearInterpolator(), (DataInterpolator<Integer, Double>) Interpolator::get);
+            greenFunction = new InterpolatedFunction<>(greenFunctionPoints,
+                    new LinearInterpolator(), (DataInterpolator<Integer, Double>) Interpolator::get);
+            blueFunction = new InterpolatedFunction<>(blueFunctionPoints,
+                    new LinearInterpolator(), (DataInterpolator<Integer, Double>) Interpolator::get);
+        }
+
+        InterpolatedFunction<Integer, Double> absorptionFunction = null;
+
+        if (null != absorptionPoints) {
+            absorptionFunction = new InterpolatedFunction<>(absorptionPoints,
+                    new LinearInterpolator(), (DataInterpolator<Integer, Double>) Interpolator::get);
+        }
 
         BufferedImage newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
 

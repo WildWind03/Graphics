@@ -370,7 +370,6 @@ public class MyJPanel extends JPanel {
             redPoints.add(new MyPoint<>(ints[0], (double) ints[1]));
             greenPoints.add(new MyPoint<>(ints[0], (double) ints[2]));
             bluePoints.add(new MyPoint<>(ints[0], (double) ints[3]));
-
         });
 
         int GRAPHIC_MAX_Y = 255;

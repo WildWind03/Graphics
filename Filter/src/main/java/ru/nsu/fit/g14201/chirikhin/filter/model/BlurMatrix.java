@@ -17,7 +17,7 @@ public class BlurMatrix extends SquareMatrix {
                 uc = u - (size - 1) / 2;
                 vc = v - (size - 1) / 2;
 
-                g = Math.exp(-(uc * uc + vc * vc) / (2 * sigma * sigma));
+                g = Math.exp(((double) -(uc * uc + vc * vc)) / (double) (2 * sigma * sigma));
 
                 sum += g;
                 matrix[u][v] = g;
