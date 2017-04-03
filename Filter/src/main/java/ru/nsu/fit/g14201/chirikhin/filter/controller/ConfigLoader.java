@@ -22,7 +22,6 @@ public class ConfigLoader {
             int countOfPointsInAbsorption = getOneValue(pointInAbsorptionString, value -> ((value >= 0) && (value < 1000)));
             for (int k = 0; k < countOfPointsInAbsorption; ++k) {
                 String nextString = bufferedReader.readLine();
-
                 if (null == nextString) {
                     throw new InvalidConfigException("Invalid file. Got null string");
                 }
