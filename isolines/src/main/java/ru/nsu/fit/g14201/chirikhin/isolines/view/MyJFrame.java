@@ -6,7 +6,6 @@ import com.chirikhin.swing.util.ToolBarUtil;
 import com.chirikhin.universal_parser.ParserException;
 import com.chirikhin.universal_parser.TypeConversionException;
 import com.chirikhin.universal_parser.TypeMatchingException;
-import com.sun.corba.se.impl.orb.ORBConfiguratorImpl;
 import ru.nsu.fit.g14201.chirikhin.isolines.config_parser.MyParser;
 
 import javax.swing.*;
@@ -15,7 +14,6 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
-import java.io.IOException;
 
 public class MyJFrame extends JFrame {
     private static final int DEFAULT_WIDTH = 500;

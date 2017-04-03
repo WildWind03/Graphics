@@ -1,11 +1,11 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
-import ru.nsu.fit.g14201.chirikhin.isolines.model.Function;
+import ru.nsu.fit.g14201.chirikhin.isolines.util.Util;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyJPanel extends JPanel {
@@ -14,6 +14,8 @@ public class MyJPanel extends JPanel {
     private static final double PART_OF_LEGEND_HEIGHT = 0.2;
     private static final int MIN_HEIGHT = 10;
     private static final int MIN_WIDTH = 10;
+    private static final int MIN_WIDTH_TO_PRINT_LEGENDS = 350;
+    private static final int MIN_HEIGHT_TO_PRINT_LEGENDS = 400;
 
     private BufferedImage map;
     private BufferedImage legend;
@@ -60,22 +62,53 @@ public class MyJPanel extends JPanel {
 
             map = new BufferedImage(this.width, mapHeight, BufferedImage.TYPE_INT_RGB);
             legend = new BufferedImage(this.width, (int) (this.height * PART_OF_LEGEND_HEIGHT), BufferedImage.TYPE_INT_RGB);
-           // legendRecords = new BufferedImage(this.width, (int) (this.height * GAP_BETWEEN_LEGEND_AND_MAP), BufferedImage.TYPE_INT_RGB);
+            legendRecords = new BufferedImage(this.width, (int) (this.height * GAP_BETWEEN_LEGEND_AND_MAP), BufferedImage.TYPE_INT_RGB);
 
             if (null != colors) {
                 new Legend(colors).draw(legend);
+
+                double max = Util.function(0, 0);
+                double min = Util.function(0, 0);
+
+                for (int i = 0; i < map.getWidth(); ++i) {
+                    for (int k = 0; k < map.getHeight(); ++k) {
+                        double value = Util.function(Util.toRealX(i, map.getWidth()), Util.toRealY(k, map.getHeight()));
+
+                        if (value > max) {
+                            max = value;
+                        }
+
+                        if (value < min) {
+                            min = value;
+                        }
+                    }
+                }
+
+                List<Double> values = new ArrayList<>();
+                double step = (max - min) / colors.size();
+
+                for (int i = 0; i < colors.size(); ++i) {
+                    values.add(min + i * step);
+                }
+
+                values.add(max);
+
                 try {
-                    new ColorMap(colors).draw(new Function(), map);
+                    new ColorMap(colors).draw(map, values);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                new LegendRecords().draw(legendRecords, values);
             }
 
             isUpdated = false;
         }
 
         g.drawImage(map, 0, 0, null);
+        if (width > MIN_WIDTH_TO_PRINT_LEGENDS && height > MIN_HEIGHT_TO_PRINT_LEGENDS) {
+            g.drawImage(legendRecords, 0, (int) (height * PART_OF_MAP_HEIGHT), null);
+        }
         g.drawImage(legend, 0, (int) (height * (GAP_BETWEEN_LEGEND_AND_MAP + PART_OF_MAP_HEIGHT)), null);
-
     }
 }
