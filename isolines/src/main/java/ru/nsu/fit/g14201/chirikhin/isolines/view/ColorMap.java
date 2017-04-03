@@ -8,18 +8,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ColorMap {
-    private final List<Color> colors;
+    private final List<Integer[]> colors;
+    private final int startX = -2;
+    private final int endX = 2;
+    private final int startY = -4;
+    private final int endY = 4;
 
-    public ColorMap(List<Color> colors) {
+    public ColorMap(List<Integer[]> colors) {
         this.colors = colors;
     }
+
+    private double toRealX(int u, int width) {
+        return (endX - startX) * (double) u / (double) width + startX;
+    }
+
+    private double toRealY(int v, int height) {
+        return (endY - startY) * (double) v / (double) height + startY;
+    }
+
     void draw(Function function, BufferedImage bufferedImage) throws Exception {
-        int max = function.get(0, 0);
-        int min = function.get(0, 0);
+        double max = function.get(0, 0);
+        double min = function.get(0, 0);
 
         for (int i = 0; i < bufferedImage.getWidth(); ++i) {
             for (int k = 0; k < bufferedImage.getHeight(); ++k) {
-                int value = function.get(i, k);
+                double value = function.get(toRealX(i, bufferedImage.getWidth()), toRealY(k, bufferedImage.getHeight()));
+
                 if (value > max) {
                     max = value;
                 }
@@ -30,8 +44,8 @@ public class ColorMap {
             }
         }
 
-        List<Integer> values = new ArrayList<>();
-        int step = (max - min) / colors.size();
+        List<Double> values = new ArrayList<>();
+        double step = (max - min) / colors.size();
 
         for (int i = 0; i < colors.size(); ++i) {
             values.add(min + i * step);
@@ -41,7 +55,7 @@ public class ColorMap {
 
         for (int i = 0; i < bufferedImage.getHeight(); ++i) {
             for (int k = 0; k < bufferedImage.getWidth(); ++k) {
-                int value = function.get(k, i);
+                double value = function.get(toRealX(k, bufferedImage.getWidth()), toRealY(i, bufferedImage.getHeight()));
                 bufferedImage.setRGB(k, i, getColor(colors, values, value).getRGB());
             }
         }
@@ -49,13 +63,14 @@ public class ColorMap {
 
     }
 
-    private Color getColor(List<Color> colors, List<Integer> values, int value) throws Exception {
+    private Color getColor(List<Integer[]> colors, List<Double> values, double value) throws Exception {
         for (int i = 0; i < values.size() - 1; ++i) {
-            int curValue = values.get(i);
-            int nextValue = values.get(i + 1);
+            double curValue = values.get(i);
+            double nextValue = values.get(i + 1);
 
             if (value >= curValue && value <= nextValue) {
-                return colors.get(i);
+                Integer[] color = colors.get(i);
+                return new Color(color[0], color[1], color[2]);
             }
         }
 

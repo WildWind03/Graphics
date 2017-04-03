@@ -12,7 +12,7 @@ public class MyParserTest {
     @Test
     public void testParser() {
         try {
-            MyParser myParser = new MyParser(new File("./FIT_g14201_Chirikhin_Filter_Data/config.txt"));
+            MyParser myParser = new MyParser(new File("./FIT_g14201_Chirikhin_Isolines_Data/config.txt"));
         } catch (TypeConversionException | ParserException | TypeMatchingException e) {
             e.printStackTrace();
         }

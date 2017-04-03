@@ -5,9 +5,9 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class Legend {
-    private final List<Color> colors;
+    private final List<Integer[]> colors;
 
-    public Legend(List<Color> colors) {
+    public Legend(List<Integer[]> colors) {
         this.colors = colors;
     }
 
@@ -19,7 +19,8 @@ public class Legend {
         int step = width / colors.size();
 
         for (int i = 0; i < colors.size(); ++i) {
-            graphics2D.setColor(colors.get(i));
+            Integer[] color = colors.get(i);
+            graphics2D.setColor(new Color(color[0], color[1], color[2]));
             graphics2D.fillRect(i * step, 0, i * step + step, height);
         }
 
