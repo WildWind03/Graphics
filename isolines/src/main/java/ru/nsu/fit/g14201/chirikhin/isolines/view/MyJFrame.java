@@ -24,7 +24,14 @@ public class MyJFrame extends JFrame {
     private static final String OPEN_MENU_ITEM = "Open";
     private static final String DATA_FOLDER = "./FIT_g14201_Chirikhin_Isolines_Data";
     private static final String ERROR_WHILE_LOADING_CONFIG = "Error while loading config";
+    private static final String VIEW_MENU = "View";
+    private static final String GRID_VISIBILITY = "Grid visibility";
+    private static final String GRID_ICON_PNG = "/grid_icon.png";
     private final MyJPanel myJPanel;
+
+    private boolean isGridButtonClicked = false;
+    private final JCheckBoxMenuItem gridItem;
+    private final JToggleButton gridButton;
 
     public MyJFrame() {
         this.myJPanel = new MyJPanel(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -44,12 +51,34 @@ public class MyJFrame extends JFrame {
         add(myJPanel, BorderLayout.CENTER);
 
         JMenu fileMenu = MenuUtil.addNewMenuToBar(jMenuBar, FILE_MENU);
+        JMenu viewMenu = MenuUtil.addNewMenuToBar(jMenuBar, VIEW_MENU);
+
         JMenuItem openItem = MenuUtil.addNewMenuItem(fileMenu, OPEN_MENU_ITEM);
         JButton openButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(OPEN_ICON_PNG)), OPEN_CONFIG_TOOLTIP);
 
+        gridItem = MenuUtil.addNewCheckBoxMenuItem(viewMenu, GRID_VISIBILITY);
+        gridButton = ToolBarUtil.addNewToggleButton(jToolBar, new ImageIcon(getClass().getResource(GRID_ICON_PNG)), GRID_VISIBILITY);
+
         ListenerUtil.setListener(openButton, openItem, this::onOpenButtonClicked);
+        ListenerUtil.setListener(gridButton, gridItem, this::onGridButtonClicked);
+
+
         pack();
         setVisible(true);
+    }
+
+    private void onGridButtonClicked() {
+        if (!isGridButtonClicked) {
+            isGridButtonClicked = true;
+            gridButton.setSelected(true);
+            gridItem.setSelected(true);
+            myJPanel.setGridShownMode(true);
+        } else {
+            isGridButtonClicked = false;
+            gridItem.setSelected(false);
+            gridButton.setSelected(false);
+            myJPanel.setGridShownMode(false);
+        }
     }
 
     private void onOpenButtonClicked() {

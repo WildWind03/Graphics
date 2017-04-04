@@ -7,23 +7,28 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-public class ColorMapSingleton {
+public class ColorMapDrawer implements Drawer {
 
-    private static class SingletonHolder {
-        private static final ColorMapSingleton INSTANCE = new ColorMapSingleton();
+    private final List<Double> values;
+    private final List<Integer[]> colors;
+    private final MyFunction myFunction;
+    private final PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter;
+
+    public ColorMapDrawer(List<Double> values, List<Integer[]> colors, MyFunction myFunction, PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter) {
+        this.values = values;
+        this.colors = colors;
+        this.myFunction = myFunction;
+        this.pixelCoordinateToAreaConverter = pixelCoordinateToAreaConverter;
     }
 
-    void draw(BufferedImage bufferedImage, List<Double> values, List<Integer[]> colors,
-              MyFunction myFunction,
-              PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter) {
+    @Override
+    public void draw(BufferedImage bufferedImage) {
         for (int i = 0; i < bufferedImage.getHeight(); ++i) {
             for (int k = 0; k < bufferedImage.getWidth(); ++k) {
                 double value = myFunction.apply(pixelCoordinateToAreaConverter.toRealX(k), pixelCoordinateToAreaConverter.toRealY(i));
                 bufferedImage.setRGB(k, i, getColor(colors, values, value).getRGB());
             }
         }
-
-
     }
 
     private Color getColor(List<Integer[]> colors, List<Double> values, double value) {
@@ -38,9 +43,5 @@ public class ColorMapSingleton {
         }
 
         throw new IndexOutOfBoundsException("Inner error! Can't choose color by point!");
-    }
-
-    public static ColorMapSingleton getInstance() {
-        return SingletonHolder.INSTANCE;
     }
 }

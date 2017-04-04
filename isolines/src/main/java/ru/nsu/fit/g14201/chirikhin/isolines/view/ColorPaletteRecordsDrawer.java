@@ -4,16 +4,16 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-public class LegendRecordsSingleton {
-    private static class SingletonHolder {
-        private static final LegendRecordsSingleton INSTANCE = new LegendRecordsSingleton();
+public class ColorPaletteRecordsDrawer implements Drawer {
+
+    private final List<Double> points;
+
+    public ColorPaletteRecordsDrawer(List<Double> points) {
+        this.points = points;
     }
 
-    private LegendRecordsSingleton() {
-
-    }
-
-    void draw(BufferedImage bufferedImage, List<Double> points) {
+    @Override
+    public void draw(BufferedImage bufferedImage) {
         Graphics2D graphics2D = bufferedImage.createGraphics();
         graphics2D.setColor(Color.WHITE);
         graphics2D.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
@@ -33,9 +33,4 @@ public class LegendRecordsSingleton {
         int posOfWholePart = str.indexOf('.');
         return str.substring(0, Math.min(posOfWholePart + 2, str.length()));
     }
-
-    public static LegendRecordsSingleton getInstance() {
-        return SingletonHolder.INSTANCE;
-    }
-
 }

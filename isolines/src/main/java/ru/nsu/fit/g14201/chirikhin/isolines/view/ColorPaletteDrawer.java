@@ -4,16 +4,15 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-public class LegendSingleton {
-    private static class SingletonHolder {
-        private static final LegendSingleton INSTANCE = new LegendSingleton();
+public class ColorPaletteDrawer implements Drawer {
+    private final List<Integer[]> colors;
+
+    public ColorPaletteDrawer(List<Integer[]> colors) {
+        this.colors = colors;
     }
 
-    private LegendSingleton() {
-
-    }
-
-    public void draw(BufferedImage bufferedImage, List<Integer[]> colors) {
+    @Override
+    public void draw(BufferedImage bufferedImage) {
         Graphics2D graphics2D = bufferedImage.createGraphics();
         int width = bufferedImage.getWidth();
         int height = bufferedImage.getHeight();
@@ -27,9 +26,5 @@ public class LegendSingleton {
         }
 
         graphics2D.dispose();
-    }
-
-    public static LegendSingleton getInstance() {
-        return SingletonHolder.INSTANCE;
     }
 }

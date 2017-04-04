@@ -7,7 +7,6 @@ import ru.nsu.fit.g14201.chirikhin.isolines.util.Util;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MyJPanel extends JPanel {
@@ -35,6 +34,10 @@ public class MyJPanel extends JPanel {
 
     private List<Integer[]> colors;
 
+    private int m;
+    private int k;
+    private boolean isGridShown = false;
+
     public MyJPanel(int width, int height) {
         update(width, height);
     }
@@ -55,6 +58,16 @@ public class MyJPanel extends JPanel {
     public void applyNewConfiguration(int m, int k, List<Integer[]> colors, Integer[] isolineColor) {
         this.colors = colors;
         isUpdated = true;
+
+        this.m = m;
+        this.k = k;
+
+        repaint();
+    }
+
+    public void setGridShownMode(boolean isShown) {
+        this.isGridShown = isShown;
+        isUpdated = true;
         repaint();
     }
 
@@ -72,7 +85,7 @@ public class MyJPanel extends JPanel {
             legendRecords = new BufferedImage(this.width, (int) (this.height * GAP_BETWEEN_LEGEND_AND_MAP), BufferedImage.TYPE_INT_RGB);
 
             if (null != colors) {
-                LegendSingleton.getInstance().draw(legend, colors);
+                new ColorPaletteDrawer(colors).draw(legend);
 
                 PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter =
                         new PixelCoordinateToAreaConverter(START_X, START_Y, END_X, END_Y, map.getWidth(), map.getHeight());
@@ -80,8 +93,11 @@ public class MyJPanel extends JPanel {
                         pixelCoordinateToAreaConverter,
                         colors.size());
 
-                ColorMapSingleton.getInstance().draw(map, values, colors, DifficultFunctionSingleton.getInstance(), pixelCoordinateToAreaConverter);
-                LegendRecordsSingleton.getInstance().draw(legendRecords, values);
+                new ColorMapDrawer(values, colors, DifficultFunctionSingleton.getInstance(), pixelCoordinateToAreaConverter).draw(map);
+                if (isGridShown) {
+                    new GridMapDrawer(m, k, Color.black).draw(map);
+                }
+                new ColorPaletteRecordsDrawer(values).draw(legendRecords);
             }
 
             isUpdated = false;
