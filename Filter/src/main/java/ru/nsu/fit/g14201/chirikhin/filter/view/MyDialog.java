@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.HashMap;
 
 public abstract class MyDialog extends JDialog {
     private static final String OK = "OK";
@@ -16,7 +17,18 @@ public abstract class MyDialog extends JDialog {
         GridBagLayout gridBagLayout = new GridBagLayout();
         setLayout(gridBagLayout);
 
-        onDialogCreated();
+        onDialogCreated(null);
+        addOkAndCancelButtons();
+        pack();
+    }
+
+    public MyDialog(JFrame jFrame, String title, HashMap<String, Object> args) {
+        super(jFrame, title, true);
+
+        GridBagLayout gridBagLayout = new GridBagLayout();
+        setLayout(gridBagLayout);
+
+        onDialogCreated(args);
         addOkAndCancelButtons();
         pack();
     }
@@ -68,7 +80,7 @@ public abstract class MyDialog extends JDialog {
         return isCancelled;
     }
 
-    abstract void onDialogCreated();
+    abstract void onDialogCreated(HashMap<String, Object> propertyResourceBundle);
 
     abstract int getRowForOkAndCancelButtons();
 }

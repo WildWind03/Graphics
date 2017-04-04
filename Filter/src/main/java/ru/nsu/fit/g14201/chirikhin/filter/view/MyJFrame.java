@@ -1,8 +1,12 @@
 package ru.nsu.fit.g14201.chirikhin.filter.view;
 
-import ru.nsu.fit.g14201.chirikhin.filter.util.ListenerUtil;
-import ru.nsu.fit.g14201.chirikhin.filter.util.MenuUtil;
-import ru.nsu.fit.g14201.chirikhin.filter.util.ToolBarUtil;
+import ru.nsu.fit.g14201.chirikhin.filter.controller.ConfigLoader;
+import ru.nsu.fit.g14201.chirikhin.filter.controller.InvalidConfigException;
+import ru.nsu.fit.g14201.chirikhin.filter.controller.MyPoint;
+import ru.nsu.fit.g14201.chirikhin.util.ListUtil;
+import ru.nsu.fit.g14201.chirikhin.util.ListenerUtil;
+import ru.nsu.fit.g14201.chirikhin.util.MenuUtil;
+import ru.nsu.fit.g14201.chirikhin.util.ToolBarUtil;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -11,6 +15,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 
 public class MyJFrame extends JFrame {
     private static final String APPLICATION_NAME = "Filter";
@@ -35,7 +40,6 @@ public class MyJFrame extends JFrame {
     private static final String ORDERED_DITHERING = "Ordered dithering";
     private static final String ROBERTS = "Robert's operator";
     private static final String SOBEL = "Sobel's operator";
-    private static final String EDGE_DETECTION = "Edge detection";
     private static final String SMOOTHING = "Smoothing";
     private static final String SHARPING = "Sharping";
     private static final String EMBOSS = "Emboss";
@@ -60,7 +64,6 @@ public class MyJFrame extends JFrame {
     private static final String MAGNIFIER_ICON_PNG = "/magnifier_icon.png";
     private static final String ROBERT_ICON_PNG = "/robert_icon.png";
     private static final String SOBEL_ICON_PNG = "/sobel_icon.png";
-    private static final String EDGE_DETECTION_ICON_PNG = "/edge_detection_icon.png";
     private static final String BLUR_ICON_PNG = "/blur_icon.png";
     private static final String SHARP_ICON_PNG = "/sharp_icon.png";
     private static final String BLACK_AND_WHITE_ICON_PNG1 = "/black_and_white_icon.png";
@@ -80,6 +83,10 @@ public class MyJFrame extends JFrame {
     private static final String FILTER_MADE_BY_CHIRIKHIN_ALEXANDER_3_19_2017 = "Filter \n Made by Chirikhin Alexander, 3.19.2017";
     private static final String ABOUT_THE_PROGRAM = "About the program";
     private static final String ROBERT_S_FILTER_CONFIGURATION = "Robert's filter configuration";
+    private static final String SOBEL_CONFIGURATION_DIALOG = "Sobel configuration dialog";
+    private static final String ROTATION_CONFIGURATION = "Rotation configuration";
+    private static final String GAMMA_CONFIGURATION = "Gamma configuration";
+    private static final String VOLUME_RENDERING_CONFIGURATION = "Volume rendering configuration";
 
     private final JMenuItem openItem;
     private final JMenuItem newItem;
@@ -97,7 +104,6 @@ public class MyJFrame extends JFrame {
     private final JMenuItem zoom2XFilter;
     private final JMenuItem robertsFilter;
     private final JMenuItem sobelFilter;
-    private final JMenuItem edgeDetectionFilter;
     private final JMenuItem smoothingFilter;
     private final JMenuItem sharpingFilter;
     private final JMenuItem embossFilter;
@@ -107,7 +113,7 @@ public class MyJFrame extends JFrame {
 
     private final JCheckBoxMenuItem absorptionCheckBoxMenuItem;
     private final JCheckBoxMenuItem emissionCheckBoxMenuItem;
-    private final JCheckBoxMenuItem runMenuItem;
+    private final JMenuItem runMenuItem;
     private final JMenuItem openConfigMenuItem;
 
     private final JMenuItem aboutAuthor;
@@ -127,7 +133,6 @@ public class MyJFrame extends JFrame {
     private final JButton zoom2XButton;
     private final JButton robertsButton;
     private final JButton sobelButton;
-    private final JButton edgeDetectingButton;
     private final JButton smoothButton;
     private final JButton sharpButton;
     private final JButton embossButton;
@@ -136,13 +141,24 @@ public class MyJFrame extends JFrame {
     private final JButton gammaButton;
     private final JToggleButton absorptionButton;
     private final JToggleButton emissionButton;
-    private final JToggleButton runButton;
+    private final JButton runButton;
     private final JButton openConfigButton;
 
     private final JButton aboutAuthorButton;
 
     private final MyJPanel myJPanel;
     private final JScrollPane scrollPane;
+
+    private boolean isEmission = false;
+    private boolean isAbsorption = false;
+
+    private LinkedList<MyPoint<Integer, Double>> absorptionPoints;
+    private LinkedList<int[]> emissionPoints;
+    private LinkedList<double[]> chargePoints;
+
+    private static final int START_VALUE_THRESHOLD = 80;
+    private static final int MIN_THRESHOLD = 2;
+    private static final int MAX_THRESHOLD = 255;
 
     public MyJFrame()  {
         super(APPLICATION_NAME);
@@ -177,7 +193,6 @@ public class MyJFrame extends JFrame {
         zoom2XFilter = MenuUtil.addNewMenuItem(filterMenu, ITEM_ZOOM);
         robertsFilter = MenuUtil.addNewMenuItem(filterMenu, ROBERTS);
         sobelFilter = MenuUtil.addNewMenuItem(filterMenu, SOBEL);
-        edgeDetectionFilter = MenuUtil.addMenuToMenu(filterMenu, EDGE_DETECTION);
         smoothingFilter = MenuUtil.addNewMenuItem(filterMenu, SMOOTHING);
         sharpingFilter = MenuUtil.addNewMenuItem(filterMenu, SHARPING);
         embossFilter = MenuUtil.addNewMenuItem(filterMenu, EMBOSS);
@@ -195,7 +210,6 @@ public class MyJFrame extends JFrame {
         zoom2XButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(MAGNIFIER_ICON_PNG)), ITEM_ZOOM);
         robertsButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(ROBERT_ICON_PNG)), ROBERTS);
         sobelButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(SOBEL_ICON_PNG)), SOBEL);
-        edgeDetectingButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(EDGE_DETECTION_ICON_PNG)), EDGE_DETECTION);
         smoothButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(BLUR_ICON_PNG)), SMOOTHING);
         sharpButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(SHARP_ICON_PNG)), SHARPING);
         embossButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(BLACK_AND_WHITE_ICON_PNG1)), EMBOSS);
@@ -206,12 +220,12 @@ public class MyJFrame extends JFrame {
         JMenu volumeVisualization = MenuUtil.addMenuToMenu(filterMenu, VOLUME_VISUALIZATION);
         absorptionCheckBoxMenuItem = MenuUtil.addNewCheckBoxMenuItem(volumeVisualization, ABSORPTION);
         emissionCheckBoxMenuItem = MenuUtil.addNewCheckBoxMenuItem(volumeVisualization, EMISSION);
-        runMenuItem = MenuUtil.addNewCheckBoxMenuItem(volumeVisualization, RUN);
+        runMenuItem = MenuUtil.addNewMenuItem(volumeVisualization, RUN);
         openConfigMenuItem = MenuUtil.addNewMenuItem(volumeVisualization, OPEN_CONFIG);
 
         absorptionButton = ToolBarUtil.addNewToggleButton(jToolBar, new ImageIcon(getClass().getResource(ABSORPTION_PNG)), ABSORPTION);
         emissionButton = ToolBarUtil.addNewToggleButton(jToolBar, new ImageIcon(getClass().getResource(EMISSION_PNG)), EMISSION);
-        runButton = ToolBarUtil.addNewToggleButton(jToolBar, new ImageIcon(getClass().getResource(RUN_PNG)), RUN);
+        runButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(RUN_PNG)), RUN);
         openConfigButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(CONFIG_PNG)), OPEN_CONFIG);
 
         aboutAuthor = MenuUtil.addNewMenuItem(aboutMenu, ABOUT_THE_APPLICATION);
@@ -237,18 +251,155 @@ public class MyJFrame extends JFrame {
         ListenerUtil.setListener(sharpButton, sharpingFilter, this::onSharpFilterButtonClicked);
         ListenerUtil.setListener(embossButton, embossFilter, this::onEmbossButtonClicked);
         ListenerUtil.setListener(orderedButton, orderedDitheringFilter, this::onOrderedDitheringButtonClicked);
-        ListenerUtil.setListener(floydButton, orderedDitheringFilter, this::onFloydDitheringButtonClicked);
+        ListenerUtil.setListener(floydButton, ditheringFloydFilter, this::onFloydDitheringButtonClicked);
         ListenerUtil.setListener(zoom2XButton, zoom2XFilter, this::onZoomButtonClicked);
         ListenerUtil.setListener(robertsButton, robertsFilter, this::onRobertsFilterClicked);
+        ListenerUtil.setListener(sobelButton, sobelFilter, this::onSobelFilterClicked);
+        ListenerUtil.setListener(waterColorButton, waterColor, this::onWaterColorClicked);
+        ListenerUtil.setListener(rotationButton, rotationFilter, this::onRotationFilter);
+        ListenerUtil.setListener(gammaButton, gammaFilter, this::onGammaFilter);
+        ListenerUtil.setListener(absorptionButton, absorptionCheckBoxMenuItem, this::onAbsorptionButtonClicked);
+        ListenerUtil.setListener(emissionButton, emissionCheckBoxMenuItem, this::onEmissionButtonClicked);
+        ListenerUtil.setListener(openConfigButton, openConfigMenuItem, this::onConfigButtonClicked);
+        ListenerUtil.setListener(runButton, runMenuItem, this::onRunButtonClicked);
 
         ListenerUtil.setListener(aboutAuthorButton, aboutAuthor, this::onAboutButtonClicked);
+
+        runButton.setEnabled(false);
+        runMenuItem.setEnabled(false);
+
+        emissionButton.setEnabled(false);
+        emissionCheckBoxMenuItem.setEnabled(false);
+
+        absorptionButton.setEnabled(false);
+        absorptionCheckBoxMenuItem.setEnabled(false);
 
         pack();
         setVisible(true);
     }
 
+    private void onRunButtonClicked() {
+        VolumeRenderingDialog volumeRenderingDialog = new VolumeRenderingDialog(this, VOLUME_RENDERING_CONFIGURATION);
+        volumeRenderingDialog.apparate();
+
+
+
+        if (!volumeRenderingDialog.isCancelled()) {
+            myJPanel.applyVisualizationFilter(isAbsorption ? absorptionPoints : null,
+                    isEmission ? emissionPoints : null,
+                    chargePoints,
+                    volumeRenderingDialog.getNx(),
+                    volumeRenderingDialog.getNy(),
+                    volumeRenderingDialog.getNz());
+        }
+    }
+
+    private void onConfigButtonClicked() {
+        JFileChooser jFileChooser = new JFileChooser();
+
+        FileNameExtensionFilter imageFilter = new FileNameExtensionFilter("*.txt", "txt");
+        jFileChooser.addChoosableFileFilter(imageFilter);
+        jFileChooser.setAcceptAllFileFilterUsed(false);
+        jFileChooser.setCurrentDirectory(new File(DATA_FOLDER));
+
+        int result = jFileChooser.showOpenDialog(this);
+
+        if (JFileChooser.APPROVE_OPTION == result) {
+            try {
+                ConfigLoader configLoader = new ConfigLoader(jFileChooser.getSelectedFile());
+
+                this.absorptionPoints = configLoader.getAbsorptionPoints();
+                this.emissionPoints = configLoader.getEmissionPoints();
+                this.chargePoints = configLoader.getChargePoints();
+
+                LinkedList<MyPoint<Integer, Double>> redFunctionPoints = new LinkedList<>();
+
+                emissionPoints.forEach(ints -> {
+                    redFunctionPoints.add(new MyPoint<>(ints[0], (double) ints[1]));
+                });
+
+
+                if (!ListUtil.isSorted(absorptionPoints) ||
+                        !ListUtil.isSorted(redFunctionPoints)) {
+                    throw new InvalidConfigException("Points in the config file must be ordered");
+                }
+
+
+                runButton.setEnabled(true);
+                runMenuItem.setEnabled(true);
+
+                emissionButton.setEnabled(true);
+                emissionCheckBoxMenuItem.setEnabled(true);
+
+                absorptionButton.setEnabled(true);
+                absorptionCheckBoxMenuItem.setEnabled(true);
+
+                myJPanel.applyGraphicBuilding(absorptionPoints,
+                        emissionPoints, chargePoints);
+            } catch (InvalidConfigException | IOException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(), "Invalid file", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void onEmissionButtonClicked() {
+        if (isEmission) {
+            isEmission = false;
+            emissionButton.setSelected(false);
+            emissionCheckBoxMenuItem.setSelected(false);
+        } else {
+            isEmission = true;
+            emissionButton.setSelected(true);
+            emissionCheckBoxMenuItem.setSelected(true);
+        }
+    }
+
+    private void onAbsorptionButtonClicked() {
+        if (isAbsorption) {
+            isAbsorption = false;
+            absorptionButton.setSelected(false);
+            absorptionCheckBoxMenuItem.setSelected(false);
+        } else {
+            isAbsorption = true;
+            absorptionButton.setSelected(true);
+            absorptionCheckBoxMenuItem.setSelected(true);
+        }
+
+    }
+
+    private void onGammaFilter() {
+        GammaDialog gammaDialog = new GammaDialog(this, GAMMA_CONFIGURATION);
+        gammaDialog.apparate();
+
+        if (!gammaDialog.isCancelled()) {
+            myJPanel.applyGammaFilter(gammaDialog.getValue());
+        }
+    }
+
+    private void onRotationFilter() {
+        SliderTextFiledDialog rotationFilter = new SliderTextFiledDialog(this, ROTATION_CONFIGURATION, -180, 180, 30);
+        rotationFilter.apparate();
+
+        if (!rotationFilter.isCancelled()) {
+            myJPanel.applyRotationFilter(rotationFilter.getValue());
+        }
+    }
+
+    private void onWaterColorClicked() {
+        myJPanel.applyWatercolorFilter();
+    }
+
+    private void onSobelFilterClicked() {
+        SliderTextFiledDialog sobelConfigDialog = new SliderTextFiledDialog(this, SOBEL_CONFIGURATION_DIALOG, MIN_THRESHOLD, MAX_THRESHOLD, START_VALUE_THRESHOLD);
+        sobelConfigDialog.apparate();
+
+        if (!sobelConfigDialog.isCancelled()) {
+            myJPanel.applySobelFilter(sobelConfigDialog.getValue());
+        }
+    }
+
     private void onRobertsFilterClicked() {
-        SliderTextFiledDialog sliderTextFiledDialog = new SliderTextFiledDialog(this, ROBERT_S_FILTER_CONFIGURATION);
+        SliderTextFiledDialog sliderTextFiledDialog = new SliderTextFiledDialog(this, ROBERT_S_FILTER_CONFIGURATION, MIN_THRESHOLD, MAX_THRESHOLD, START_VALUE_THRESHOLD);
         sliderTextFiledDialog.apparate();
 
         if (!sliderTextFiledDialog.isCancelled()) {
@@ -343,6 +494,15 @@ public class MyJFrame extends JFrame {
     private void onNewButtonClicked() {
         myJPanel.clear();
         changeSelectMode(false);
+
+        runButton.setEnabled(false);
+        runMenuItem.setEnabled(false);
+
+        emissionButton.setEnabled(false);
+        emissionCheckBoxMenuItem.setEnabled(false);
+
+        absorptionButton.setEnabled(false);
+        absorptionCheckBoxMenuItem.setEnabled(false);
 
         repaint();
 

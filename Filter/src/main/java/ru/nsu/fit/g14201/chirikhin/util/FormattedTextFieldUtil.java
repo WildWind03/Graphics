@@ -1,4 +1,4 @@
-package ru.nsu.fit.g14201.chirikhin.filter.util;
+package ru.nsu.fit.g14201.chirikhin.util;
 
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
@@ -11,6 +11,19 @@ public class FormattedTextFieldUtil {
 
     public static JFormattedTextField getFormattedTextField(int min, int max, int textFiledSize) {
         NumberFormatter lineWidthFormatter = new NumberFormatter(NumberFormat.getIntegerInstance());
+        lineWidthFormatter.setMinimum(min);
+        lineWidthFormatter.setMaximum(max);
+        lineWidthFormatter.setCommitsOnValidEdit(true);
+
+        JFormattedTextField jFormattedTextField = new JFormattedTextField(lineWidthFormatter);
+        jFormattedTextField.setColumns(textFiledSize);
+
+        return jFormattedTextField;
+    }
+
+    public static JFormattedTextField getFormattedDoubleTextField(double min, double max, int textFiledSize) {
+        NumberFormatter lineWidthFormatter = new NumberFormatter(NumberFormat.getNumberInstance());
+
         lineWidthFormatter.setMinimum(min);
         lineWidthFormatter.setMaximum(max);
         lineWidthFormatter.setCommitsOnValidEdit(true);

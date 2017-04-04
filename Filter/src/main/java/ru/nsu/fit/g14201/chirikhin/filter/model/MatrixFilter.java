@@ -1,11 +1,13 @@
 package ru.nsu.fit.g14201.chirikhin.filter.model;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.function.Predicate;
 
 public class MatrixFilter implements BaseFilter {
     private final BaseMatrix baseMatrix;
-    private final int MAX_COLOR = 255;
-    private final int MIN_COLOR = 0;
+    private static final int MAX_COLOR = 255;
+    private static final int MIN_COLOR = 0;
 
     public MatrixFilter(BaseMatrix baseMatrix) {
         this.baseMatrix = baseMatrix;
@@ -84,12 +86,34 @@ public class MatrixFilter implements BaseFilter {
 
     @Override
     public BufferedImage apply(BufferedImage bufferedImage) {
-        BufferedImage newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+        /*BufferedImage newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
 
         for (int i = 0; i < bufferedImage.getHeight(); ++i) {
             for (int k = 0; k < bufferedImage.getWidth(); ++k) {
                 int[] pixel = getFilteredPixel(bufferedImage, k, i);
                 newImage.getRaster().setPixel(k, i, pixel);
+            }
+        }
+
+        return newImage;
+        */
+        return apply(bufferedImage, point -> true);
+    }
+
+    public BufferedImage apply(BufferedImage bufferedImage, Predicate<Point> predicate) {
+        BufferedImage newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+
+        for (int i = 0; i < bufferedImage.getHeight(); ++i) {
+            for (int k = 0; k < bufferedImage.getWidth(); ++k) {
+                if (predicate.test(new Point(k, i))) {
+
+                    int[] pixel = getFilteredPixel(bufferedImage, k, i);
+                    newImage.getRaster().setPixel(k, i, pixel);
+                } else {
+                    int[] pixel = new int[3];
+                    bufferedImage.getRaster().getPixel(k, i, pixel);
+                    newImage.getRaster().setPixel(k, i, pixel);
+                }
             }
         }
 
