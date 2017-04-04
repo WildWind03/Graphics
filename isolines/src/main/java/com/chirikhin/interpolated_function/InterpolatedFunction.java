@@ -3,22 +3,20 @@ package com.chirikhin.interpolated_function;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class InterpolatedFunction <A extends Comparable<A>, V> {
-    private final ArrayList<MyPoint<A, V>> points;
+public class InterpolatedFunction {
+    private final ArrayList<MyPoint<Double, Double>> points;
     private final Interpolator interpolator;
-    private final DataInterpolator<A, V> dataInterpolator;
 
-    public InterpolatedFunction(LinkedList<MyPoint<A, V>> points, Interpolator interpolator, DataInterpolator<A, V> dataInterpolator) {
+    public InterpolatedFunction(LinkedList<MyPoint<Double, Double>> points, Interpolator interpolator) {
         this.points = new ArrayList<>(points);
 
         this.interpolator = interpolator;
-        this.dataInterpolator = dataInterpolator;
     }
 
-    public V getValue(A arg) {
+    public Double getValue(Double arg) {
         int counter = 0;
-        for (MyPoint<A, V> point : points) {
-            if (arg == point.getValue1()) {
+        for (MyPoint<Double, Double> point : points) {
+            if (arg.equals(point.getValue1())) {
                 return point.getValue2();
             }
             if (arg.compareTo(point.getValue1()) > 0) {
@@ -34,8 +32,7 @@ public class InterpolatedFunction <A extends Comparable<A>, V> {
             if (points.size() == counter) {
                 return points.get(counter - 1).getValue2();
             } else {
-                return dataInterpolator.apply(interpolator,
-                        points.get(counter - 1).getValue1(),
+                return interpolator.get(points.get(counter - 1).getValue1(),
                         points.get(counter - 1).getValue2(),
                         points.get(counter).getValue1(),
                         points.get(counter).getValue2(),
