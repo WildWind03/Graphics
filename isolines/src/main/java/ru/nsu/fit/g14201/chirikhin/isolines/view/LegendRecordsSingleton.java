@@ -4,7 +4,15 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-public class LegendRecords {
+public class LegendRecordsSingleton {
+    private static class SingletonHolder {
+        private static final LegendRecordsSingleton INSTANCE = new LegendRecordsSingleton();
+    }
+
+    private LegendRecordsSingleton() {
+
+    }
+
     void draw(BufferedImage bufferedImage, List<Double> points) {
         Graphics2D graphics2D = bufferedImage.createGraphics();
         graphics2D.setColor(Color.WHITE);
@@ -24,6 +32,10 @@ public class LegendRecords {
         String str = Double.toString(d);
         int posOfWholePart = str.indexOf('.');
         return str.substring(0, Math.min(posOfWholePart + 2, str.length()));
+    }
+
+    public static LegendRecordsSingleton getInstance() {
+        return SingletonHolder.INSTANCE;
     }
 
 }

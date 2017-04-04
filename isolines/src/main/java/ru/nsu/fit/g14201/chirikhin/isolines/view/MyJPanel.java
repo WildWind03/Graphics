@@ -1,5 +1,7 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
+import ru.nsu.fit.g14201.chirikhin.isolines.function.DifficultFunctionSingleton;
+import ru.nsu.fit.g14201.chirikhin.isolines.model.PixelCoordinateToAreaConverter;
 import ru.nsu.fit.g14201.chirikhin.isolines.util.Util;
 
 import javax.swing.*;
@@ -16,6 +18,11 @@ public class MyJPanel extends JPanel {
     private static final int MIN_WIDTH = 10;
     private static final int MIN_WIDTH_TO_PRINT_LEGENDS = 350;
     private static final int MIN_HEIGHT_TO_PRINT_LEGENDS = 400;
+
+    private static final int START_X = -2;
+    private static final int END_X = 2;
+    private static final int START_Y = -4;
+    private static final int END_Y = 4;
 
     private BufferedImage map;
     private BufferedImage legend;
@@ -65,41 +72,16 @@ public class MyJPanel extends JPanel {
             legendRecords = new BufferedImage(this.width, (int) (this.height * GAP_BETWEEN_LEGEND_AND_MAP), BufferedImage.TYPE_INT_RGB);
 
             if (null != colors) {
-                new Legend(colors).draw(legend);
+                LegendSingleton.getInstance().draw(legend, colors);
 
-                double max = Util.function(0, 0);
-                double min = Util.function(0, 0);
+                PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter =
+                        new PixelCoordinateToAreaConverter(START_X, START_Y, END_X, END_Y, map.getWidth(), map.getHeight());
+                List<Double> values = Util.getPointsByFunctionColorsAndArea(DifficultFunctionSingleton.getInstance(),
+                        pixelCoordinateToAreaConverter,
+                        colors.size());
 
-                for (int i = 0; i < map.getWidth(); ++i) {
-                    for (int k = 0; k < map.getHeight(); ++k) {
-                        double value = Util.function(Util.toRealX(i, map.getWidth()), Util.toRealY(k, map.getHeight()));
-
-                        if (value > max) {
-                            max = value;
-                        }
-
-                        if (value < min) {
-                            min = value;
-                        }
-                    }
-                }
-
-                List<Double> values = new ArrayList<>();
-                double step = (max - min) / colors.size();
-
-                for (int i = 0; i < colors.size(); ++i) {
-                    values.add(min + i * step);
-                }
-
-                values.add(max);
-
-                try {
-                    new ColorMap(colors).draw(map, values);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                new LegendRecords().draw(legendRecords, values);
+                ColorMapSingleton.getInstance().draw(map, values, colors, DifficultFunctionSingleton.getInstance(), pixelCoordinateToAreaConverter);
+                LegendRecordsSingleton.getInstance().draw(legendRecords, values);
             }
 
             isUpdated = false;
