@@ -86,6 +86,7 @@ public class MyJPanel extends JPanel {
 
             int mapHeight = (int) (PART_OF_MAP_HEIGHT * this.height);
 
+
             map = new BufferedImage(this.width, mapHeight, BufferedImage.TYPE_INT_RGB);
             legend = new BufferedImage(this.width, (int) (this.height * PART_OF_LEGEND_HEIGHT), BufferedImage.TYPE_INT_RGB);
             legendRecords = new BufferedImage(this.width, (int) (this.height * GAP_BETWEEN_LEGEND_AND_MAP), BufferedImage.TYPE_INT_RGB);
@@ -99,13 +100,15 @@ public class MyJPanel extends JPanel {
                         pixelCoordinateToAreaConverter,
                         colors.size());
 
-                new ColorMapDrawer(values, colors, DifficultFunctionSingleton.getInstance(), pixelCoordinateToAreaConverter).draw(map);
-
-                if (isGridShown) {
-                    new GridMapDrawer(m, k, GRID_COLOR).draw(map);
+                if (colorMapVisibility) {
+                    new ColorMapDrawer(values, colors, DifficultFunctionSingleton.getInstance(), pixelCoordinateToAreaConverter).draw(map);
                 }
 
                 new ColorPaletteRecordsDrawer(values).draw(legendRecords);
+            }
+
+            if (isGridShown) {
+                new GridMapDrawer(m, k, GRID_COLOR).draw(map);
             }
 
             isUpdated = false;
@@ -116,15 +119,20 @@ public class MyJPanel extends JPanel {
         if (width > MIN_WIDTH_TO_PRINT_LEGENDS && height > MIN_HEIGHT_TO_PRINT_LEGENDS) {
             g.drawImage(legendRecords, 0, (int) (height * PART_OF_MAP_HEIGHT), null);
         }
+
         g.drawImage(legend, 0, (int) (height * (GAP_BETWEEN_LEGEND_AND_MAP + PART_OF_MAP_HEIGHT)), null);
     }
 
     public void setColorMapVisibility(boolean colorMapVisibility) {
         this.colorMapVisibility = colorMapVisibility;
+        isUpdated = true;
+
+        repaint();
     }
 
     public void setInteractiveModeEnabled(boolean newInteractiveMode) {
         this.interaciveMode = newInteractiveMode;
+        isUpdated = true;
     }
 
 }

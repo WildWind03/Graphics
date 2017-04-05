@@ -29,5 +29,7 @@ public class GridMapDrawer implements Drawer {
         for (int k = stepY; k < bufferedImage.getHeight(); k+=stepY) {
             graphics2D.drawLine(0, k, bufferedImage.getWidth(), k);
         }
+
+        graphics2D.dispose();
     }
 }

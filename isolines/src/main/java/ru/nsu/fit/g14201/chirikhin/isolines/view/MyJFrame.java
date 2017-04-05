@@ -31,6 +31,11 @@ public class MyJFrame extends JFrame {
     private static final String COLOR_MAP_PNG = "/color_map.png";
     private static final String INTERACTIVE_ICON_PNG = "/interactive_icon.png";
     private static final String INTERACTIVE_MODE = "Interactive mode";
+    private static final String HELP = "Help";
+    private static final String ABOUT = "About";
+    private static final String ABOUT_ICON_PNG = "/about_icon.png";
+    private static final String ISOLINES_INFO_MESSAGE = "Isolines \n Created by Chirikhin Alexander 5.4.2017";
+    private static final String ISOLINES_INFO_TITLE = "About program";
     private final MyJPanel myJPanel;
 
     private final JCheckBoxMenuItem gridItem;
@@ -81,6 +86,14 @@ public class MyJFrame extends JFrame {
         ListenerUtil.setOnChangeListeners(interactiveButton,
                 interactiveItem,
                 e -> onToggleButtonClicked(interactiveButton, interactiveItem, myJPanel::setInteractiveModeEnabled, e));
+
+        JMenu aboutMenu = MenuUtil.addNewMenuToBar(jMenuBar, HELP);
+        JMenuItem aboutItem = MenuUtil.addNewMenuItem(aboutMenu, ABOUT);
+        JButton aboutButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(ABOUT_ICON_PNG)), ABOUT);
+
+        ListenerUtil.setOnActionListeners(aboutButton, aboutItem, () -> JOptionPane.showMessageDialog(this, ISOLINES_INFO_MESSAGE, ISOLINES_INFO_TITLE, JOptionPane.INFORMATION_MESSAGE));
+
+        onToggleButtonClicked(colorMapVisibilityItem, colorMapVisibilityButton, myJPanel::setColorMapVisibility, true);
 
         pack();
         setVisible(true);
