@@ -38,6 +38,12 @@ public class MyJPanel extends JPanel {
     private int k;
     private boolean isGridShown = false;
 
+    private final Color GRID_COLOR = Color.GRAY;
+    private boolean colorMapVisibility;
+    private boolean interaciveMode;
+
+
+
     public MyJPanel(int width, int height) {
         update(width, height);
     }
@@ -94,9 +100,11 @@ public class MyJPanel extends JPanel {
                         colors.size());
 
                 new ColorMapDrawer(values, colors, DifficultFunctionSingleton.getInstance(), pixelCoordinateToAreaConverter).draw(map);
+
                 if (isGridShown) {
-                    new GridMapDrawer(m, k, Color.black).draw(map);
+                    new GridMapDrawer(m, k, GRID_COLOR).draw(map);
                 }
+
                 new ColorPaletteRecordsDrawer(values).draw(legendRecords);
             }
 
@@ -104,9 +112,19 @@ public class MyJPanel extends JPanel {
         }
 
         g.drawImage(map, 0, 0, null);
+
         if (width > MIN_WIDTH_TO_PRINT_LEGENDS && height > MIN_HEIGHT_TO_PRINT_LEGENDS) {
             g.drawImage(legendRecords, 0, (int) (height * PART_OF_MAP_HEIGHT), null);
         }
         g.drawImage(legend, 0, (int) (height * (GAP_BETWEEN_LEGEND_AND_MAP + PART_OF_MAP_HEIGHT)), null);
     }
+
+    public void setColorMapVisibility(boolean colorMapVisibility) {
+        this.colorMapVisibility = colorMapVisibility;
+    }
+
+    public void setInteractiveModeEnabled(boolean newInteractiveMode) {
+        this.interaciveMode = newInteractiveMode;
+    }
+
 }

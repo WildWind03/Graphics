@@ -1,7 +1,5 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
-import ru.nsu.fit.g14201.chirikhin.isolines.main.Main;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 

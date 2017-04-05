@@ -27,11 +27,16 @@ public class MyJFrame extends JFrame {
     private static final String VIEW_MENU = "View";
     private static final String GRID_VISIBILITY = "Grid visibility";
     private static final String GRID_ICON_PNG = "/grid_icon.png";
+    private static final String COLOR_MAP_VISIBILITY = "Color map visibility";
+    private static final String COLOR_MAP_PNG = "/color_map.png";
+    private static final String INTERACTIVE_ICON_PNG = "/interactive_icon.png";
+    private static final String INTERACTIVE_MODE = "Interactive mode";
     private final MyJPanel myJPanel;
 
-    private boolean isGridButtonClicked = false;
     private final JCheckBoxMenuItem gridItem;
     private final JToggleButton gridButton;
+    private final JCheckBoxMenuItem colorMapVisibilityItem;
+    private final JToggleButton colorMapVisibilityButton;
 
     public MyJFrame() {
         this.myJPanel = new MyJPanel(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -59,26 +64,32 @@ public class MyJFrame extends JFrame {
         gridItem = MenuUtil.addNewCheckBoxMenuItem(viewMenu, GRID_VISIBILITY);
         gridButton = ToolBarUtil.addNewToggleButton(jToolBar, new ImageIcon(getClass().getResource(GRID_ICON_PNG)), GRID_VISIBILITY);
 
-        ListenerUtil.setListener(openButton, openItem, this::onOpenButtonClicked);
-        ListenerUtil.setListener(gridButton, gridItem, this::onGridButtonClicked);
+        ListenerUtil.setOnChangeListeners(gridButton, gridItem, e -> onToggleButtonClicked(gridButton, gridItem, myJPanel::setGridShownMode, e));
 
+        ListenerUtil.setOnActionListeners(openButton, openItem, this::onOpenButtonClicked);
+
+        colorMapVisibilityItem = MenuUtil.addNewCheckBoxMenuItem(viewMenu, COLOR_MAP_VISIBILITY);
+        colorMapVisibilityButton = ToolBarUtil.addNewToggleButton(jToolBar, new ImageIcon(getClass().getResource(COLOR_MAP_PNG)), COLOR_MAP_VISIBILITY);
+
+        ListenerUtil.setOnChangeListeners(colorMapVisibilityButton,
+                colorMapVisibilityItem,
+                e -> onToggleButtonClicked(colorMapVisibilityButton, colorMapVisibilityItem, myJPanel::setColorMapVisibility, e));
+
+        AbstractButton interactiveButton = ToolBarUtil.addNewToggleButton(jToolBar, new ImageIcon(getClass().getResource(INTERACTIVE_ICON_PNG)), INTERACTIVE_MODE);
+        AbstractButton interactiveItem = MenuUtil.addNewMenuItem(viewMenu, INTERACTIVE_MODE);
+
+        ListenerUtil.setOnChangeListeners(interactiveButton,
+                interactiveItem,
+                e -> onToggleButtonClicked(interactiveButton, interactiveItem, myJPanel::setInteractiveModeEnabled, e));
 
         pack();
         setVisible(true);
     }
 
-    private void onGridButtonClicked() {
-        if (!isGridButtonClicked) {
-            isGridButtonClicked = true;
-            gridButton.setSelected(true);
-            gridItem.setSelected(true);
-            myJPanel.setGridShownMode(true);
-        } else {
-            isGridButtonClicked = false;
-            gridItem.setSelected(false);
-            gridButton.setSelected(false);
-            myJPanel.setGridShownMode(false);
-        }
+    private void onToggleButtonClicked(AbstractButton firstButton, AbstractButton secondButton, BooleanRunnable runnable, boolean isSelected) {
+            firstButton.setSelected(isSelected);
+            secondButton.setSelected(isSelected);
+            runnable.run(isSelected);
     }
 
     private void onOpenButtonClicked() {
