@@ -1,8 +1,7 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
-import com.chirikhin.swing.util.ListenerUtil;
+import com.chirikhin.swing.util.MenuToolBarListenerUtil;
 import com.chirikhin.swing.util.MenuUtil;
-import com.chirikhin.swing.util.ToolBarUtil;
 import com.chirikhin.universal_parser.ParserException;
 import com.chirikhin.universal_parser.TypeConversionException;
 import com.chirikhin.universal_parser.TypeMatchingException;
@@ -18,32 +17,30 @@ import java.io.File;
 public class MyJFrame extends JFrame {
     private static final int DEFAULT_WIDTH = 500;
     private static final int DEFAULT_HEIGHT = 500;
-    private static final String OPEN_ICON_PNG = "/open_icon.png";
-    private static final String OPEN_CONFIG_TOOLTIP = "Open config";
+    private static final String OPEN_ICON_PNG = "open_icon.png";
     private static final String FILE_MENU = "File";
-    private static final String OPEN_MENU_ITEM = "Open";
+    private static final String OPEN_MENU_TITLE = "Open config";
     private static final String DATA_FOLDER = "./FIT_g14201_Chirikhin_Isolines_Data";
     private static final String ERROR_WHILE_LOADING_CONFIG = "Error while loading config";
     private static final String VIEW_MENU = "View";
     private static final String GRID_VISIBILITY = "Grid visibility";
-    private static final String GRID_ICON_PNG = "/grid_icon.png";
+    private static final String GRID_ICON_PNG = "grid_icon.png";
     private static final String COLOR_MAP_VISIBILITY = "Color map visibility";
-    private static final String COLOR_MAP_PNG = "/color_map.png";
-    private static final String INTERACTIVE_ICON_PNG = "/interactive_icon.png";
+    private static final String COLOR_MAP_PNG = "color_map.png";
+    private static final String INTERACTIVE_ICON_PNG = "interactive_icon.png";
     private static final String INTERACTIVE_MODE = "Interactive mode";
     private static final String HELP = "Help";
     private static final String ABOUT = "About";
-    private static final String ABOUT_ICON_PNG = "/about_icon.png";
+    private static final String ABOUT_ICON_PNG = "about_icon.png";
     private static final String ISOLINES_INFO_MESSAGE = "Isolines \n Created by Chirikhin Alexander 5.4.2017";
     private static final String ISOLINES_INFO_TITLE = "About program";
+    private static final String INTERPOLATION_MODE_ICON_PNG = "interpolation_mode_icon.png";
+    private static final String INTERPOLATION_MODE = "Interpolation mode";
+    private static final String APP_NAME = "Isolines";
     private final MyJPanel myJPanel;
 
-    private final JCheckBoxMenuItem gridItem;
-    private final JToggleButton gridButton;
-    private final JCheckBoxMenuItem colorMapVisibilityItem;
-    private final JToggleButton colorMapVisibilityButton;
-
     public MyJFrame() {
+        super(APP_NAME);
         this.myJPanel = new MyJPanel(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
@@ -63,46 +60,20 @@ public class MyJFrame extends JFrame {
         JMenu fileMenu = MenuUtil.addNewMenuToBar(jMenuBar, FILE_MENU);
         JMenu viewMenu = MenuUtil.addNewMenuToBar(jMenuBar, VIEW_MENU);
 
-        JMenuItem openItem = MenuUtil.addNewMenuItem(fileMenu, OPEN_MENU_ITEM);
-        JButton openButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(OPEN_ICON_PNG)), OPEN_CONFIG_TOOLTIP);
+        MenuToolBarListenerUtil.addNewOption(fileMenu, jToolBar, OPEN_ICON_PNG, OPEN_MENU_TITLE, this::onOpenButtonClicked);
 
-        gridItem = MenuUtil.addNewCheckBoxMenuItem(viewMenu, GRID_VISIBILITY);
-        gridButton = ToolBarUtil.addNewToggleButton(jToolBar, new ImageIcon(getClass().getResource(GRID_ICON_PNG)), GRID_VISIBILITY);
-
-        ListenerUtil.setOnChangeListeners(gridButton, gridItem, e -> onToggleButtonClicked(gridButton, gridItem, myJPanel::setGridShownMode, e));
-
-        ListenerUtil.setOnActionListeners(openButton, openItem, this::onOpenButtonClicked);
-
-        colorMapVisibilityItem = MenuUtil.addNewCheckBoxMenuItem(viewMenu, COLOR_MAP_VISIBILITY);
-        colorMapVisibilityButton = ToolBarUtil.addNewToggleButton(jToolBar, new ImageIcon(getClass().getResource(COLOR_MAP_PNG)), COLOR_MAP_VISIBILITY);
-
-        ListenerUtil.setOnChangeListeners(colorMapVisibilityButton,
-                colorMapVisibilityItem,
-                e -> onToggleButtonClicked(colorMapVisibilityButton, colorMapVisibilityItem, myJPanel::setColorMapVisibility, e));
-
-        AbstractButton interactiveButton = ToolBarUtil.addNewToggleButton(jToolBar, new ImageIcon(getClass().getResource(INTERACTIVE_ICON_PNG)), INTERACTIVE_MODE);
-        AbstractButton interactiveItem = MenuUtil.addNewMenuItem(viewMenu, INTERACTIVE_MODE);
-
-        ListenerUtil.setOnChangeListeners(interactiveButton,
-                interactiveItem,
-                e -> onToggleButtonClicked(interactiveButton, interactiveItem, myJPanel::setInteractiveModeEnabled, e));
+        MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, GRID_ICON_PNG, GRID_VISIBILITY, myJPanel::setGridShownMode);
+        MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, COLOR_MAP_PNG, COLOR_MAP_VISIBILITY, myJPanel::setColorMapVisibility);
+        MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, INTERACTIVE_ICON_PNG, INTERACTIVE_MODE, myJPanel::setInteractiveModeEnabled);
+        MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, INTERPOLATION_MODE_ICON_PNG, INTERPOLATION_MODE, myJPanel::setColorInterpolationModeEnabled);
 
         JMenu aboutMenu = MenuUtil.addNewMenuToBar(jMenuBar, HELP);
-        JMenuItem aboutItem = MenuUtil.addNewMenuItem(aboutMenu, ABOUT);
-        JButton aboutButton = ToolBarUtil.addNewButton(jToolBar, new ImageIcon(getClass().getResource(ABOUT_ICON_PNG)), ABOUT);
 
-        ListenerUtil.setOnActionListeners(aboutButton, aboutItem, () -> JOptionPane.showMessageDialog(this, ISOLINES_INFO_MESSAGE, ISOLINES_INFO_TITLE, JOptionPane.INFORMATION_MESSAGE));
-
-        onToggleButtonClicked(colorMapVisibilityItem, colorMapVisibilityButton, myJPanel::setColorMapVisibility, true);
+        MenuToolBarListenerUtil.addNewOption(aboutMenu, jToolBar, ABOUT_ICON_PNG, ABOUT,
+                () -> JOptionPane.showMessageDialog(this, ISOLINES_INFO_MESSAGE, ISOLINES_INFO_TITLE, JOptionPane.INFORMATION_MESSAGE));
 
         pack();
         setVisible(true);
-    }
-
-    private void onToggleButtonClicked(AbstractButton firstButton, AbstractButton secondButton, BooleanRunnable runnable, boolean isSelected) {
-            firstButton.setSelected(isSelected);
-            secondButton.setSelected(isSelected);
-            runnable.run(isSelected);
     }
 
     private void onOpenButtonClicked() {

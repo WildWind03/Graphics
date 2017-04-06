@@ -41,7 +41,7 @@ public class MyJPanel extends JPanel {
     private final Color GRID_COLOR = Color.GRAY;
     private boolean colorMapVisibility;
     private boolean interaciveMode;
-
+    private boolean colorInterpolationModeEnabled;
 
 
     public MyJPanel(int width, int height) {
@@ -135,4 +135,7 @@ public class MyJPanel extends JPanel {
         isUpdated = true;
     }
 
+    public void setColorInterpolationModeEnabled(boolean colorInterpolationModeEnabled) {
+        this.colorInterpolationModeEnabled = colorInterpolationModeEnabled;
+    }
 }
