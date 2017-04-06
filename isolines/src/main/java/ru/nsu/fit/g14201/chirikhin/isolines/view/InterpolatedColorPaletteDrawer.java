@@ -35,18 +35,12 @@ public class InterpolatedColorPaletteDrawer implements Drawer {
             bluePoints.add(new MyPoint<>((double) step * k, (double) colors.get(k)[2]));
         }
 
-        for (MyPoint<Double, Double> myPoint : redPoints) {
-            System.out.println(myPoint.getValue2());
-        }
-
         InterpolatedFunction redFunc = new InterpolatedFunction(redPoints, interpolator);
         InterpolatedFunction greenFunc = new InterpolatedFunction(greenPoints, interpolator);
         InterpolatedFunction blueFunc = new InterpolatedFunction(bluePoints, interpolator);
 
         for (int k = 0; k < height; ++k) {
             for (int i = 0; i < width; i++) {
-
-                //System.out.println(redFunc.getValue((double) i));
                 bufferedImage.getRaster().setPixel(i, k,
                         new int[] {
                                 redFunc.getValue((double) i).intValue(),

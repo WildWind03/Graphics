@@ -106,7 +106,12 @@ public class MyJPanel extends JPanel {
                         colors.size());
 
                 if (colorMapVisibility) {
-                    new ColorMapDrawer(values, colors, DifficultFunctionSingleton.getInstance(), pixelCoordinateToAreaConverter).draw(map);
+                    if (colorInterpolationModeEnabled) {
+                        new InterpolatedColorMapDrawer(values, colors, DifficultFunctionSingleton.getInstance(), pixelCoordinateToAreaConverter, new LinearInterpolator())
+                                .draw(map);
+                    } else {
+                        new ColorMapDrawer(values, colors, DifficultFunctionSingleton.getInstance(), pixelCoordinateToAreaConverter).draw(map);
+                    }
                 }
 
                 new ColorPaletteRecordsDrawer(values).draw(legendRecords);
