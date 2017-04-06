@@ -1,5 +1,6 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
+import com.chirikhin.interpolated_function.LinearInterpolator;
 import ru.nsu.fit.g14201.chirikhin.isolines.function.DifficultFunctionSingleton;
 import ru.nsu.fit.g14201.chirikhin.isolines.model.PixelCoordinateToAreaConverter;
 import ru.nsu.fit.g14201.chirikhin.isolines.util.Util;
@@ -92,7 +93,11 @@ public class MyJPanel extends JPanel {
             legendRecords = new BufferedImage(this.width, (int) (this.height * GAP_BETWEEN_LEGEND_AND_MAP), BufferedImage.TYPE_INT_RGB);
 
             if (null != colors) {
-                new ColorPaletteDrawer(colors).draw(legend);
+                if (!colorInterpolationModeEnabled) {
+                    new ColorPaletteDrawer(colors).draw(legend);
+                } else {
+                    new InterpolatedColorPaletteDrawer(colors, new LinearInterpolator()).draw(legend);
+                }
 
                 PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter =
                         new PixelCoordinateToAreaConverter(START_X, START_Y, END_X, END_Y, map.getWidth(), map.getHeight());
@@ -137,5 +142,7 @@ public class MyJPanel extends JPanel {
 
     public void setColorInterpolationModeEnabled(boolean colorInterpolationModeEnabled) {
         this.colorInterpolationModeEnabled = colorInterpolationModeEnabled;
+        isUpdated = true;
+        repaint();
     }
 }

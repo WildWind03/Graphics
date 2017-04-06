@@ -15,11 +15,12 @@ public class InterpolatedFunction {
 
     public Double getValue(Double arg) {
         int counter = 0;
+
         for (MyPoint<Double, Double> point : points) {
             if (arg.equals(point.getValue1())) {
                 return point.getValue2();
             }
-            if (arg.compareTo(point.getValue1()) > 0) {
+            if (arg.compareTo(point.getValue1()) < 0) {
                 break;
             }
 
