@@ -1,5 +1,7 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
+import com.chirikhin.swing.util.DoubleUtil;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -22,15 +24,9 @@ public class ColorPaletteRecordsDrawer implements Drawer {
         double step = (double) bufferedImage.getWidth() / (double) (points.size() - 1);
 
         for (int i = 1; i < points.size() - 1; ++i) {
-            graphics2D.drawString(toString(points.get(i)), (int) (step * i - step * 0.04d), (int) (bufferedImage.getHeight() * 0.6d));
+            graphics2D.drawString(DoubleUtil.getDouble(points.get(i), 2), (int) (step * i - step * 0.2d), (int) (bufferedImage.getHeight() * 0.6d));
         }
 
         graphics2D.dispose();
-    }
-
-    private String toString(double d) {
-        String str = Double.toString(d);
-        int posOfWholePart = str.indexOf('.');
-        return str.substring(0, Math.min(posOfWholePart + 2, str.length()));
     }
 }

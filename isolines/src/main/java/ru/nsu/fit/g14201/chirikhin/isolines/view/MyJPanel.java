@@ -1,12 +1,17 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
 import com.chirikhin.interpolated_function.LinearInterpolator;
+import com.google.common.eventbus.EventBus;
 import ru.nsu.fit.g14201.chirikhin.isolines.function.DifficultFunctionSingleton;
 import ru.nsu.fit.g14201.chirikhin.isolines.model.PixelCoordinateToAreaConverter;
 import ru.nsu.fit.g14201.chirikhin.isolines.util.Util;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
@@ -46,6 +51,21 @@ public class MyJPanel extends JPanel {
 
 
     public MyJPanel(int width, int height) {
+        addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                super.mouseMoved(e);
+
+                if (null != map && e.getX() < map.getWidth() && e.getY() < map.getHeight()) {
+                    PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter =
+                            new PixelCoordinateToAreaConverter(START_X, START_Y, END_X, END_Y, map.getWidth(), map.getHeight());
+
+                    double realX = pixelCoordinateToAreaConverter.toRealX(e.getX());
+                    double realY = pixelCoordinateToAreaConverter.toRealY(e.getY());
+                    EventBusSingleton.getInstance().post(new FieldCoordinatesFunctionValue(realX, realY, DifficultFunctionSingleton.getInstance().apply(realX, realY)));
+                }
+            }
+        });
         update(width, height);
     }
 
@@ -136,7 +156,6 @@ public class MyJPanel extends JPanel {
     public void setColorMapVisibility(boolean colorMapVisibility) {
         this.colorMapVisibility = colorMapVisibility;
         isUpdated = true;
-
         repaint();
     }
 

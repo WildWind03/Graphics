@@ -5,6 +5,8 @@ import com.chirikhin.swing.util.MenuUtil;
 import com.chirikhin.universal_parser.ParserException;
 import com.chirikhin.universal_parser.TypeConversionException;
 import com.chirikhin.universal_parser.TypeMatchingException;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import ru.nsu.fit.g14201.chirikhin.isolines.config_parser.MyParser;
 
 import javax.swing.*;
@@ -37,7 +39,9 @@ public class MyJFrame extends JFrame {
     private static final String INTERPOLATION_MODE_ICON_PNG = "interpolation_mode_icon.png";
     private static final String INTERPOLATION_MODE = "Interpolation mode";
     private static final String APP_NAME = "Isolines";
+
     private final MyJPanel myJPanel;
+    private final StatusBar statusBar;
 
     public MyJFrame() {
         super(APP_NAME);
@@ -47,15 +51,17 @@ public class MyJFrame extends JFrame {
                 myJPanel.update(getContentPane().getWidth(), getContentPane().getHeight());
             }
         });
-
+        EventBusSingleton.getInstance().register(this);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         JMenuBar jMenuBar = new JMenuBar();
         setJMenuBar(jMenuBar);
+        statusBar = new StatusBar();
 
         JToolBar jToolBar = new JToolBar();
         add(jToolBar, BorderLayout.NORTH);
         add(myJPanel, BorderLayout.CENTER);
+        add(statusBar, BorderLayout.SOUTH);
 
         JMenu fileMenu = MenuUtil.addNewMenuToBar(jMenuBar, FILE_MENU);
         JMenu viewMenu = MenuUtil.addNewMenuToBar(jMenuBar, VIEW_MENU);
@@ -74,6 +80,13 @@ public class MyJFrame extends JFrame {
 
         pack();
         setVisible(true);
+    }
+
+    @Subscribe
+    public void onNewValueCalculated(FieldCoordinatesFunctionValue fieldCoordinatesFunctionValue) {
+        statusBar.updateValues(fieldCoordinatesFunctionValue.getX(),
+                fieldCoordinatesFunctionValue.getY(),
+                fieldCoordinatesFunctionValue.getFuncValue());
     }
 
     private void onOpenButtonClicked() {
