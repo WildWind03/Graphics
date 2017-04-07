@@ -5,7 +5,6 @@ import com.chirikhin.swing.util.MenuUtil;
 import com.chirikhin.universal_parser.ParserException;
 import com.chirikhin.universal_parser.TypeConversionException;
 import com.chirikhin.universal_parser.TypeMatchingException;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import ru.nsu.fit.g14201.chirikhin.isolines.config_parser.MyParser;
 

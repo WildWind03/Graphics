@@ -9,7 +9,7 @@ public class StatusBar extends JPanel {
     private final int COUNT_OF_SYMBOLS_AFTER_INTEGER_PART = 2;
 
     public StatusBar() {
-        barLabel = new JLabel("Test");
+        barLabel = new JLabel();
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         add(barLabel);
     }

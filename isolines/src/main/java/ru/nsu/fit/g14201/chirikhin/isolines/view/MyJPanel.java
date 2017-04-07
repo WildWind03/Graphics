@@ -1,7 +1,6 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
 import com.chirikhin.interpolated_function.LinearInterpolator;
-import com.google.common.eventbus.EventBus;
 import ru.nsu.fit.g14201.chirikhin.isolines.function.DifficultFunctionSingleton;
 import ru.nsu.fit.g14201.chirikhin.isolines.model.PixelCoordinateToAreaConverter;
 import ru.nsu.fit.g14201.chirikhin.isolines.util.Util;
@@ -9,9 +8,7 @@ import ru.nsu.fit.g14201.chirikhin.isolines.util.Util;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
@@ -116,9 +113,9 @@ public class MyJPanel extends JPanel {
                 if (!colorInterpolationModeEnabled) {
                     ColorFunction colorFunction = new ColorPaletteFunction(colors, legend.getWidth());
                     new ColorMapDrawer(colorFunction).draw(legend);
-//                    new ColorPaletteDrawer(colors).draw(legend);
                 } else {
-                    new InterpolatedColorPaletteDrawer(colors, new LinearInterpolator()).draw(legend);
+                    ColorFunction colorFunction = new InterpolatedColorPaletteFunction(colors, new LinearInterpolator(), legend.getWidth());
+                    new ColorMapDrawer(colorFunction).draw(legend);
                 }
 
                 PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter =

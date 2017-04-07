@@ -1,8 +1,6 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.List;
 
 public class ColorMapDrawer implements Drawer {
 
