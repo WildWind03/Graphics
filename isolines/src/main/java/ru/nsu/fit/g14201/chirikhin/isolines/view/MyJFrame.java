@@ -39,6 +39,10 @@ public class MyJFrame extends JFrame {
     private static final String INTERPOLATION_MODE_ICON_PNG = "interpolation_mode_icon.png";
     private static final String INTERPOLATION_MODE = "Interpolation mode";
     private static final String APP_NAME = "Isolines";
+    private static final String DYNAMIC_ISOLINE_MODE_ICON = "dynamic_isoline_building_mode_icon.png";
+    private static final String ENTER_POINT_MODE_ICON = "enter_point_mode_icon.png";
+    private static final String DYNAMIC_ISOLINE_DRAWING_MODE = "Dynamic isoline drawing mode";
+    private static final String ENTER_POINT_DRAWING_MODE = "Enter point drawing mode";
 
     private final MyJPanel myJPanel;
     private final StatusBar statusBar;
@@ -72,6 +76,8 @@ public class MyJFrame extends JFrame {
         MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, COLOR_MAP_PNG, COLOR_MAP_VISIBILITY, myJPanel::setColorMapVisibility);
         MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, INTERACTIVE_ICON_PNG, INTERACTIVE_MODE, myJPanel::setInteractiveModeEnabled);
         MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, INTERPOLATION_MODE_ICON_PNG, INTERPOLATION_MODE, myJPanel::setColorInterpolationModeEnabled);
+        MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, DYNAMIC_ISOLINE_MODE_ICON, DYNAMIC_ISOLINE_DRAWING_MODE, myJPanel::setDynamicIsolineMode);
+        MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, ENTER_POINT_MODE_ICON, ENTER_POINT_DRAWING_MODE, myJPanel::setEnterPointMode);
 
         JMenu aboutMenu = MenuUtil.addNewMenuToBar(jMenuBar, HELP);
 

@@ -114,7 +114,9 @@ public class MyJPanel extends JPanel {
 
             if (null != colors) {
                 if (!colorInterpolationModeEnabled) {
-                    new ColorPaletteDrawer(colors).draw(legend);
+                    ColorFunction colorFunction = new ColorPaletteFunction(colors, legend.getWidth());
+                    new ColorMapDrawer(colorFunction).draw(legend);
+//                    new ColorPaletteDrawer(colors).draw(legend);
                 } else {
                     new InterpolatedColorPaletteDrawer(colors, new LinearInterpolator()).draw(legend);
                 }
@@ -127,10 +129,16 @@ public class MyJPanel extends JPanel {
 
                 if (colorMapVisibility) {
                     if (colorInterpolationModeEnabled) {
-                        new InterpolatedColorMapDrawer(values, colors, DifficultFunctionSingleton.getInstance(), pixelCoordinateToAreaConverter, new LinearInterpolator())
-                                .draw(map);
+                        InterpolatedColorMapFunction func = new InterpolatedColorMapFunction(values,
+                                colors,
+                                DifficultFunctionSingleton.getInstance(),
+                                pixelCoordinateToAreaConverter,
+                                new LinearInterpolator());
+
+                        new ColorMapDrawer(func).draw(map);
                     } else {
-                        new ColorMapDrawer(values, colors, DifficultFunctionSingleton.getInstance(), pixelCoordinateToAreaConverter).draw(map);
+                        ColorFunction colorFunction = new ColorMapFunction(values, colors, DifficultFunctionSingleton.getInstance(), pixelCoordinateToAreaConverter);
+                        new ColorMapDrawer(colorFunction).draw(map);
                     }
                 }
 
@@ -168,5 +176,13 @@ public class MyJPanel extends JPanel {
         this.colorInterpolationModeEnabled = colorInterpolationModeEnabled;
         isUpdated = true;
         repaint();
+    }
+
+    public void setDynamicIsolineMode(boolean b) {
+
+    }
+
+    public void setEnterPointMode(boolean b) {
+
     }
 }
