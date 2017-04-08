@@ -40,6 +40,7 @@ public class MyJPanel extends JPanel {
     private int m;
     private int k;
     private boolean isGridShown = false;
+    private int isolineColor;
 
     private final Color GRID_COLOR = Color.GRAY;
     private boolean colorMapVisibility;
@@ -86,6 +87,7 @@ public class MyJPanel extends JPanel {
         this.m = m;
         this.k = k;
 
+        this.isolineColor = new Color(isolineColor[0], isolineColor[1], isolineColor[2]).getRGB();
         repaint();
     }
 
@@ -181,5 +183,26 @@ public class MyJPanel extends JPanel {
 
     public void setEnterPointMode(boolean b) {
 
+    }
+
+    public void updateSettings(int gridWidthDivisions, int gridHeightDivisions, int redColor, int greenColor, int blueColor) {
+        this.m = gridWidthDivisions;
+        this.k = gridHeightDivisions;
+
+        this.isolineColor = new Color(redColor, greenColor, blueColor).getRGB();
+        isUpdated = true;
+        repaint();
+    }
+
+    public int getM() {
+        return m;
+    }
+
+    public int getK() {
+        return k;
+    }
+
+    public int getIsolineColor() {
+        return isolineColor;
     }
 }

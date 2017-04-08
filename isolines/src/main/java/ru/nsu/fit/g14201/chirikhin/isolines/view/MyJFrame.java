@@ -42,6 +42,8 @@ public class MyJFrame extends JFrame {
     private static final String ENTER_POINT_MODE_ICON = "enter_point_mode_icon.png";
     private static final String DYNAMIC_ISOLINE_DRAWING_MODE = "Dynamic isoline drawing mode";
     private static final String ENTER_POINT_DRAWING_MODE = "Enter point drawing mode";
+    private static final String SETTINGS_ICON_PNG = "settings_icon.png";
+    private static final String SETTINGS = "Settings";
 
     private final MyJPanel myJPanel;
     private final StatusBar statusBar;
@@ -77,6 +79,8 @@ public class MyJFrame extends JFrame {
         MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, INTERPOLATION_MODE_ICON_PNG, INTERPOLATION_MODE, myJPanel::setColorInterpolationModeEnabled);
         MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, DYNAMIC_ISOLINE_MODE_ICON, DYNAMIC_ISOLINE_DRAWING_MODE, myJPanel::setDynamicIsolineMode);
         MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, ENTER_POINT_MODE_ICON, ENTER_POINT_DRAWING_MODE, myJPanel::setEnterPointMode);
+        MenuToolBarListenerUtil.addNewOption(viewMenu, jToolBar, SETTINGS_ICON_PNG, SETTINGS, this::onConfigButtonClicked);
+
 
         JMenu aboutMenu = MenuUtil.addNewMenuToBar(jMenuBar, HELP);
 
@@ -85,6 +89,21 @@ public class MyJFrame extends JFrame {
 
         pack();
         setVisible(true);
+    }
+
+    private void onConfigButtonClicked() {
+        Color oldColor = new Color(myJPanel.getIsolineColor());
+        SettingsDialog settingsDialog = new SettingsDialog(this, SETTINGS,
+                new SettingParams(myJPanel.getM(), myJPanel.getK(), oldColor.getRed(), oldColor.getBlue(), oldColor.getBlue()));
+        settingsDialog.apparate();
+
+        if (!settingsDialog.isCancelled()) {
+            myJPanel.updateSettings(settingsDialog.getGridWidthDivisions(),
+                    settingsDialog.getGridHeightDivisions(),
+                    settingsDialog.getRedColor(),
+                    settingsDialog.getGreenColor(),
+                    settingsDialog.getBlueColor());
+        }
     }
 
     @Subscribe
