@@ -6,7 +6,7 @@ import javax.swing.*;
 
 public class StatusBar extends JPanel {
     private final JLabel barLabel;
-    private final int COUNT_OF_SYMBOLS_AFTER_INTEGER_PART = 2;
+    private static final int COUNT_OF_SYMBOLS_AFTER_INTEGER_PART = 2;
 
     public StatusBar() {
         barLabel = new JLabel();
