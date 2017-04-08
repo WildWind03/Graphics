@@ -32,8 +32,35 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>ru.nsu.fit.g14201.chirikhin.isolines.main.Main</mainClass>
+                        </manifest>
+                    </archive>
+
+                    <descriptorRefs>
+                        jar-with-dependencies
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>3.0.4</version>
+                <configuration>
+                    <outputDirectory>.</outputDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <!-->
     <repository>
