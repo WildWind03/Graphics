@@ -1,5 +1,8 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
+import com.google.common.eventbus.EventBus;
+import ru.nsu.fit.g14201.chirikhin.isolines.main.Main;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -19,15 +22,20 @@ public class GridMapDrawer implements Drawer {
     public void draw(BufferedImage bufferedImage) {
         Graphics2D graphics2D = bufferedImage.createGraphics();
         graphics2D.setColor(gridColor);
-        int stepX = (int) Math.ceil((double) bufferedImage.getWidth() / (double) widthDiv);
-        int stepY = (int) Math.ceil((double) bufferedImage.getHeight() / (double) heightDiv);
+        int stepX = (int)(((double) bufferedImage.getWidth() - 1) / (double) widthDiv);
+        int stepY = (int)(((double) bufferedImage.getHeight() - 1) / (double) heightDiv);
 
-        for (int k = stepX; k < bufferedImage.getWidth(); k+=stepX) {
-            graphics2D.drawLine(k, 0, k, bufferedImage.getHeight());
+        int realWidth = ((bufferedImage.getWidth() - 1) / widthDiv) * widthDiv;
+        int realHeight = ((bufferedImage.getHeight() - 1) / heightDiv) * heightDiv;
+
+        int x = stepX;
+        for (int counter = 0; counter < widthDiv; x+=stepX, counter++) {
+            graphics2D.drawLine(x, 0, x, realHeight);
         }
 
-        for (int k = stepY; k < bufferedImage.getHeight(); k+=stepY) {
-            graphics2D.drawLine(0, k, bufferedImage.getWidth(), k);
+        int y = stepY;
+        for (int counter = 0; counter < heightDiv; y+=stepY, counter++) {
+            graphics2D.drawLine(0, y, realWidth, y);
         }
 
         graphics2D.dispose();

@@ -1,6 +1,7 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
 import com.chirikhin.interpolated_function.LinearInterpolator;
+import com.google.common.eventbus.Subscribe;
 import ru.nsu.fit.g14201.chirikhin.isolines.function.DifficultFunctionSingleton;
 import ru.nsu.fit.g14201.chirikhin.isolines.model.PixelCoordinateToAreaConverter;
 import ru.nsu.fit.g14201.chirikhin.isolines.util.Util;
@@ -46,9 +47,12 @@ public class MyJPanel extends JPanel {
     private boolean colorMapVisibility;
     private boolean interaciveMode;
     private boolean colorInterpolationModeEnabled;
+    private int mapWidth;
+    private int mapHeight;
 
 
     public MyJPanel(int width, int height) {
+        //EventBusSingleton.getInstance().register(this);
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -67,6 +71,15 @@ public class MyJPanel extends JPanel {
         update(width, height);
     }
 
+    /*@Subscribe
+    public void update(MapPreferredSizeEvent mapPreferredSizeEvent) {
+        //map = new BufferedImage(mapPreferredSizeEvent.getWidth(), mapPreferredSizeEvent.getHeight(), BufferedImage.TYPE_INT_RGB);
+        mapWidth = mapPreferredSizeEvent.getWidth();
+        mapHeight = mapPreferredSizeEvent.getHeight();
+        isUpdated = true;
+        repaint();
+    }*/
+
     public void update(int width, int height) {
         if (width < MIN_WIDTH || height < MIN_HEIGHT) {
             return;
@@ -74,6 +87,9 @@ public class MyJPanel extends JPanel {
         
         this.width = width;
         this.height = height;
+
+        this.mapWidth = this.width;
+        this.mapHeight = (int) (PART_OF_MAP_HEIGHT * this.height);
 
         setPreferredSize(new Dimension(this.width, this.height));
         isUpdated = true;
@@ -104,10 +120,8 @@ public class MyJPanel extends JPanel {
         if (isUpdated) {
             setPreferredSize(new Dimension(this.width, this.height));
 
-            int mapHeight = (int) (PART_OF_MAP_HEIGHT * this.height);
 
-
-            map = new BufferedImage(this.width, mapHeight, BufferedImage.TYPE_INT_RGB);
+            map = new BufferedImage(mapWidth, mapHeight, BufferedImage.TYPE_INT_RGB);
             legend = new BufferedImage(this.width, (int) (this.height * PART_OF_LEGEND_HEIGHT), BufferedImage.TYPE_INT_RGB);
             legendRecords = new BufferedImage(this.width, (int) (this.height * GAP_BETWEEN_LEGEND_AND_MAP), BufferedImage.TYPE_INT_RGB);
 
