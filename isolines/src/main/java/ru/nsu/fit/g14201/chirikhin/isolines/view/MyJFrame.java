@@ -118,8 +118,9 @@ public class MyJFrame extends JFrame {
             int endX = settingsDialog.getEndX();
             int endY = settingsDialog.getEndY();
 
-            if (endX >= startX || endY >= startY) {
+            if (endX <= startX || endY <= startY) {
                 JOptionPane.showMessageDialog(this, INVALID_FIELD_CONFIGURATION, ERROR, JOptionPane.ERROR_MESSAGE);
+                return;
             }
 
             myJPanel.updateSettings(settingsDialog.getGridWidthDivisions(),

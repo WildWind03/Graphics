@@ -5,6 +5,7 @@ import ru.nsu.fit.g14201.chirikhin.isolines.function.MyFunction;
 import ru.nsu.fit.g14201.chirikhin.isolines.model.PixelCoordinateToAreaConverter;
 
 import java.awt.*;
+import java.awt.geom.Arc2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,12 +51,18 @@ public class IsolineDrawer implements Drawer {
         for (Double value : values) {
             for (int  i = 0; i < heightDiv; ++i) {
                 for (int k = 0; k < widthDiv; ++k) {
-
                     ArrayList<Pair<Integer, Integer>> points = new ArrayList<>();
-                    addCrossPoint(virtualImage, k, i, k + 1, i, value, stepX, stepY, points);
-                    addCrossPoint(virtualImage, k, i + 1, k + 1, i + 1, value, stepX, stepY, points);
-                    addCrossPoint(virtualImage, k, i, k, i + 1, value, stepX, stepY, points);
-                    addCrossPoint(virtualImage, k + 1, i, k + 1, i + 1, value, stepX, stepY, points);
+//                    addCrossPoint(virtualImage[k][i], virtualImage[k+1][i], value, 1, 0, points, k * stepX, i * stepY, stepX, stepY);
+//                    addCrossPoint(virtualImage[k][i + 1], virtualImage[k + 1][i + 1], value, 1, 0, points, k * stepX, (i + 1) * stepY, stepX, stepY);
+//                    addCrossPoint(virtualImage[k][i], virtualImage[k][i + 1], value, 0, 1, points, k * stepX, i * stepY, stepX, stepY);
+//                    addCrossPoint(virtualImage[k + 1][i], virtualImage [k + 1][i + 1], value, 0, 1, points, (k + 1) * stepX, i * stepY, stepX, stepY);
+
+                    addCrossPointOfSquare(getCrossPoint(virtualImage[k][i], virtualImage[k+1][i], value, stepX, 0), points, k * stepX, i * stepY);
+                    addCrossPointOfSquare(getCrossPoint(virtualImage[k][i + 1], virtualImage[k + 1][i + 1], value, stepX, 0), points, k * stepX, (i + 1) * stepY);
+                    addCrossPointOfSquare(getCrossPoint(virtualImage[k][i], virtualImage[k][i + 1], value, 0, stepY), points, k * stepX, i * stepY);
+                    addCrossPointOfSquare(getCrossPoint(virtualImage[k + 1][i], virtualImage [k + 1][i + 1], value, 0, stepY), points, (k + 1) * stepX, i * stepY);
+
+
 
                     if (2 == points.size()) {
                         Pair<Integer, Integer> point1 = points.get(0);
@@ -66,8 +73,17 @@ public class IsolineDrawer implements Drawer {
 
 
                     if (4 == points.size()) {
-                        ArrayList<Pair<Integer, Integer>> triangleLineCrossPoints = new ArrayList<>();
-                       // addCrossPoint();
+//                        ArrayList<Pair<Integer, Integer>> firstTriangleLineCrossPoints = new ArrayList<>();
+//                        addCrossPoint(virtualImage[k][i], virtualImage[k][i + 1], value, 0, 1, firstTriangleLineCrossPoints, k * stepX, i * stepY, stepX, stepY);
+//
+//                        int centerX = stepX * k + stepX / 2;
+//                        int centerY = stepY * i + stepY / 2;
+//
+//                        double centerValue = myFunction.apply(pixelCoordinateToAreaConverter.toRealX(centerX), pixelCoordinateToAreaConverter.toRealY(centerY));
+//
+//                        addCrossPoint(virtualImage[k][i], centerValue, value, 1, 1, points, k * stepX, i * stepY, stepX, stepY);
+//
+//                        addCrossPoint();
                     }
                 }
             }
@@ -76,27 +92,38 @@ public class IsolineDrawer implements Drawer {
         graphics2D.dispose();
     }
 
-    private void addCrossPoint(double[][] virtualImage, int i0, int k0, int i1, int k1, double value,
-            int stepX, int stepY, List<Pair<Integer, Integer>> points) {
-        if (!isCrossed(virtualImage, i0, k0, i1, k1, value)) {
+    private void addCrossPointOfSquare(Pair<Integer, Integer> point, List<Pair<Integer, Integer>> points, int startX, int startY) {
+        if (null == point) {
             return;
         }
 
-        int dx = i1 - i0;
-        int dy = k1 - k0;
-
-        int x = i0 * stepX;
-        int y = k0 * stepY;
-
-        if (virtualImage[i0][k0] > virtualImage[i1][k1]) {
-            y += dy * stepY - stepY * dy * ((value - virtualImage[i1][k1]) / (virtualImage[i0][k0] - virtualImage[i1][k1]));
-            x += dx * stepX - stepX * dx * ((value - virtualImage[i1][k1]) / (virtualImage[i0][k0] - virtualImage[i1][k1]));
-        } else {
-            y += stepY * dy * ((value - virtualImage[i0][k0]) / (virtualImage[i1][k1] - virtualImage[i0][k0]));
-            x += stepX * dx * ((value - virtualImage[i0][k0]) / (virtualImage[i1][k1] - virtualImage[i0][k0]));
-        }
+        int x = point.getKey() + startX;
+        int y = point.getValue() + startY;
 
         points.add(new Pair<>(x, y));
+    }
+
+    private Pair<Integer, Integer> getCrossPoint(double value1, double value2, double value, double dx, double dy) {
+        if (!isCrossed(value1, value2, value)) {
+            return null;
+        }
+
+        int x;
+        int y;
+
+        if (value1 > value2) {
+            x = (int)(dx  - dx * ((value - value2) / (value1 - value2)));
+            y = (int)(dy  - dy * ((value - value2) / (value1 - value2)));
+        } else {
+            x = (int)(dx * ((value - value1) / (value2 - value1)));
+            y = (int)(dy * ((value - value1) / (value2 - value1)));
+        }
+
+        return new Pair<>(x, y);
+    }
+
+    private boolean isCrossed(double value1, double value2, double value) {
+        return !((value > value2 && value > value1) || (value < value1 && value < value2));
     }
 
     private boolean isCrossed(double[][] virtualImage, int i0, int k0, int i1, int k1, double value) {
