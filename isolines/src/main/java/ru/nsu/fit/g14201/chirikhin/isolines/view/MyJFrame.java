@@ -44,6 +44,8 @@ public class MyJFrame extends JFrame {
     private static final String ENTER_POINT_DRAWING_MODE = "Enter point drawing mode";
     private static final String SETTINGS_ICON_PNG = "settings_icon.png";
     private static final String SETTINGS = "Settings";
+    private static final String INVALID_FIELD_CONFIGURATION = "Invalid field configuration!";
+    private static final String ERROR = "Error";
 
     private final MyJPanel myJPanel;
     private final StatusBar statusBar;
@@ -94,15 +96,37 @@ public class MyJFrame extends JFrame {
     private void onConfigButtonClicked() {
         Color oldColor = new Color(myJPanel.getIsolineColor());
         SettingsDialog settingsDialog = new SettingsDialog(this, SETTINGS,
-                new SettingParams(myJPanel.getM(), myJPanel.getK(), oldColor.getRed(), oldColor.getBlue(), oldColor.getBlue()));
+                new SettingParams(myJPanel.getM(),
+                        myJPanel.getK(),
+                        oldColor.getRed(),
+                        oldColor.getBlue(),
+                        oldColor.getBlue(),
+                        myJPanel.getStartX(),
+                        myJPanel.getStartY(),
+                        myJPanel.getEndX(),
+                        myJPanel.getEndY()));
         settingsDialog.apparate();
 
         if (!settingsDialog.isCancelled()) {
+
+            int startX = settingsDialog.getStartX();
+            int startY = settingsDialog.getStartY();
+
+            int endX = settingsDialog.getEndX();
+            int endY = settingsDialog.getEndY();
+
+            if (endX >= startX || endY >= startY) {
+                JOptionPane.showMessageDialog(this, INVALID_FIELD_CONFIGURATION, ERROR, JOptionPane.ERROR_MESSAGE);
+            }
             myJPanel.updateSettings(settingsDialog.getGridWidthDivisions(),
                     settingsDialog.getGridHeightDivisions(),
                     settingsDialog.getRedColor(),
                     settingsDialog.getGreenColor(),
-                    settingsDialog.getBlueColor());
+                    settingsDialog.getBlueColor(),
+                    settingsDialog.getStartX(),
+                    settingsDialog.getStartY(),
+                    settingsDialog.getEndX(),
+                    settingsDialog.getEndY());
         }
     }
 

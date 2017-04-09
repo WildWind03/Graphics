@@ -1,7 +1,6 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
 import com.chirikhin.interpolated_function.LinearInterpolator;
-import com.google.common.eventbus.Subscribe;
 import ru.nsu.fit.g14201.chirikhin.isolines.function.DifficultFunctionSingleton;
 import ru.nsu.fit.g14201.chirikhin.isolines.model.PixelCoordinateToAreaConverter;
 import ru.nsu.fit.g14201.chirikhin.isolines.util.Util;
@@ -22,10 +21,10 @@ public class MyJPanel extends JPanel {
     private static final int MIN_WIDTH_TO_PRINT_LEGENDS = 350;
     private static final int MIN_HEIGHT_TO_PRINT_LEGENDS = 400;
 
-    private static final int START_X = -2;
-    private static final int END_X = 2;
-    private static final int START_Y = -4;
-    private static final int END_Y = 4;
+    private int startX = -2;
+    private int endX = 2;
+    private int startY = -4;
+    private int endY = 4;
 
     private BufferedImage map;
     private BufferedImage legend;
@@ -59,7 +58,7 @@ public class MyJPanel extends JPanel {
 
                 if (null != map && e.getX() < map.getWidth() && e.getY() < map.getHeight()) {
                     PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter =
-                            new PixelCoordinateToAreaConverter(START_X, START_Y, END_X, END_Y, map.getWidth(), map.getHeight());
+                            new PixelCoordinateToAreaConverter(startX, startY, endX, endY, map.getWidth(), map.getHeight());
 
                     double realX = pixelCoordinateToAreaConverter.toRealX(e.getX());
                     double realY = pixelCoordinateToAreaConverter.toRealY(e.getY());
@@ -126,7 +125,7 @@ public class MyJPanel extends JPanel {
                 }
 
                 PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter =
-                        new PixelCoordinateToAreaConverter(START_X, START_Y, END_X, END_Y, map.getWidth(), map.getHeight());
+                        new PixelCoordinateToAreaConverter(startX, startY, endX, endY, map.getWidth(), map.getHeight());
                 List<Double> values = Util.getPointsByFunctionColorsAndArea(DifficultFunctionSingleton.getInstance(),
                         pixelCoordinateToAreaConverter,
                         colors.size());
@@ -190,7 +189,21 @@ public class MyJPanel extends JPanel {
 
     }
 
-    public void updateSettings(int gridWidthDivisions, int gridHeightDivisions, int redColor, int greenColor, int blueColor) {
+    public void updateSettings(int gridWidthDivisions,
+                               int gridHeightDivisions,
+                               int redColor,
+                               int greenColor,
+                               int blueColor,
+                               int startX,
+                               int startY,
+                               int endX,
+                               int endY) {
+
+        this.startX = startX;
+        this.startY = startY;
+
+        this.endX = endX;
+        this.endY = endY;
         this.m = gridWidthDivisions;
         this.k = gridHeightDivisions;
 
@@ -209,5 +222,21 @@ public class MyJPanel extends JPanel {
 
     public int getIsolineColor() {
         return isolineColor;
+    }
+
+    public int getStartX() {
+        return startX;
+    }
+
+    public int getEndX() {
+        return endX;
+    }
+
+    public int getStartY() {
+        return startY;
+    }
+
+    public int getEndY() {
+        return endY;
     }
 }
