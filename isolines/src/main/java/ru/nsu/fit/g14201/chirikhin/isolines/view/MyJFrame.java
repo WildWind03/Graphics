@@ -46,6 +46,8 @@ public class MyJFrame extends JFrame {
     private static final String SETTINGS = "Settings";
     private static final String INVALID_FIELD_CONFIGURATION = "Invalid field configuration!";
     private static final String ERROR = "Error";
+    private static final String DRAW_ISOLINES = "Draw isolines";
+    private static final String ISOLINE_PAINT_ICON_PNG = "isoline_paint_icon.png";
 
     private final MyJPanel myJPanel;
     private final StatusBar statusBar;
@@ -81,6 +83,7 @@ public class MyJFrame extends JFrame {
         MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, INTERPOLATION_MODE_ICON_PNG, INTERPOLATION_MODE, myJPanel::setColorInterpolationModeEnabled);
         MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, DYNAMIC_ISOLINE_MODE_ICON, DYNAMIC_ISOLINE_DRAWING_MODE, myJPanel::setDynamicIsolineMode);
         MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, ENTER_POINT_MODE_ICON, ENTER_POINT_DRAWING_MODE, myJPanel::setEnterPointMode);
+        MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, ISOLINE_PAINT_ICON_PNG, DRAW_ISOLINES, myJPanel::setDrawIsolinesMode);
         MenuToolBarListenerUtil.addNewOption(viewMenu, jToolBar, SETTINGS_ICON_PNG, SETTINGS, this::onConfigButtonClicked);
 
 
@@ -118,6 +121,7 @@ public class MyJFrame extends JFrame {
             if (endX >= startX || endY >= startY) {
                 JOptionPane.showMessageDialog(this, INVALID_FIELD_CONFIGURATION, ERROR, JOptionPane.ERROR_MESSAGE);
             }
+
             myJPanel.updateSettings(settingsDialog.getGridWidthDivisions(),
                     settingsDialog.getGridHeightDivisions(),
                     settingsDialog.getRedColor(),

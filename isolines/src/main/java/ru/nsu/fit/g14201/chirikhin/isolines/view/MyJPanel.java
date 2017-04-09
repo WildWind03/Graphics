@@ -2,6 +2,8 @@ package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
 import com.chirikhin.interpolated_function.LinearInterpolator;
 import ru.nsu.fit.g14201.chirikhin.isolines.function.DifficultFunctionSingleton;
+import ru.nsu.fit.g14201.chirikhin.isolines.function.MyFunction;
+import ru.nsu.fit.g14201.chirikhin.isolines.function.X2Y2;
 import ru.nsu.fit.g14201.chirikhin.isolines.model.PixelCoordinateToAreaConverter;
 import ru.nsu.fit.g14201.chirikhin.isolines.util.Util;
 
@@ -40,6 +42,7 @@ public class MyJPanel extends JPanel {
     private int m = 1;
     private int k = 1;
     private boolean isGridShown = false;
+    private boolean isIsolinesDrawing = false;
     private int isolineColor;
 
     private final Color GRID_COLOR = Color.GRAY;
@@ -49,20 +52,23 @@ public class MyJPanel extends JPanel {
     private int mapWidth;
     private int mapHeight;
 
+    private final MyFunction myFunction;
+
 
     public MyJPanel(int width, int height) {
+        myFunction = DifficultFunctionSingleton.getInstance();
         addMouseMotionListener(new MouseMotionAdapter() {
+
             @Override
             public void mouseMoved(MouseEvent e) {
                 super.mouseMoved(e);
 
                 if (null != map && e.getX() < map.getWidth() && e.getY() < map.getHeight()) {
-                    PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter =
-                            new PixelCoordinateToAreaConverter(startX, startY, endX, endY, map.getWidth(), map.getHeight());
 
+                    PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter = new PixelCoordinateToAreaConverter(startX, startY, endX, endY, map.getWidth(), map.getHeight());
                     double realX = pixelCoordinateToAreaConverter.toRealX(e.getX());
                     double realY = pixelCoordinateToAreaConverter.toRealY(e.getY());
-                    EventBusSingleton.getInstance().post(new FieldCoordinatesFunctionValue(realX, realY, DifficultFunctionSingleton.getInstance().apply(realX, realY)));
+                    EventBusSingleton.getInstance().post(new FieldCoordinatesFunctionValue(realX, realY, myFunction.apply(realX, realY)));
                 }
             }
         });
@@ -73,7 +79,7 @@ public class MyJPanel extends JPanel {
         if (width < MIN_WIDTH || height < MIN_HEIGHT) {
             return;
         }
-        
+
         this.width = width;
         this.height = height;
 
@@ -126,7 +132,7 @@ public class MyJPanel extends JPanel {
 
                 PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter =
                         new PixelCoordinateToAreaConverter(startX, startY, endX, endY, map.getWidth(), map.getHeight());
-                List<Double> values = Util.getPointsByFunctionColorsAndArea(DifficultFunctionSingleton.getInstance(),
+                List<Double> values = Util.getPointsByFunctionColorsAndArea(myFunction,
                         pixelCoordinateToAreaConverter,
                         colors.size());
 
@@ -134,22 +140,26 @@ public class MyJPanel extends JPanel {
                     if (colorInterpolationModeEnabled) {
                         InterpolatedColorMapFunction func = new InterpolatedColorMapFunction(values,
                                 colors,
-                                DifficultFunctionSingleton.getInstance(),
+                                myFunction,
                                 pixelCoordinateToAreaConverter,
                                 new LinearInterpolator());
 
                         new ColorMapDrawer(func).draw(map);
                     } else {
-                        ColorFunction colorFunction = new ColorMapFunction(values, colors, DifficultFunctionSingleton.getInstance(), pixelCoordinateToAreaConverter);
+                        ColorFunction colorFunction = new ColorMapFunction(values, colors, myFunction, pixelCoordinateToAreaConverter);
                         new ColorMapDrawer(colorFunction).draw(map);
                     }
                 }
 
                 new ColorPaletteRecordsDrawer(values).draw(legendRecords);
-            }
 
-            if (isGridShown) {
-                new GridMapDrawer(m, k, GRID_COLOR).draw(map);
+                if (isGridShown) {
+                    new GridMapDrawer(m, k, GRID_COLOR).draw(map);
+                }
+
+                if (isIsolinesDrawing) {
+                    new IsolineDrawer(m, k, isolineColor, pixelCoordinateToAreaConverter, myFunction, values).draw(map);
+                }
             }
 
             isUpdated = false;
@@ -208,8 +218,8 @@ public class MyJPanel extends JPanel {
         this.k = gridHeightDivisions;
 
         this.isolineColor = new Color(redColor, greenColor, blueColor).getRGB();
-        isUpdated = true;
-        repaint();
+
+        update(this.width, this.height);
     }
 
     public int getM() {
@@ -238,5 +248,11 @@ public class MyJPanel extends JPanel {
 
     public int getEndY() {
         return endY;
+    }
+
+    public void setDrawIsolinesMode(boolean isIsolinesDrawing) {
+        this.isIsolinesDrawing = isIsolinesDrawing;
+        isUpdated = true;
+        repaint();
     }
 }

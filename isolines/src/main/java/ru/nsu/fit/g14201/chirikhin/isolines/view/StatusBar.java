@@ -12,6 +12,8 @@ public class StatusBar extends JPanel {
         barLabel = new JLabel();
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         add(barLabel);
+
+        updateValues(0d, 0d, 0d);
     }
 
     public void updateValues(double x, double y, double value) {
