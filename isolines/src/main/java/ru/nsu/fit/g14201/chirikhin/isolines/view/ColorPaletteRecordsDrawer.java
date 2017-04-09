@@ -24,7 +24,9 @@ public class ColorPaletteRecordsDrawer implements Drawer {
         double step = (double) bufferedImage.getWidth() / (double) (points.size() - 1);
 
         for (int i = 1; i < points.size() - 1; ++i) {
-            graphics2D.drawString(DoubleUtil.getDouble(points.get(i), 2), (int) (step * i - step * 0.2d), (int) (bufferedImage.getHeight() * 0.6d));
+            String legend = DoubleUtil.getDouble(points.get(i), 2);
+            int width = graphics2D.getFontMetrics().stringWidth(legend);
+            graphics2D.drawString(legend, (int) (step * i - width / 2), (int) (bufferedImage.getHeight() * 0.6d));
         }
 
         graphics2D.dispose();
