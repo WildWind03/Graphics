@@ -38,8 +38,8 @@ public class MyJPanel extends JPanel {
 
     private List<Integer[]> colors;
 
-    private int m;
-    private int k;
+    private int m = 1;
+    private int k = 1;
     private boolean isGridShown = false;
     private int isolineColor;
 
@@ -52,7 +52,6 @@ public class MyJPanel extends JPanel {
 
 
     public MyJPanel(int width, int height) {
-        //EventBusSingleton.getInstance().register(this);
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -71,15 +70,6 @@ public class MyJPanel extends JPanel {
         update(width, height);
     }
 
-    /*@Subscribe
-    public void update(MapPreferredSizeEvent mapPreferredSizeEvent) {
-        //map = new BufferedImage(mapPreferredSizeEvent.getWidth(), mapPreferredSizeEvent.getHeight(), BufferedImage.TYPE_INT_RGB);
-        mapWidth = mapPreferredSizeEvent.getWidth();
-        mapHeight = mapPreferredSizeEvent.getHeight();
-        isUpdated = true;
-        repaint();
-    }*/
-
     public void update(int width, int height) {
         if (width < MIN_WIDTH || height < MIN_HEIGHT) {
             return;
@@ -88,8 +78,10 @@ public class MyJPanel extends JPanel {
         this.width = width;
         this.height = height;
 
-        this.mapWidth = this.width;
-        this.mapHeight = (int) (PART_OF_MAP_HEIGHT * this.height);
+        int stepX = width / k;
+        int stepY = ((int) (PART_OF_MAP_HEIGHT * this.height)) / m;
+        this.mapWidth = stepX * k;
+        this.mapHeight = stepY * m;
 
         setPreferredSize(new Dimension(this.width, this.height));
         isUpdated = true;
@@ -98,13 +90,12 @@ public class MyJPanel extends JPanel {
 
     public void applyNewConfiguration(int m, int k, List<Integer[]> colors, Integer[] isolineColor) {
         this.colors = colors;
-        isUpdated = true;
 
         this.m = m;
         this.k = k;
 
         this.isolineColor = new Color(isolineColor[0], isolineColor[1], isolineColor[2]).getRGB();
-        repaint();
+        update(this.width, this.height);
     }
 
     public void setGridShownMode(boolean isShown) {

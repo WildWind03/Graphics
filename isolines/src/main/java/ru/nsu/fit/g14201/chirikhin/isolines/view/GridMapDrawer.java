@@ -22,11 +22,11 @@ public class GridMapDrawer implements Drawer {
     public void draw(BufferedImage bufferedImage) {
         Graphics2D graphics2D = bufferedImage.createGraphics();
         graphics2D.setColor(gridColor);
-        int stepX = (int)(((double) bufferedImage.getWidth() - 1) / (double) widthDiv);
-        int stepY = (int)(((double) bufferedImage.getHeight() - 1) / (double) heightDiv);
+        int stepX = (int)(((double) bufferedImage.getWidth() ) / (double) widthDiv);
+        int stepY = (int)(((double) bufferedImage.getHeight()) / (double) heightDiv);
 
-        int realWidth = ((bufferedImage.getWidth() - 1) / widthDiv) * widthDiv;
-        int realHeight = ((bufferedImage.getHeight() - 1) / heightDiv) * heightDiv;
+        int realWidth = ((bufferedImage.getWidth()) / widthDiv) * widthDiv;
+        int realHeight = ((bufferedImage.getHeight()) / heightDiv) * heightDiv;
 
         int x = stepX;
         for (int counter = 0; counter < widthDiv; x+=stepX, counter++) {
