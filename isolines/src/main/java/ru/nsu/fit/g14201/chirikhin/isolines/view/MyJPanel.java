@@ -198,8 +198,8 @@ public class MyJPanel extends JPanel {
                 }
 
                 if (isIsolinesDrawing) {
-                    new IsolineDrawer(m, k, isolineColor, pixelCoordinateToAreaConverter, myFunction, values).draw(map);
-                    new IsolineDrawer(m, k, isolineColor, pixelCoordinateToAreaConverter, myFunction, drawnIsolines).draw(map);
+                    new IsolineDrawer(m, k, isolineColor, pixelCoordinateToAreaConverter, myFunction, values, isEnterPointDrawingMode).draw(map);
+                    new IsolineDrawer(m, k, isolineColor, pixelCoordinateToAreaConverter, myFunction, drawnIsolines, isEnterPointDrawingMode).draw(map);
                 }
             }
 

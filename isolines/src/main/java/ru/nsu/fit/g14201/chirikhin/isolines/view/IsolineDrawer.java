@@ -11,6 +11,9 @@ import java.util.List;
 
 public class IsolineDrawer implements Drawer {
 
+    private static final int ENTER_POINT_WIDTH = 6;
+    private static final int ENTER_POINT_HEIGHT = 6;
+
     public class Point {
         private final double value;
         private final int x;
@@ -67,19 +70,22 @@ public class IsolineDrawer implements Drawer {
     private final PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter;
     private final MyFunction myFunction;
     private List<Double> values;
+    private boolean isNeedToDrawEnterPoints;
 
     public IsolineDrawer(int widthDiv,
                          int heightDiv,
                          int isolineColor,
                          PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter,
                          MyFunction myFunction,
-                         List<Double> values) {
+                         List<Double> values,
+                         boolean isNeedToDrawEnterPoints) {
         this.widthDiv = widthDiv;
         this.heightDiv = heightDiv;
         this.isolineColor = isolineColor;
         this.pixelCoordinateToAreaConverter = pixelCoordinateToAreaConverter;
         this.myFunction = myFunction;
         this.values = values;
+        this.isNeedToDrawEnterPoints = isNeedToDrawEnterPoints;
     }
 
     @Override
@@ -217,7 +223,6 @@ public class IsolineDrawer implements Drawer {
                                 tempValue += epsilon;
                             }
 
-                            System.out.println(4);
                             tempValue = value;
                             ArrayList<Pair<Integer, Integer>> downTriangleLineCrossPoints = new ArrayList<>();
                             while (true) {
@@ -298,6 +303,17 @@ public class IsolineDrawer implements Drawer {
         }
 
         graphics2D.drawLine(point1.getKey(), point1.getValue(), point2.getKey(), point2.getValue());
+
+        if (isNeedToDrawEnterPoints) {
+            graphics2D.drawOval(point1.getKey() - ENTER_POINT_WIDTH / 2,
+                    point1.getValue() - ENTER_POINT_WIDTH / 2,
+                    ENTER_POINT_WIDTH,
+                    ENTER_POINT_HEIGHT);
+            graphics2D.drawOval(point2.getKey() - ENTER_POINT_WIDTH / 2,
+                    point2.getValue() - ENTER_POINT_HEIGHT / 2,
+                    ENTER_POINT_WIDTH,
+                    ENTER_POINT_HEIGHT);
+        }
     }
 
     private boolean isCrossed(double value1, double value2, double value) {
