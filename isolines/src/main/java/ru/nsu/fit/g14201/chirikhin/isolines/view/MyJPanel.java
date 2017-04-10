@@ -56,7 +56,8 @@ public class MyJPanel extends JPanel {
 
 
     public MyJPanel(int width, int height) {
-        myFunction = DifficultFunctionSingleton.getInstance();
+        myFunction = (aDouble, aDouble2) -> Math.abs(aDouble + aDouble2);
+        //myFunction = new X2Y2();
         addMouseMotionListener(new MouseMotionAdapter() {
 
             @Override
