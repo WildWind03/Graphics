@@ -78,11 +78,11 @@ public class MyJFrame extends JFrame {
         MenuToolBarListenerUtil.addNewOption(fileMenu, jToolBar, OPEN_ICON_PNG, OPEN_MENU_TITLE, this::onOpenButtonClicked);
 
         MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, GRID_ICON_PNG, GRID_VISIBILITY, myJPanel::setGridShownMode);
-        MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, COLOR_MAP_PNG, COLOR_MAP_VISIBILITY, myJPanel::setColorMapVisibility);
+        MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, COLOR_MAP_PNG, COLOR_MAP_VISIBILITY, myJPanel::setColorMapVisible);
         MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, INTERACTIVE_ICON_PNG, INTERACTIVE_MODE, myJPanel::setInteractiveModeEnabled);
-        MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, INTERPOLATION_MODE_ICON_PNG, INTERPOLATION_MODE, myJPanel::setColorInterpolationModeEnabled);
-        MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, DYNAMIC_ISOLINE_MODE_ICON, DYNAMIC_ISOLINE_DRAWING_MODE, myJPanel::setDynamicIsolineMode);
-        MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, ENTER_POINT_MODE_ICON, ENTER_POINT_DRAWING_MODE, myJPanel::setEnterPointMode);
+        MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, INTERPOLATION_MODE_ICON_PNG, INTERPOLATION_MODE, myJPanel::setColorInterpolated);
+        MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, ENTER_POINT_MODE_ICON, ENTER_POINT_DRAWING_MODE, myJPanel::setEnterPointDrawingMode);
+        MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, DYNAMIC_ISOLINE_MODE_ICON, DYNAMIC_ISOLINE_DRAWING_MODE, myJPanel::setDynamicIsolineDrawingMode);
         MenuToolBarListenerUtil.addNewSelectableOption(viewMenu, jToolBar, ISOLINE_PAINT_ICON_PNG, DRAW_ISOLINES, myJPanel::setDrawIsolinesMode);
         MenuToolBarListenerUtil.addNewOption(viewMenu, jToolBar, SETTINGS_ICON_PNG, SETTINGS, this::onConfigButtonClicked);
 

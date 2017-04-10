@@ -1,17 +1,17 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
 import com.chirikhin.interpolated_function.LinearInterpolator;
-import ru.nsu.fit.g14201.chirikhin.isolines.function.DifficultFunctionSingleton;
 import ru.nsu.fit.g14201.chirikhin.isolines.function.MyFunction;
-import ru.nsu.fit.g14201.chirikhin.isolines.function.X2Y2;
 import ru.nsu.fit.g14201.chirikhin.isolines.model.PixelCoordinateToAreaConverter;
 import ru.nsu.fit.g14201.chirikhin.isolines.util.Util;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyJPanel extends JPanel {
@@ -46,20 +46,25 @@ public class MyJPanel extends JPanel {
     private int isolineColor;
 
     private final Color GRID_COLOR = Color.GRAY;
-    private boolean colorMapVisibility;
-    private boolean interaciveMode;
-    private boolean colorInterpolationModeEnabled;
+    private boolean isColorMapVisible;
+    private boolean isInteractiveMode;
+    private boolean isColorInterpolated;
     private int mapWidth;
     private int mapHeight;
 
+    private final List <Double> drawnIsolines = new ArrayList<>();
+
     private final MyFunction myFunction;
+    private boolean isDynamicIsolineDrawingMode;
+    private boolean isEnterPointDrawingMode;
+
 
 
     public MyJPanel(int width, int height) {
         myFunction = (aDouble, aDouble2) -> Math.abs(aDouble + aDouble2);
         //myFunction = new X2Y2();
-        addMouseMotionListener(new MouseMotionAdapter() {
 
+        MouseMotionAdapter mouseMotionAdapter = new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
                 super.mouseMoved(e);
@@ -70,6 +75,38 @@ public class MyJPanel extends JPanel {
                     double realX = pixelCoordinateToAreaConverter.toRealX(e.getX());
                     double realY = pixelCoordinateToAreaConverter.toRealY(e.getY());
                     EventBusSingleton.getInstance().post(new FieldCoordinatesFunctionValue(realX, realY, myFunction.apply(realX, realY)));
+                }
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                super.mouseDragged(e);
+
+                if (isDynamicIsolineDrawingMode && null != map && e.getX() < map.getWidth() && e.getY() < map.getHeight()) {
+                    PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter = new PixelCoordinateToAreaConverter(startX, startY, endX, endY, map.getWidth(), map.getHeight());
+                    double realX = pixelCoordinateToAreaConverter.toRealX(e.getX());
+                    double realY = pixelCoordinateToAreaConverter.toRealY(e.getY());
+
+                    drawnIsolines.add(myFunction.apply(realX, realY));
+                    isUpdated = true;
+                    repaint();
+                }
+            }
+        };
+        addMouseMotionListener(mouseMotionAdapter);
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (isInteractiveMode && null != map && e.getX() < map.getWidth() && e.getY() < map.getHeight()) {
+                    PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter = new PixelCoordinateToAreaConverter(startX, startY, endX, endY, map.getWidth(), map.getHeight());
+                    double realX = pixelCoordinateToAreaConverter.toRealX(e.getX());
+                    double realY = pixelCoordinateToAreaConverter.toRealY(e.getY());
+
+                    drawnIsolines.add(myFunction.apply(realX, realY));
+                    isUpdated = true;
+                    repaint();
                 }
             }
         });
@@ -97,6 +134,8 @@ public class MyJPanel extends JPanel {
     public void applyNewConfiguration(int m, int k, List<Integer[]> colors, Integer[] isolineColor) {
         this.colors = colors;
 
+        this.drawnIsolines.clear();
+
         this.m = m;
         this.k = k;
 
@@ -123,7 +162,7 @@ public class MyJPanel extends JPanel {
             legendRecords = new BufferedImage(this.width, (int) (this.height * GAP_BETWEEN_LEGEND_AND_MAP), BufferedImage.TYPE_INT_RGB);
 
             if (null != colors) {
-                if (!colorInterpolationModeEnabled) {
+                if (!isColorInterpolated) {
                     ColorFunction colorFunction = new ColorPaletteFunction(colors, legend.getWidth());
                     new ColorMapDrawer(colorFunction).draw(legend);
                 } else {
@@ -137,8 +176,8 @@ public class MyJPanel extends JPanel {
                         pixelCoordinateToAreaConverter,
                         colors.size());
 
-                if (colorMapVisibility) {
-                    if (colorInterpolationModeEnabled) {
+                if (isColorMapVisible) {
+                    if (isColorInterpolated) {
                         InterpolatedColorMapFunction func = new InterpolatedColorMapFunction(values,
                                 colors,
                                 myFunction,
@@ -160,6 +199,7 @@ public class MyJPanel extends JPanel {
 
                 if (isIsolinesDrawing) {
                     new IsolineDrawer(m, k, isolineColor, pixelCoordinateToAreaConverter, myFunction, values).draw(map);
+                    new IsolineDrawer(m, k, isolineColor, pixelCoordinateToAreaConverter, myFunction, drawnIsolines).draw(map);
                 }
             }
 
@@ -175,29 +215,26 @@ public class MyJPanel extends JPanel {
         g.drawImage(legend, 0, (int) (height * (GAP_BETWEEN_LEGEND_AND_MAP + PART_OF_MAP_HEIGHT)), null);
     }
 
-    public void setColorMapVisibility(boolean colorMapVisibility) {
-        this.colorMapVisibility = colorMapVisibility;
+    public void setColorMapVisible(boolean colorMapVisible) {
+        this.isColorMapVisible = colorMapVisible;
         isUpdated = true;
         repaint();
     }
 
     public void setInteractiveModeEnabled(boolean newInteractiveMode) {
-        this.interaciveMode = newInteractiveMode;
+        this.isInteractiveMode = newInteractiveMode;
         isUpdated = true;
     }
 
-    public void setColorInterpolationModeEnabled(boolean colorInterpolationModeEnabled) {
-        this.colorInterpolationModeEnabled = colorInterpolationModeEnabled;
+    public void setColorInterpolated(boolean colorInterpolated) {
+        this.isColorInterpolated = colorInterpolated;
         isUpdated = true;
         repaint();
     }
 
-    public void setDynamicIsolineMode(boolean b) {
 
-    }
-
-    public void setEnterPointMode(boolean b) {
-
+    public void setEnterPointDrawingMode(boolean b) {
+        this.isEnterPointDrawingMode = b;
     }
 
     public void updateSettings(int gridWidthDivisions,
@@ -255,5 +292,9 @@ public class MyJPanel extends JPanel {
         this.isIsolinesDrawing = isIsolinesDrawing;
         isUpdated = true;
         repaint();
+    }
+
+    public void setDynamicIsolineDrawingMode(boolean b) {
+        this.isDynamicIsolineDrawingMode = b;
     }
 }
