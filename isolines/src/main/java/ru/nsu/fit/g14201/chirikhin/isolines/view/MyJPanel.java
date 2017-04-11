@@ -3,7 +3,6 @@ package ru.nsu.fit.g14201.chirikhin.isolines.view;
 import com.chirikhin.interpolated_function.LinearInterpolator;
 import ru.nsu.fit.g14201.chirikhin.isolines.function.DifficultFunctionSingleton;
 import ru.nsu.fit.g14201.chirikhin.isolines.function.MyFunction;
-import ru.nsu.fit.g14201.chirikhin.isolines.function.X2Y2;
 import ru.nsu.fit.g14201.chirikhin.isolines.model.PixelCoordinateToAreaConverter;
 import ru.nsu.fit.g14201.chirikhin.isolines.util.Util;
 
