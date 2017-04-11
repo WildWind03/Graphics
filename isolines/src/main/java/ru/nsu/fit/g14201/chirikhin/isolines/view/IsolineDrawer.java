@@ -14,7 +14,7 @@ public class IsolineDrawer implements Drawer {
     private static final int ENTER_POINT_WIDTH = 6;
     private static final int ENTER_POINT_HEIGHT = 6;
 
-    public class Point {
+    public static class Point {
         private final double value;
         private final int x;
         private final int y;

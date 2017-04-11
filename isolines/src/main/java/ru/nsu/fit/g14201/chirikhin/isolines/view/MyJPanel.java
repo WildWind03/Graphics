@@ -30,9 +30,9 @@ public class MyJPanel extends JPanel {
     private int startY = -4;
     private int endY = 4;
 
-    private BufferedImage map;
-    private BufferedImage legend;
-    private BufferedImage legendRecords;
+    private transient BufferedImage map;
+    private transient BufferedImage legend;
+    private transient BufferedImage legendRecords;
 
     private int width;
     private int height;
@@ -56,7 +56,7 @@ public class MyJPanel extends JPanel {
 
     private Double drawnIsoline;
 
-    private final MyFunction myFunction;
+    private final transient MyFunction myFunction;
     private boolean isDynamicIsolineDrawingMode;
     private boolean isEnterPointDrawingMode;
 
