@@ -1,7 +1,9 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
 import com.chirikhin.interpolated_function.LinearInterpolator;
+import ru.nsu.fit.g14201.chirikhin.isolines.function.DifficultFunctionSingleton;
 import ru.nsu.fit.g14201.chirikhin.isolines.function.MyFunction;
+import ru.nsu.fit.g14201.chirikhin.isolines.function.X2Y2;
 import ru.nsu.fit.g14201.chirikhin.isolines.model.PixelCoordinateToAreaConverter;
 import ru.nsu.fit.g14201.chirikhin.isolines.util.Util;
 
@@ -52,7 +54,7 @@ public class MyJPanel extends JPanel {
     private int mapWidth;
     private int mapHeight;
 
-    private final List <Double> drawnIsolines = new ArrayList<>();
+    private Double drawnIsoline;
 
     private final MyFunction myFunction;
     private boolean isDynamicIsolineDrawingMode;
@@ -61,9 +63,10 @@ public class MyJPanel extends JPanel {
 
 
     public MyJPanel(int width, int height) {
-        myFunction = (aDouble, aDouble2) -> Math.abs(aDouble + aDouble2);
+        //myFunction = (aDouble, aDouble2) -> Math.abs(aDouble + aDouble2);
         //myFunction = new X2Y2();
-
+//        myFunction = (x, y) -> Math.sin(x * Math.cos(Math.PI / 4) - y * Math.sin(Math.PI / 4)) + Math.cos(x * Math.sin(Math.PI / 4) + y * Math.cos(Math.PI / 4));
+        myFunction = DifficultFunctionSingleton.getInstance();
         MouseMotionAdapter mouseMotionAdapter = new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -87,7 +90,8 @@ public class MyJPanel extends JPanel {
                     double realX = pixelCoordinateToAreaConverter.toRealX(e.getX());
                     double realY = pixelCoordinateToAreaConverter.toRealY(e.getY());
 
-                    drawnIsolines.add(myFunction.apply(realX, realY));
+//                    drawnIsolines.add(myFunction.apply(realX, realY));
+                    drawnIsoline = myFunction.apply(realX, realY);
                     isUpdated = true;
                     repaint();
                 }
@@ -104,7 +108,8 @@ public class MyJPanel extends JPanel {
                     double realX = pixelCoordinateToAreaConverter.toRealX(e.getX());
                     double realY = pixelCoordinateToAreaConverter.toRealY(e.getY());
 
-                    drawnIsolines.add(myFunction.apply(realX, realY));
+//                    drawnIsolines.add(myFunction.apply(realX, realY));
+                    drawnIsoline = myFunction.apply(realX, realY);
                     isUpdated = true;
                     repaint();
                 }
@@ -134,7 +139,7 @@ public class MyJPanel extends JPanel {
     public void applyNewConfiguration(int m, int k, List<Integer[]> colors, Integer[] isolineColor) {
         this.colors = colors;
 
-        this.drawnIsolines.clear();
+        this.drawnIsoline = null;
 
         this.m = m;
         this.k = k;
@@ -198,8 +203,12 @@ public class MyJPanel extends JPanel {
                 }
 
                 if (isIsolinesDrawing) {
+                    ArrayList<Double> drawnIsolineList = new ArrayList<>();
+                    if (null != drawnIsoline) {
+                        drawnIsolineList.add(drawnIsoline);
+                    }
                     new IsolineDrawer(m, k, isolineColor, pixelCoordinateToAreaConverter, myFunction, values, isEnterPointDrawingMode).draw(map);
-                    new IsolineDrawer(m, k, isolineColor, pixelCoordinateToAreaConverter, myFunction, drawnIsolines, isEnterPointDrawingMode).draw(map);
+                    new IsolineDrawer(m, k, isolineColor, pixelCoordinateToAreaConverter, myFunction, drawnIsolineList, isEnterPointDrawingMode).draw(map);
                 }
             }
 
