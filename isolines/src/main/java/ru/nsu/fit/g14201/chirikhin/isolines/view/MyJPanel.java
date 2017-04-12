@@ -243,6 +243,8 @@ public class MyJPanel extends JPanel {
 
     public void setEnterPointDrawingMode(boolean b) {
         this.isEnterPointDrawingMode = b;
+        isUpdated = true;
+        repaint();
     }
 
     public void updateSettings(int gridWidthDivisions,
