@@ -47,15 +47,4 @@
             </plugin>
         </plugins>
     </reporting>
-
-    <!-->
-    <repository>
-        <id>project_lib</id>
-        <name>Repository in project's lib dir</name>
-        <layout>default</layout>
-        <url>file:///C:\Users\userg\Java Libs\src\main\java\ru\nsu\fit\g14201\chirikhin\filter\controller</url>
-    </repository>
-    <-->
-
-
 </project>
