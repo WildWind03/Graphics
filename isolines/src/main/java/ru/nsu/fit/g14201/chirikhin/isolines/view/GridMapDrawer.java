@@ -1,8 +1,5 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.view;
 
-import com.google.common.eventbus.EventBus;
-import ru.nsu.fit.g14201.chirikhin.isolines.main.Main;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 

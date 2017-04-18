@@ -59,6 +59,8 @@ public class MyJPanel extends JPanel {
     private boolean isDynamicIsolineDrawingMode;
     private boolean isEnterPointDrawingMode;
 
+    private FieldCoordinatesFunctionValueRunnable fieldCoordinatesFunctionValueRunnable;
+
 
 
     public MyJPanel(int width, int height) {
@@ -76,7 +78,10 @@ public class MyJPanel extends JPanel {
                     PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter = new PixelCoordinateToAreaConverter(startX, startY, endX, endY, map.getWidth(), map.getHeight());
                     double realX = pixelCoordinateToAreaConverter.toRealX(e.getX());
                     double realY = pixelCoordinateToAreaConverter.toRealY(e.getY());
-                    EventBusSingleton.getInstance().post(new FieldCoordinatesFunctionValue(realX, realY, myFunction.apply(realX, realY)));
+
+                    if (null != fieldCoordinatesFunctionValueRunnable) {
+                        fieldCoordinatesFunctionValueRunnable.run(new FieldCoordinatesFunctionValue(realX, realY, myFunction.apply(realX, realY)));
+                    }
                 }
             }
 
@@ -115,6 +120,10 @@ public class MyJPanel extends JPanel {
             }
         });
         update(width, height);
+    }
+
+    public void setFieldCoordinatesFunctionValuesUpdateListener(FieldCoordinatesFunctionValueRunnable fieldCoordinatesFunctionValuesUpdateListener) {
+        this.fieldCoordinatesFunctionValueRunnable = fieldCoordinatesFunctionValuesUpdateListener;
     }
 
     public void update(int width, int height) {

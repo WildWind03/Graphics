@@ -5,7 +5,6 @@ import com.chirikhin.swing.util.MenuUtil;
 import com.chirikhin.universal_parser.ParserException;
 import com.chirikhin.universal_parser.TypeConversionException;
 import com.chirikhin.universal_parser.TypeMatchingException;
-import com.google.common.eventbus.Subscribe;
 import ru.nsu.fit.g14201.chirikhin.isolines.config_parser.MyParser;
 
 import javax.swing.*;
@@ -55,12 +54,12 @@ public class MyJFrame extends JFrame {
     public MyJFrame() {
         super(APP_NAME);
         this.myJPanel = new MyJPanel(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        myJPanel.setFieldCoordinatesFunctionValuesUpdateListener(this::onNewValueCalculated);
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 myJPanel.update(getContentPane().getWidth(), getContentPane().getHeight());
             }
         });
-        EventBusSingleton.getInstance().register(this);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         JMenuBar jMenuBar = new JMenuBar();
@@ -135,7 +134,6 @@ public class MyJFrame extends JFrame {
         }
     }
 
-    @Subscribe
     public void onNewValueCalculated(FieldCoordinatesFunctionValue fieldCoordinatesFunctionValue) {
         statusBar.updateValues(fieldCoordinatesFunctionValue.getX(),
                 fieldCoordinatesFunctionValue.getY(),
