@@ -3,12 +3,14 @@ package chirikhin.universal_parser;
 import java.util.ArrayList;
 
 public class ParserConfig {
-    private final ArrayList<MyRunnable> runnables;
+    private final ArrayList<TypeCheckRunnable> runnables;
+    private final MyFactory objectFactory;
     private int currentRunnableIndex = 0;
     private String splitRegex = " ";
 
-    public ParserConfig(ArrayList<MyRunnable> runnables) {
+    public ParserConfig(ArrayList<TypeCheckRunnable> runnables, MyFactory objectFactory) {
         this.runnables = runnables;
+        this.objectFactory = objectFactory;
     }
 
     public void setSplitRegex(String splitRegex) {
@@ -20,7 +22,11 @@ public class ParserConfig {
             throw new ParserException("Can't choose runnable by offered index!");
         }
 
-        runnables.get(currentRunnableIndex).run(string.split(splitRegex), this);
+        runnables.get(currentRunnableIndex).run(string.split(splitRegex), this, objectFactory);
+    }
+
+    public void nextIndex() {
+        this.currentRunnableIndex++;
     }
 
     public void setCurrentRunnableIndex(int currentRunnableIndex) {

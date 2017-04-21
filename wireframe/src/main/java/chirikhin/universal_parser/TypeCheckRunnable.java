@@ -2,15 +2,13 @@ package chirikhin.universal_parser;
 
 import java.util.ArrayList;
 
-public abstract class TypeCheckRunnable implements MyRunnable {
+public abstract class TypeCheckRunnable {
 
     private final ArrayList<Class<?>> types;
-    private final ObjectFactory objectFactory;
 
     private boolean isLastArgumentMandatory = false;
 
-    public TypeCheckRunnable(ArrayList<Class<?>> types, ObjectFactory objectFactory) throws TypeConversionException {
-        this.objectFactory = objectFactory;
+    public TypeCheckRunnable(ArrayList<Class<?>> types) throws TypeConversionException {
         this.types = types;
     }
 
@@ -18,7 +16,7 @@ public abstract class TypeCheckRunnable implements MyRunnable {
         this.isLastArgumentMandatory = isMandatory;
     }
 
-    public void run(String[] strings, ParserConfig parserConfig)
+    public void run(String[] strings, ParserConfig parserConfig, MyFactory objectFactory)
             throws TypeConversionException, TypeMatchingException, ParserException {
         if (strings.length < types.size() - (isLastArgumentMandatory ? 0 : 1)) {
             throw new TypeMatchingException("Different count of arguments in the type mask and in the config file");

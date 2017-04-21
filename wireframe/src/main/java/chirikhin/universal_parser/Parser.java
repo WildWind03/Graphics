@@ -11,7 +11,9 @@ public class Parser {
                                      new FileInputStream(file), Charset.forName("UTF-8")))) {
             String nextString;
             while ((nextString = bufferedReader.readLine()) != null) {
-                parserConfig.execute(nextString);
+                if (!nextString.isEmpty()) {
+                    parserConfig.execute(nextString);
+                }
             }
         } catch (IOException e) {
             throw new ParserException(e.getMessage(), e);
