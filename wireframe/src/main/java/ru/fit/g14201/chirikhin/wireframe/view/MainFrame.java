@@ -94,7 +94,7 @@ public class MainFrame extends JFrame {
     }
 
     private void onSettingButtonClick() {
-        SettingsDialog settingsDialog = new SettingsDialog(this, "Settings", -1, model);
+        SettingsDialog settingsDialog = new SettingsDialog(this, SETTINGS, -1, model);
         settingsDialog.apparate();
     }
 

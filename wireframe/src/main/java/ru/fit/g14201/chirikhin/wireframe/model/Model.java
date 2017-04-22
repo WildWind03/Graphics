@@ -151,6 +151,7 @@ public class Model {
         return backgroundColor;
     }
 
+
     public ArrayList<Shape> getShapes() {
         return shapes;
     }

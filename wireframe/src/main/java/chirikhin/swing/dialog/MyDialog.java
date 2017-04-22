@@ -34,6 +34,10 @@ public abstract class MyDialog extends JDialog {
     }
 
     protected void addComponent(int row, int column, int width, int height, JComponent jComponent) {
+        addComponent(row, column, width, height, GridBagConstraints.NONE, jComponent);
+    }
+
+    protected void addComponent(int row, int column, int width, int height, int fill, JComponent jComponent) {
         GridBagConstraints constraints = new GridBagConstraints();
 
         Insets insets = new Insets(5, 10, 5, 10);
@@ -43,6 +47,7 @@ public abstract class MyDialog extends JDialog {
         constraints.insets = insets;
         constraints.gridwidth = width;
         constraints.gridheight = height;
+        constraints.fill = fill;
 
         add(jComponent, constraints);
     }

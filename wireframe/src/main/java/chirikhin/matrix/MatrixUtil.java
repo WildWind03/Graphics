@@ -5,6 +5,22 @@ public class MatrixUtil {
 
     }
 
+    public static Matrix multiply(Matrix matrix, float value) {
+        if (null == matrix) {
+            throw new IllegalArgumentException("Matrix can not be null");
+        }
+
+        float[][] matrixData = new float[matrix.getHeight()][matrix.getWidth()];
+
+        for (int i = 0; i < matrix.getHeight(); ++i) {
+            for (int k = 0; k < matrix.getWidth(); ++k) {
+                matrixData[i][k] = matrix.get(i, k) * value;
+            }
+        }
+
+        return new Matrix(matrixData);
+    }
+
     public static Matrix multiply(Matrix leftMatrix, Matrix rightMatrix) {
         if (null == rightMatrix || null == leftMatrix) {
             throw new IllegalArgumentException("Matrixes can not be null");
