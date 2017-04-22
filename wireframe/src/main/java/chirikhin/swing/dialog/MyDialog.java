@@ -22,18 +22,27 @@ public abstract class MyDialog extends JDialog {
         setLayout(gridBagLayout);
 
         onDialogCreated(args);
-        addOkAndCancelButtons(rowForOkAndCancelButtons);
+        if (rowForOkAndCancelButtons > 0) {
+            addOkAndCancelButtons(rowForOkAndCancelButtons);
+        }
+
         pack();
     }
 
     protected void addComponent(int row, int column, JComponent jComponent) {
+        addComponent(row, column, 1, 1, jComponent);
+    }
+
+    protected void addComponent(int row, int column, int width, int height, JComponent jComponent) {
         GridBagConstraints constraints = new GridBagConstraints();
 
         Insets insets = new Insets(5, 10, 5, 10);
 
-        constraints.gridx = row;
-        constraints.gridy = column;
+        constraints.gridx = column;
+        constraints.gridy = row;
         constraints.insets = insets;
+        constraints.gridwidth = width;
+        constraints.gridheight = height;
 
         add(jComponent, constraints);
     }

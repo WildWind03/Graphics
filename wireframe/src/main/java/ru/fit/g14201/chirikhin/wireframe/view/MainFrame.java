@@ -5,6 +5,7 @@ import chirikhin.universal_parser.NoObjectFactoryException;
 import chirikhin.universal_parser.ParserException;
 import chirikhin.universal_parser.TypeConversionException;
 import chirikhin.universal_parser.TypeMatchingException;
+import ru.fit.g14201.chirikhin.wireframe.model.Model;
 import ru.fit.g14201.chirikhin.wireframe.model_loader.ModelLoader;
 
 import javax.swing.*;
@@ -29,8 +30,11 @@ public class MainFrame extends JFrame {
     private static final String DATA_FOLDER = "./FIT_g14201_Chirikhin_Wireframe_Data";
     private static final String CAN_T_OPEN = "Can't open";
 
+    private Model model;
+
     public MainFrame() {
         super(WIREFRAME);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         JMenuBar jMenubar = new JMenuBar();
 
         JMenu fileMenu = new JMenu(FILE);
@@ -72,6 +76,7 @@ public class MainFrame extends JFrame {
         if (JFileChooser.APPROVE_OPTION == result) {
             try {
                 ModelLoader modelLoader = new ModelLoader(jFileChooser.getSelectedFile());
+                loadModel(modelLoader.getModel());
             } catch (ParserException | TypeConversionException |
                     TypeMatchingException | NoObjectFactoryException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(),
@@ -89,7 +94,12 @@ public class MainFrame extends JFrame {
     }
 
     private void onSettingButtonClick() {
+        SettingsDialog settingsDialog = new SettingsDialog(this, "Settings", -1, model);
+        settingsDialog.apparate();
+    }
 
+    private void loadModel(Model model) {
+        this.model = model;
     }
 
 }

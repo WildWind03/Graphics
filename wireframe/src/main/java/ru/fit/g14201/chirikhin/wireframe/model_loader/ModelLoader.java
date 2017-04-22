@@ -160,13 +160,27 @@ public class ModelLoader {
                                 "Shape was not added. Builder worked not properly");
                     }
                     ++currentShape.integer;
+                    rowCounterForMatrix.integer = 0;
                     parserConfig.setCurrentRunnableIndex(currentParserRunnableIndex.integer);
                 }
             }
         });
 
-        Parser parser = new Parser(file, parserConfigBuilder.build());
-        System.out.println(model.getShapes().get(0).getRoundMatrix().get(0, 0));
+        Parser parser = new Parser(file, parserConfigBuilder.build(), ListUtil.asList(5), s -> {
+            if (s.isEmpty()) {
+                return false;
+            }
+
+            String trimmedString = s.trim();
+
+            if (trimmedString.length() > 2) {
+                if (trimmedString.substring(0, 2).equals("//")) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
 
     }
 
