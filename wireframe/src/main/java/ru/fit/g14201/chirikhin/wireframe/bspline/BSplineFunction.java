@@ -11,7 +11,7 @@ public class BSplineFunction {
             {3, -6, 3, 0},
             {-3, 0, 3, 0},
             {1, 4, 1, 0}});
-    private static final float k = 1/6;
+    private static final float k = 1f/6f;
 
     public BSplineFunction(ArrayList<Point> points) {
         this.points = points;

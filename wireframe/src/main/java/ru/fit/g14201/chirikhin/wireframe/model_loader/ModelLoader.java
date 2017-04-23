@@ -31,21 +31,29 @@ public class ModelLoader {
 
         MyFactory objectFactory = new MyFactory();
         objectFactory.addTypeMaker(Integer.class, Integer::parseInt);
-        objectFactory.addTypeMaker(Comment.class, (string) -> null);
+        objectFactory.addTypeMaker(Float.class, Float::parseFloat);
+        objectFactory.addTypeMaker(Comment.class, (string) -> {
+            if (!string.substring(0, 2).equals("//")) {
+                throw new ParserException("Invalid comment");
+            }
+
+            return null;
+        });
 
         ParserConfigBuilder parserConfigBuilder = new ParserConfigBuilder()
                 .with(objectFactory)
                 .add(new TypeCheckRunnable(ListUtil.asList(Integer.class,
-                        Integer.class, Integer.class, Integer.class, Integer.class,
-                        Integer.class, Comment.class)) {
+                        Integer.class, Integer.class, Float.class, Float.class, Float.class,
+                        Float.class, Comment.class)) {
                     @Override
                     public void run(Object[] objects, ParserConfig parserConfig) {
                         model.setN((Integer) objects[0]);
                         model.setM((Integer) objects[1]);
-                        model.setA((Integer) objects[2]);
-                        model.setB((Integer) objects[3]);
-                        model.setC((Integer) objects[4]);
-                        model.setD((Integer) objects[5]);
+                        model.setK((Integer) objects[2]);
+                        model.setA((Float) objects[3]);
+                        model.setB((Float) objects[4]);
+                        model.setC((Float) objects[5]);
+                        model.setD((Float) objects[6]);
                         parserConfig.nextIndex();
                     }
                 })
@@ -92,10 +100,10 @@ public class ModelLoader {
                     }
                 });
 
-            ShapeBuilder shapeBuilder = new ShapeBuilder();
+        final ShapeBuilder[] shapeBuilder = {new ShapeBuilder()};
             IntegerWrapper rowCounterForMatrix = new IntegerWrapper(0);
             Matrix roundMatrix = new Matrix(new float[3][3]);
-            shapeBuilder.withRoundMatrix(roundMatrix);
+            shapeBuilder[0].withRoundMatrix(roundMatrix);
             IntegerWrapper countOfPoints = new IntegerWrapper(0);
             IntegerWrapper currentParserRunnableIndex = new IntegerWrapper(0);
             IntegerWrapper currentShape = new IntegerWrapper(0);
@@ -105,7 +113,7 @@ public class ModelLoader {
                             Comment.class)) {
                         @Override
                         public void run(Object[] objects, ParserConfig parserConfig) {
-                            shapeBuilder.withColor(new Color((Integer) objects[0],
+                            shapeBuilder[0].withColor(new Color((Integer) objects[0],
                                     (Integer) objects[1],
                                     (Integer) objects[2]));
                             currentParserRunnableIndex.integer = parserConfig.getCurrentRunnableIndex();
@@ -116,7 +124,7 @@ public class ModelLoader {
                             Comment.class)) {
                         @Override
                         public void run(Object[] objects, ParserConfig parserConfig) {
-                            shapeBuilder
+                            shapeBuilder[0]
                                     .withCx((Integer) objects[0])
                                     .withCy((Integer) objects[1])
                                     .withCz((Integer) objects[2]);
@@ -146,22 +154,25 @@ public class ModelLoader {
                     });
 
 
-        IntegerWrapper currentPoint = new IntegerWrapper(0);
-        parserConfigBuilder.add(new TypeCheckRunnable(ListUtil.asList(Integer.class, Integer.class,
+        final IntegerWrapper[] currentPoint = {new IntegerWrapper(0)};
+        parserConfigBuilder.add(new TypeCheckRunnable(ListUtil.asList(Float.class, Float.class,
                 Comment.class)) {
             @Override
             public void run(Object[] objects, ParserConfig parserConfig) {
-                shapeBuilder.addPoint((Integer) objects[0], (Integer) objects[1]);
-                if (++currentPoint.integer >= countOfPoints.integer) {
+                shapeBuilder[0].addPoint((Float) objects[0], (Float) objects[1]);
+                if (++currentPoint[0].integer >= countOfPoints.integer) {
                     try {
-                        model.addShape(shapeBuilder.build());
+                        model.addShape(shapeBuilder[0].build());
                     } catch (ShapeBuildingException e) {
                         Logger.getLogger(ModelLoader.class.getName()).log(Level.WARNING,
                                 "Shape was not added. Builder worked not properly");
                     }
                     ++currentShape.integer;
                     rowCounterForMatrix.integer = 0;
+                    currentPoint[0].integer = 0;
                     parserConfig.setCurrentRunnableIndex(currentParserRunnableIndex.integer);
+                    shapeBuilder[0] = new ShapeBuilder();
+                    shapeBuilder[0].withRoundMatrix(roundMatrix);
                 }
             }
         });

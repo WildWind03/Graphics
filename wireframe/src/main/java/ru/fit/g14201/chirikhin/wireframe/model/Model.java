@@ -9,10 +9,10 @@ public class Model {
     private int n;
     private int m;
     private int k;
-    private int a;
-    private int b;
-    private int c;
-    private int d;
+    private float a;
+    private float b;
+    private float c;
+    private float d;
     private int zn;
     private int zf;
     private int sw;
@@ -55,19 +55,19 @@ public class Model {
         this.k = k;
     }
 
-    public void setA(int a) {
+    public void setA(float a) {
         this.a = a;
     }
 
-    public void setB(int b) {
+    public void setB(float b) {
         this.b = b;
     }
 
-    public void setC(int c) {
+    public void setC(float c) {
         this.c = c;
     }
 
-    public void setD(int d) {
+    public void setD(float d) {
         this.d = d;
     }
 
@@ -111,19 +111,19 @@ public class Model {
         return k;
     }
 
-    public int getA() {
+    public float getA() {
         return a;
     }
 
-    public int getB() {
+    public float getB() {
         return b;
     }
 
-    public int getC() {
+    public float getC() {
         return c;
     }
 
-    public int getD() {
+    public float getD() {
         return d;
     }
 

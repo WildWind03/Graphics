@@ -27,11 +27,11 @@ public class PixelCoordinateToAreaConverter {
     }
 
     public int toPixelX(float imX) {
-        return (int) (imX / (endX - startX)) * pixelFieldWidth;
+        return pixelFieldWidth / 2 + (int) ((imX / (endX - startX)) * pixelFieldWidth);
     }
 
     public int toPixelY(float imY) {
-        return (int) (imY / (endY - startY)) * pixelFieldHeight;
+        return pixelFieldHeight / 2 - (int) ((imY / (endY - startY)) * pixelFieldHeight);
     }
 
     public int getPixelFieldWidth() {

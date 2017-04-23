@@ -2,17 +2,12 @@ package ru.fit.g14201.chirikhin.wireframe.view;
 
 import chirikhin.matrix.Matrix;
 import chirikhin.swing.dialog.MyDialog;
-import ru.fit.g14201.chirikhin.wireframe.bspline.*;
-import ru.fit.g14201.chirikhin.wireframe.bspline.Point;
-import ru.fit.g14201.chirikhin.wireframe.model.*;
+import ru.fit.g14201.chirikhin.wireframe.model.Model;
 import ru.fit.g14201.chirikhin.wireframe.model.Shape;
+import ru.fit.g14201.chirikhin.wireframe.model.ShapeBuilder;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -74,11 +69,7 @@ public class SettingsDialog extends MyDialog {
 
         JLabel listOfShapesLabel = new JLabel("List of shapes");
         listOfShapesLabel.setFont(new Font(listOfShapesLabel.getFont().getName(), Font.PLAIN, 20));
-        splineGraphic = new SplineGraphic(WIDTH, HEIGHT,
-                model.getA(),
-                model.getC(),
-                model.getB(),
-                model.getD());
+        splineGraphic = new SplineGraphic(WIDTH, HEIGHT);
         setResizable(false);
         addComponent(0, 0, 80, 10, splineGraphic);
         addComponent(0, 81, 50, 5, listOfShapesLabel);
@@ -128,8 +119,10 @@ public class SettingsDialog extends MyDialog {
 
         shapesList.addListSelectionListener(e -> {
             int selectedModelIndex = shapesList.getSelectedIndex();
-            Shape shape = model.getShapes().get(selectedModelIndex);
-            splineGraphic.drawPoints(shape.getPoints());
+            if (selectedModelIndex >= 0) {
+                Shape shape = model.getShapes().get(selectedModelIndex);
+                splineGraphic.drawSpline(shape);
+            }
         });
 
         JButton addNewShapeButton = new JButton("Add a new shape to the model");
