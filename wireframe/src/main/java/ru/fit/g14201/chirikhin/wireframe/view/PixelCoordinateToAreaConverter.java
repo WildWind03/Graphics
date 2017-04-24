@@ -41,4 +41,20 @@ public class PixelCoordinateToAreaConverter {
     public int getPixelFieldHeight() {
         return pixelFieldHeight;
     }
+
+    public float getStartX() {
+        return startX;
+    }
+
+    public float getStartY() {
+        return startY;
+    }
+
+    public float getEndX() {
+        return endX;
+    }
+
+    public float getEndY() {
+        return endY;
+    }
 }

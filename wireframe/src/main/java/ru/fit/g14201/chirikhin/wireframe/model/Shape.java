@@ -50,4 +50,8 @@ public class Shape {
     public ArrayList<Point> getPoints() {
         return points;
     }
+
+    public boolean isEmpty() {
+        return getPoints().isEmpty();
+    }
 }

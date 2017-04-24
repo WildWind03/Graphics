@@ -13,10 +13,11 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class SplineGraphic extends JPanel {
-    public static final int ovalRadius1 = 4;
-    public static final int ovalRadius2 = 7;
+    private static final int ovalRadius1 = 4;
+    private static final int ovalRadius2 = 7;
 
     private final int width;
     private final int height;
@@ -40,11 +41,32 @@ public class SplineGraphic extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
-                System.out.println("Drag");
-                if (null != selectedPoint) {
-                    selectedPoint.setX(pixelCoordinateToAreaConverter.toRealX(e.getX()));
-                    selectedPoint.setY(pixelCoordinateToAreaConverter.toRealY(height - e.getY()));
-                    drawSpline(shape);
+                if (null != shape && null != selectedPoint) {
+                    float oldMax = pixelCoordinateToAreaConverter.getEndX();
+
+                    if (e.getX() > width) {
+                        float gapX = e.getX() - width;
+                        float addPartX = (gapX / (float) width) * 2 * oldMax;
+                        selectedPoint.setX(oldMax + addPartX);
+                    } else {
+                        float newX = pixelCoordinateToAreaConverter.toRealX(e.getX());
+                        selectedPoint.setX(newX);
+                    }
+
+                    if (e.getY() > height) {
+                        int gapY = e.getY() - height;
+                        float addPartY =(gapY / (float) height) * 2 * oldMax;
+                        selectedPoint.setY(-oldMax - addPartY);
+                    } else {
+                        float newY = pixelCoordinateToAreaConverter.toRealY(height - e.getY());
+                        selectedPoint.setY(newY);
+                    }
+
+                    float newMax = getMax(shape.getPoints());
+                    pixelCoordinateToAreaConverter = new PixelCoordinateToAreaConverter(
+                            -newMax, -newMax, newMax, newMax, width, height);
+
+                    drawSpline();
                 }
             }
         });
@@ -54,7 +76,7 @@ public class SplineGraphic extends JPanel {
             public void mousePressed(MouseEvent e) {
                 super.mouseClicked(e);
 
-                if (null != shape) {
+                if (null != shape && !shape.isEmpty()) {
                     int counter = 0;
                     for (Point point : shape.getPoints()) {
                         int realX = pixelCoordinateToAreaConverter.toPixelX(point.getX());
@@ -64,12 +86,21 @@ public class SplineGraphic extends JPanel {
                         if (e.getX() >= realX - radius && e.getX() <= realX + radius) {
                             if (e.getY() >= realY - radius && e.getY() <= realY + radius) {
                                 selectedPoint = point;
-                                System.out.println("Press");
+                                drawSpline();
                                 break;
                             }
                         }
                         counter++;
                     }
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                if (null != shape && !shape.isEmpty()) {
+                    selectedPoint = null;
+                    drawSpline();
                 }
             }
         });
@@ -87,8 +118,17 @@ public class SplineGraphic extends JPanel {
             int realX = pixelCoordinateToAreaConverter.toPixelX(p.getX());
             int realY = pixelCoordinateToAreaConverter.toPixelY(p.getY());
             int ovarRadius = (0 == counter % 2) ? ovalRadius1 : ovalRadius2;
+
+            if (selectedPoint == p) {
+                graphics2D.setColor(Color.green);
+            }
+
             graphics2D.drawOval(realX - ovarRadius, realY - ovarRadius, ovarRadius * 2,
                     ovarRadius * 2);
+
+            if (selectedPoint == p) {
+                graphics2D.setColor(Color.RED);
+            }
             if (counter++ > 0) {
                 graphics2D.drawLine(realX, realY, prevRealX, prevRealY);
             }
@@ -99,11 +139,11 @@ public class SplineGraphic extends JPanel {
         }
 
         graphics2D.dispose();
-        repaint();
     }
 
     public void setShape(Shape shape) {
         this.shape = shape;
+
         if (!shape.getPoints().isEmpty()) {
             float max = getMax(shape.getPoints());
             pixelCoordinateToAreaConverter =
@@ -111,14 +151,15 @@ public class SplineGraphic extends JPanel {
         } else {
             pixelCoordinateToAreaConverter = null;
         }
-        drawSpline(shape);
+
+        drawSpline();
     }
 
-    private void drawSpline(Shape shape) {
+    private void drawSpline() {
         clearImage();
         drawCoordinateSystem();
 
-        if (shape.getPoints().isEmpty()) {
+        if (null == shape || shape.getPoints().isEmpty()) {
             repaint();
             return;
         }
@@ -169,7 +210,11 @@ public class SplineGraphic extends JPanel {
     }
 
     private float getMax(List<Point> list) {
-        return Math.abs(list
+        if (null == list) {
+            throw new IllegalArgumentException("List must be not null");
+        }
+
+        Optional<Float> maxValue = list
                 .stream()
                 .flatMap(point
                         -> ListUtil.asList(point.getX(), point.getY()).stream())
@@ -183,7 +228,12 @@ public class SplineGraphic extends JPanel {
                             return 0;
                         }
                     }
-                })
-                .get());
+                });
+
+        if (maxValue.isPresent()) {
+            return Math.abs(maxValue.get());
+        }
+
+        throw new IllegalArgumentException("Optional doesn't contain value");
     }
 }
