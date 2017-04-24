@@ -60,8 +60,8 @@ public abstract class MyDialog extends JDialog {
         JButton okButton = new JButton(OK);
         JButton cancelButton = new JButton(CANCEL);
 
-        addComponent(0, row, okButton);
-        addComponent(1, row, cancelButton);
+        addComponent(row, 0, okButton);
+        addComponent(row, 1, cancelButton);
 
         addWindowListener(new WindowAdapter() {
             @Override

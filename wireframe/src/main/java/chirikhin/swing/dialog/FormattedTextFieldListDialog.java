@@ -26,12 +26,12 @@ public class FormattedTextFieldListDialog extends MyDialog {
     }
 
     public void addTextField(String label, int minValue, int maxValue, String TAG, Number defaultValue) {
-        addComponent(0, currentRow, new JLabel(label));
+        addComponent(currentRow, 0, new JLabel(label));
 
         JFormattedTextField jFormattedTextField = FormattedTextFieldUtil.getFormattedTextField(minValue, maxValue, DEFAULT_TEXT_FIELD_LENGTH);
         textFields.add(new Pair<>(TAG, jFormattedTextField));
         jFormattedTextField.setValue(defaultValue);
-        addComponent(1, currentRow, jFormattedTextField);
+        addComponent(currentRow, 1, jFormattedTextField);
         currentRow++;
     }
 

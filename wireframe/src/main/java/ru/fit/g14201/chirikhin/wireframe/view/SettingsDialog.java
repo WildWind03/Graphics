@@ -1,6 +1,7 @@
 package ru.fit.g14201.chirikhin.wireframe.view;
 
 import chirikhin.matrix.Matrix;
+import chirikhin.swing.dialog.FormattedTextFieldListDialog;
 import chirikhin.swing.dialog.MyDialog;
 import ru.fit.g14201.chirikhin.wireframe.model.Model;
 import ru.fit.g14201.chirikhin.wireframe.model.Shape;
@@ -117,17 +118,6 @@ public class SettingsDialog extends MyDialog {
 
         JList<String> shapesList = new JList<>(shapes.toArray(new String[shapes.size()]));
 
-        splineGraphic.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-
-                if (shapesList.getSelectedIndex() >= 0) {
-                    Shape shape = model.getShapes().get(shapesList.getSelectedIndex());
-                }
-            }
-        });
-
         shapesList.addListSelectionListener(e -> {
             int selectedModelIndex = shapesList.getSelectedIndex();
             if (selectedModelIndex >= 0) {
@@ -138,15 +128,15 @@ public class SettingsDialog extends MyDialog {
 
         JButton addNewShapeButton = new JButton("Add a new shape to the model");
         addNewShapeButton.addActionListener(e -> {
-            if(model.getShapes().add(new ShapeBuilder()
-                    .withColor(Color.BLACK)
-                    .withCx(0)
-                    .withCy(0)
-                    .withCz(0)
-                    .withRoundMatrix(new Matrix(new float[][] {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}))
-                    .build())) {
-                shapes.add(getShapeName(shapes));
-                shapesList.setListData(shapes.toArray(new String[shapes.size()]));
+                if(model.getShapes().add(new ShapeBuilder()
+                        .withColor(Color.BLACK)
+                        .withCx(0)
+                        .withCy(0)
+                        .withCz(0)
+                        .withRoundMatrix(new Matrix(new float[][] {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}))
+                        .build())) {
+                    shapes.add(getShapeName(shapes));
+                    shapesList.setListData(shapes.toArray(new String[shapes.size()]));
             }
         });
 
@@ -164,6 +154,7 @@ public class SettingsDialog extends MyDialog {
                         shapes.remove(shapesList.getSelectedValue());
                         model.getShapes().remove(shapesList.locationToIndex(e.getPoint()));
                         shapesList.setListData(shapes.toArray(new String[shapes.size()]));
+                        splineGraphic.setShape(null);
                     });
 
                     jPopupMenu.add(itemRemove);
