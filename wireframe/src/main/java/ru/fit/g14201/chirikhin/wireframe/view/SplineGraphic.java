@@ -2,14 +2,15 @@ package ru.fit.g14201.chirikhin.wireframe.view;
 
 import chirikhin.swing.dialog.FormattedTextFieldListDialog;
 import chirikhin.swing.util.ListUtil;
-import javafx.scene.input.KeyCode;
 import ru.fit.g14201.chirikhin.wireframe.bspline.BSplineFunction;
 import ru.fit.g14201.chirikhin.wireframe.bspline.Point;
 import ru.fit.g14201.chirikhin.wireframe.model.Shape;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,7 +1,6 @@
 package ru.fit.g14201.chirikhin.wireframe.view;
 
 import chirikhin.matrix.Matrix;
-import chirikhin.swing.dialog.FormattedTextFieldListDialog;
 import chirikhin.swing.dialog.MyDialog;
 import ru.fit.g14201.chirikhin.wireframe.model.Model;
 import ru.fit.g14201.chirikhin.wireframe.model.Shape;
