@@ -1,8 +1,8 @@
 package ru.fit.g14201.chirikhin.wireframe.bspline;
 
 public class Point {
-    private final float x;
-    private final float y;
+    private float x;
+    private float y;
 
     public Point(float x, float y) {
         this.x = x;
@@ -15,5 +15,13 @@ public class Point {
 
     public float getY() {
         return y;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public void setY(float y) {
+        this.y = y;
     }
 }

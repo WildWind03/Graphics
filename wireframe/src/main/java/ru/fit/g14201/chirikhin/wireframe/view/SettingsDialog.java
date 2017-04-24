@@ -44,6 +44,7 @@ public class SettingsDialog extends MyDialog {
 
     @Override
     protected void onDialogCreated(HashMap<String, Object> propertyResourceBundle) {
+        splineGraphic = new SplineGraphic(WIDTH, HEIGHT);
         Model model = (propertyResourceBundle.get(MODEL_KEY) != null) ?
                 (Model) propertyResourceBundle.get(MODEL_KEY)
                 : new Model(10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, new Matrix(new float[][]{{1, 2, 3},
@@ -69,7 +70,6 @@ public class SettingsDialog extends MyDialog {
 
         JLabel listOfShapesLabel = new JLabel("List of shapes");
         listOfShapesLabel.setFont(new Font(listOfShapesLabel.getFont().getName(), Font.PLAIN, 20));
-        splineGraphic = new SplineGraphic(WIDTH, HEIGHT);
         setResizable(false);
         addComponent(0, 0, 80, 10, splineGraphic);
         addComponent(0, 81, 50, 5, listOfShapesLabel);
@@ -117,11 +117,22 @@ public class SettingsDialog extends MyDialog {
 
         JList<String> shapesList = new JList<>(shapes.toArray(new String[shapes.size()]));
 
+        splineGraphic.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                if (shapesList.getSelectedIndex() >= 0) {
+                    Shape shape = model.getShapes().get(shapesList.getSelectedIndex());
+                }
+            }
+        });
+
         shapesList.addListSelectionListener(e -> {
             int selectedModelIndex = shapesList.getSelectedIndex();
             if (selectedModelIndex >= 0) {
                 Shape shape = model.getShapes().get(selectedModelIndex);
-                splineGraphic.drawSpline(shape);
+                splineGraphic.setShape(shape);
             }
         });
 

@@ -19,11 +19,11 @@ public class PixelCoordinateToAreaConverter {
     }
 
     public float toRealX(int u) {
-        return (endX - startX) * (float) u / (float) pixelFieldWidth + startX;
+        return (((float) u) / pixelFieldWidth) * (endX - startX) + startX;
     }
 
     public float toRealY(int v) {
-        return (endY - startY) * (float) v / (float) pixelFieldHeight + startY;
+        return ((float) v / pixelFieldHeight) * (endY - startY) + startY;
     }
 
     public int toPixelX(float imX) {
