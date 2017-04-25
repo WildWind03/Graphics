@@ -52,8 +52,8 @@ public class MyParser {
         MyRunnable myRunnable1 = new TypeCheckRunnable(firstLinesParams, myFactory) {
             @Override
             public void run(Object[] objects, ParserConfig parserConfig) {
-                gripValueKM.add((int) objects[0]);
-                gripValueKM.add((int) objects[1]);
+                gripValueKM.add((Integer) objects[0]);
+                gripValueKM.add((Integer) objects[1]);
                 parserConfig.setCurrentRunnableIndex(parserConfig.getCurrentRunnableIndex() + 1);
             }
         };
@@ -62,7 +62,7 @@ public class MyParser {
         MyRunnable myRunnable2 = new TypeCheckRunnable(secondLinesParams, myFactory) {
             @Override
             public void run(Object[] objects, ParserConfig parserConfig) {
-                levelCount.add((int) objects[0]);
+                levelCount.add((Integer) objects[0]);
                 parserConfig.setCurrentRunnableIndex(parserConfig.getCurrentRunnableIndex() + 1);
             }
         };
@@ -73,7 +73,7 @@ public class MyParser {
 
             @Override
             public void run(Object[] objects, ParserConfig parserConfig) {
-                legendColor.add(new Integer[] {(int) objects[0], (int) objects[1], (int) objects[2]});
+                legendColor.add(new Integer[] {(Integer) objects[0], (Integer) objects[1], (Integer) objects[2]});
                 counter++;
 
                 if (counter >= levelCount.get(0)) {
@@ -86,7 +86,7 @@ public class MyParser {
         MyRunnable myRunnable4  = new TypeCheckRunnable(thirdLinesParams, myFactory) {
             @Override
             public void run(Object[] objects, ParserConfig parserConfig) {
-                isolinesColor.add(new Integer[] {(int) objects[0], (int) objects[1], (int) objects[2]});
+                isolinesColor.add(new Integer[] {(Integer) objects[0], (Integer) objects[1], (Integer) objects[2]});
                 parserConfig.setCurrentRunnableIndex(parserConfig.getCurrentRunnableIndex() + 1);
             }
         };

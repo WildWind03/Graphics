@@ -1,24 +1,44 @@
 package ru.nsu.fit.g14201.chirikhin.isolines.util;
 
-public class Util {
-    private static final int START_X = -2;
-    private static final int END_X = 2;
-    private static final int START_Y = -4;
-    private static final int END_Y = 4;
+import ru.nsu.fit.g14201.chirikhin.isolines.function.MyFunction;
+import ru.nsu.fit.g14201.chirikhin.isolines.model.PixelCoordinateToAreaConverter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+public class Util {
     private Util() {
 
     }
 
-    public static double function(double x, double y) {
-        return (Math.exp(-x*x-y*y/2) * Math.cos(4*x) + Math.exp(-3*((x+0.5)*(x+0.5)+y*y/2)));
-    }
+    public static List<Double> getPointsByFunctionColorsAndArea(MyFunction function, PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter,
+                                                                 int countOfDivisions) {
+        double max = function.apply(0d, 0d);
+        double min = function.apply(0d, 0d);
 
-    public static double toRealX(int u, int width) {
-        return (END_X - START_X) * (double) u / (double) width + START_X;
-    }
+        for (int i = 0; i < pixelCoordinateToAreaConverter.getPixelFieldWidth(); ++i) {
+            for (int k = 0; k < pixelCoordinateToAreaConverter.getPixelFieldHeight(); ++k) {
+                double value = function.apply(pixelCoordinateToAreaConverter.toRealX(i), pixelCoordinateToAreaConverter.toRealY(k));
 
-    public static double toRealY(int v, int height) {
-        return (END_Y - START_Y) * (double) v / (double) height + START_Y;
+                if (value > max) {
+                    max = value;
+                }
+
+                if (value < min) {
+                    min = value;
+                }
+            }
+        }
+
+        List<Double> values = new ArrayList<>();
+        double step = (max - min) / countOfDivisions;
+
+        for (int i = 0; i < countOfDivisions; ++i) {
+            values.add(min + i * step);
+        }
+
+        values.add(max);
+
+        return values;
     }
 }
