@@ -1,16 +1,21 @@
 package ru.fit.g14201.chirikhin.wireframe.view;
 
+import chirikhin.matrix.Matrix;
 import chirikhin.swing.util.MenuToolBarListenerUtil;
 import chirikhin.universal_parser.NoObjectFactoryException;
 import chirikhin.universal_parser.ParserException;
 import chirikhin.universal_parser.TypeConversionException;
 import chirikhin.universal_parser.TypeMatchingException;
-import ru.fit.g14201.chirikhin.wireframe.model.Model;
+import ru.fit.g14201.chirikhin.wireframe.bspline.*;
+import ru.fit.g14201.chirikhin.wireframe.bspline.Point;
+import ru.fit.g14201.chirikhin.wireframe.model.*;
+import ru.fit.g14201.chirikhin.wireframe.model.Shape;
 import ru.fit.g14201.chirikhin.wireframe.model_loader.ModelLoader;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.io.File;
+import java.awt.*;
+import java.io.*;
 
 public class MainFrame extends JFrame {
 
@@ -76,7 +81,7 @@ public class MainFrame extends JFrame {
         if (JFileChooser.APPROVE_OPTION == result) {
             try {
                 ModelLoader modelLoader = new ModelLoader(jFileChooser.getSelectedFile());
-                loadModel(modelLoader.getModel());
+                this.model = modelLoader.getModel();
             } catch (ParserException | TypeConversionException |
                     TypeMatchingException | NoObjectFactoryException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(),
@@ -86,6 +91,60 @@ public class MainFrame extends JFrame {
     }
 
     private void onSaveButtonClick() {
+        JFileChooser saveFileChooser = new JFileChooser();
+        saveFileChooser.setCurrentDirectory(new File(DATA_FOLDER));
+        FileNameExtensionFilter fileNameExtensionFilter = new FileNameExtensionFilter("*.txt", "txt");
+        saveFileChooser.setFileFilter(fileNameExtensionFilter);
+        int returnVal = saveFileChooser.showSaveDialog(this);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(
+                    saveFileChooser.getSelectedFile()))) {
+                bufferedWriter.write(model.getN() + " " + model.getM() + " " + model.getK() + " " +
+                    model.getA() + " " + model.getB() + " " + model.getC() + " " + model.getD());
+                bufferedWriter.newLine();
+                bufferedWriter.write(model.getZn() + " " + model.getZf() + " " + model.getSw() + " " +
+                    model.getSh());
+                bufferedWriter.newLine();
+                Matrix roundMatrix = model.getRoundMatrix();
+                for (int i = 0; i < 3; ++i) {
+                    bufferedWriter.write(roundMatrix.get(i, 0) + " " + roundMatrix.get(i, 1) + " " + roundMatrix.get(i, 2));
+                    bufferedWriter.newLine();
+                }
+
+                Color backgroundColor = model.getBackgroundColor();
+                bufferedWriter.write(backgroundColor.getRed() + " " + backgroundColor.getGreen() + " "
+                        + backgroundColor.getBlue());
+
+                bufferedWriter.newLine();
+                bufferedWriter.write(model.getShapes().size() + "");
+                bufferedWriter.newLine();
+
+                for (Shape shape : model.getShapes()) {
+                    Color color = shape.getColor();
+                    bufferedWriter.write(color.getRed() + " " + color.getGreen() + " " + color.getBlue());
+                    bufferedWriter.newLine();
+                    bufferedWriter.write(shape.getCx() + " " + shape.getCy() + " " + shape.getCz());
+
+                    Matrix shapeMatrix = shape.getRoundMatrix();
+                    for (int i = 0; i < 3; ++i) {
+                        bufferedWriter.write(shapeMatrix.get(i, 0) + " " + shapeMatrix.get(i, 1) + " " + shapeMatrix.get(i, 2));
+                        bufferedWriter.newLine();
+                    }
+
+                    bufferedWriter.write(shape.getPoints().size() + "");
+                    bufferedWriter.newLine();
+
+                    for (Point point : shape.getPoints()) {
+                        bufferedWriter.write(point.getX() + " " + point.getY());
+                        bufferedWriter.newLine();
+                    }
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error", "Can't save. Reason: " + e.getMessage(),
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
 
     }
 
@@ -96,10 +155,6 @@ public class MainFrame extends JFrame {
     private void onSettingButtonClick() {
         SettingsDialog settingsDialog = new SettingsDialog(this, SETTINGS, -1, model);
         settingsDialog.apparate();
-    }
-
-    private void loadModel(Model model) {
-        this.model = model;
     }
 
 }

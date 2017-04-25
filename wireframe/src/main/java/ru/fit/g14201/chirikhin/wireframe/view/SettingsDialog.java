@@ -19,6 +19,10 @@ public class SettingsDialog extends MyDialog {
     private static final int HEIGHT = 300;
     private static final int SHAPES_LIST_WIDTH = 200;
     private static final int SHAPES_LIST_HEIGHT = 340;
+    private static final float SCALE_RATE_PLUS = 1.1f;
+    private static final float SCALE_RATE_MINUS = 0.9f;
+
+
     private SplineGraphic splineGraphic;
 
     private JSpinner nSpinner;
@@ -140,6 +144,18 @@ public class SettingsDialog extends MyDialog {
         });
 
         addComponent(95, 80, 5, 5, addNewShapeButton);
+        JButton zoomPlusButton = new JButton("Zoom +");
+        zoomPlusButton.addActionListener((e) -> splineGraphic.scaleField(SCALE_RATE_MINUS));
+        addNewComponent(3, 0, zoomPlusButton);
+
+        JButton zoomMinusButton = new JButton("Zoom -");
+        zoomMinusButton.addActionListener(e -> splineGraphic.scaleField(SCALE_RATE_PLUS));
+        addNewComponent(3, 1, zoomMinusButton);
+
+        JButton autoSizeButton = new JButton("Autosize");
+        autoSizeButton.addActionListener(e -> splineGraphic.autosizeField());
+
+        addNewComponent(3, 2, autoSizeButton);
 
         shapesList.addMouseListener(new MouseAdapter() {
             @Override
@@ -175,6 +191,10 @@ public class SettingsDialog extends MyDialog {
     private void addNewSpinnerLabel(int row, int column, String label, JSpinner jSpinner) {
         addComponent(80 + row * 5, column * 2, 1, 5, new JLabel(label));
         addComponent(80 + row * 5, column * 2 + 1, 1, 5, jSpinner);
+    }
+
+    private void addNewComponent(int row, int column, JComponent jComponent) {
+        addComponent(80 + row * 5, column * 2, 2, 5, jComponent);
     }
 
     private String getShapeName(ArrayList<String> names) {
