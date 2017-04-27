@@ -2,7 +2,7 @@ package ru.fit.g14201.chirikhin.wireframe.view;
 
 import chirikhin.swing.util.ListUtil;
 import ru.fit.g14201.chirikhin.wireframe.bspline.BSplineFunction;
-import ru.fit.g14201.chirikhin.wireframe.bspline.Point;
+import chirikhin.support.Point;
 import ru.fit.g14201.chirikhin.wireframe.model.Shape;
 
 import javax.swing.*;
@@ -27,7 +27,7 @@ public class SplineGraphic extends JPanel {
     private PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter;
     private Shape shape;
 
-    private Point selectedPoint = null;
+    private Point<Float, Float> selectedPoint = null;
 
     public SplineGraphic(int width, int height) {
         super(true);
@@ -87,7 +87,7 @@ public class SplineGraphic extends JPanel {
     private void onMousePressed(MouseEvent e) {
         if (null != shape && !shape.isEmpty()) {
             int counter = 0;
-            for (Point point : shape.getPoints()) {
+            for (Point<Float, Float> point : shape.getPoints()) {
                 int realX = pixelCoordinateToAreaConverter.toPixelX(point.getX());
                 int realY = pixelCoordinateToAreaConverter.toPixelY(point.getY());
                 int radius = (0 == counter % 2) ? ovalRadius1 : ovalRadius2;
@@ -109,7 +109,7 @@ public class SplineGraphic extends JPanel {
             e.consume();
             if (null != shape) {
                 int counter = 0;
-                for (Point point : shape.getPoints()) {
+                for (Point<Float, Float> point : shape.getPoints()) {
                     int realX = pixelCoordinateToAreaConverter.toPixelX(point.getX());
                     int realY = pixelCoordinateToAreaConverter.toPixelY(point.getY());
                     int radius = (0 == counter % 2) ? ovalRadius1 : ovalRadius2;
@@ -125,7 +125,7 @@ public class SplineGraphic extends JPanel {
                 float fieldX = pixelCoordinateToAreaConverter.toRealX(e.getX());
                 float fieldY = pixelCoordinateToAreaConverter.toRealY(height - e.getY());
 
-                shape.addPoint(new Point(fieldX, fieldY));
+                shape.addPoint(new Point<>(fieldX, fieldY));
 
                 drawSpline();
             }
@@ -136,7 +136,7 @@ public class SplineGraphic extends JPanel {
         if (null != shape) {
             int counter = 0;
 
-            for (Point point : shape.getPoints()) {
+            for (Point<Float, Float> point : shape.getPoints()) {
                 int realX = pixelCoordinateToAreaConverter.toPixelX(point.getX());
                 int realY = pixelCoordinateToAreaConverter.toPixelY(point.getY());
                 int radius = (0 == counter % 2) ? ovalRadius1 : ovalRadius2;
@@ -161,7 +161,7 @@ public class SplineGraphic extends JPanel {
         return false;
     }
 
-    private void drawPoints(ArrayList<Point> points) {
+    private void drawPoints(ArrayList<Point<Float, Float>> points) {
         Graphics2D graphics2D = bufferedImage.createGraphics();
 
         graphics2D.setColor(Color.RED);
@@ -169,7 +169,7 @@ public class SplineGraphic extends JPanel {
         int counter = 0;
         int prevRealX = 0;
         int prevRealY = 0;
-        for (Point p : points) {
+        for (Point<Float, Float> p : points) {
             int realX = pixelCoordinateToAreaConverter.toPixelX(p.getX());
             int realY = pixelCoordinateToAreaConverter.toPixelY(p.getY());
             int ovarRadius = (0 == counter % 2) ? ovalRadius1 : ovalRadius2;
@@ -219,7 +219,7 @@ public class SplineGraphic extends JPanel {
 
         for (int i = 1; i < shape.getPoints().size() - 2; ++i) {
             for (float t = 0; t < 1; t += 0.01) {
-                Point point = bSplineFunction.getValue(i, t);
+                Point<Float, Float> point = bSplineFunction.getValue(i, t);
 
                 int realX = pixelCoordinateToAreaConverter.toPixelX(point.getX());
                 int realY = pixelCoordinateToAreaConverter.toPixelY(point.getY());
@@ -299,7 +299,7 @@ public class SplineGraphic extends JPanel {
         }
     }
 
-    private float getMax(List<Point> list) {
+    private float getMax(List<Point<Float, Float>> list) {
         if (null == list) {
             throw new IllegalArgumentException("List must be not null");
         }

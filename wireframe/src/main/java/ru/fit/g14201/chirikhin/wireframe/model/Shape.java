@@ -1,7 +1,7 @@
 package ru.fit.g14201.chirikhin.wireframe.model;
 
 import chirikhin.matrix.Matrix;
-import ru.fit.g14201.chirikhin.wireframe.bspline.Point;
+import chirikhin.support.Point;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -12,9 +12,9 @@ public class Shape {
     private final int cy;
     private final int cz;
     private final Matrix roundMatrix;
-    private final ArrayList<Point> points;
+    private final ArrayList<Point<Float, Float>> points;
 
-    Shape(Color color, int cx, int cy, int cz, Matrix roundMatrix, ArrayList<Point> points) {
+    Shape(Color color, int cx, int cy, int cz, Matrix roundMatrix, ArrayList<Point<Float, Float>> points) {
         this.color = color;
         this.cx = cx;
         this.cy = cy;
@@ -23,7 +23,7 @@ public class Shape {
         this.points = points;
     }
 
-    public void addPoint(Point point) {
+    public void addPoint(Point<Float, Float> point) {
         points.add(point);
     }
 
@@ -47,7 +47,7 @@ public class Shape {
         return roundMatrix;
     }
 
-    public ArrayList<Point> getPoints() {
+    public ArrayList<Point<Float, Float>> getPoints() {
         return points;
     }
 

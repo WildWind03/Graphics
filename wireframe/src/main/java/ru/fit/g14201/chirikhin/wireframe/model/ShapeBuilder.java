@@ -1,7 +1,7 @@
 package ru.fit.g14201.chirikhin.wireframe.model;
 
 import chirikhin.matrix.Matrix;
-import ru.fit.g14201.chirikhin.wireframe.bspline.Point;
+import chirikhin.support.Point;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class ShapeBuilder {
     private Integer cy = null;
     private Integer cz = null;
     private Matrix roundMatrix = null;
-    private final ArrayList<Point> points = new ArrayList<>();
+    private final ArrayList<Point<Float, Float>> points = new ArrayList<>();
 
     public ShapeBuilder() {
 
@@ -44,7 +44,7 @@ public class ShapeBuilder {
     }
 
     public ShapeBuilder addPoint(float x, float y) {
-        points.add(new Point(x, y));
+        points.add(new Point<>(x, y));
         return this;
     }
 

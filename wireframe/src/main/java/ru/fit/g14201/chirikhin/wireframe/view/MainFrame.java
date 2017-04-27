@@ -1,16 +1,13 @@
 package ru.fit.g14201.chirikhin.wireframe.view;
 
-import chirikhin.matrix.Matrix;
 import chirikhin.swing.util.MenuToolBarListenerUtil;
 import chirikhin.universal_parser.NoObjectFactoryException;
 import chirikhin.universal_parser.ParserException;
 import chirikhin.universal_parser.TypeConversionException;
 import chirikhin.universal_parser.TypeMatchingException;
-import ru.fit.g14201.chirikhin.wireframe.bspline.*;
-import ru.fit.g14201.chirikhin.wireframe.bspline.Point;
 import ru.fit.g14201.chirikhin.wireframe.model.*;
-import ru.fit.g14201.chirikhin.wireframe.model.Shape;
 import ru.fit.g14201.chirikhin.wireframe.model_loader.ModelLoader;
+import ru.fit.g14201.chirikhin.wireframe.model_loader.ModelSaver;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -34,12 +31,17 @@ public class MainFrame extends JFrame {
     private static final String ABOUT_TEXT = "Wireframe\nCreated 21.04.2017 by Chirikhin Alexander";
     private static final String DATA_FOLDER = "./FIT_g14201_Chirikhin_Wireframe_Data";
     private static final String CAN_T_OPEN = "Can't open";
+    private static final int DEFAULT_SHAPE_VIEW_WIDTH = 600;
+    private static final int DEFAULT_SHAPE_VIEW_HEIGHT = 400;
 
     private Model model;
+    private final ShapeView shapeView = new ShapeView(DEFAULT_SHAPE_VIEW_WIDTH, DEFAULT_SHAPE_VIEW_HEIGHT);
 
     public MainFrame() {
         super(WIREFRAME);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+        setResizable(false);
         JMenuBar jMenubar = new JMenuBar();
 
         JMenu fileMenu = new JMenu(FILE);
@@ -52,7 +54,8 @@ public class MainFrame extends JFrame {
         setJMenuBar(jMenubar);
 
         JToolBar jToolBar = new JToolBar();
-        add(jToolBar);
+        add(jToolBar, BorderLayout.NORTH);
+        add(shapeView, BorderLayout.CENTER);
 
         MenuToolBarListenerUtil.addNewOption(fileMenu, jToolBar, OPEN_ICON_PNG,
                 OPEN, this::onOpenButtonClick);
@@ -98,48 +101,8 @@ public class MainFrame extends JFrame {
         int returnVal = saveFileChooser.showSaveDialog(this);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(
-                    saveFileChooser.getSelectedFile()))) {
-                bufferedWriter.write(model.getN() + " " + model.getM() + " " + model.getK() + " " +
-                    model.getA() + " " + model.getB() + " " + model.getC() + " " + model.getD());
-                bufferedWriter.newLine();
-                bufferedWriter.write(model.getZn() + " " + model.getZf() + " " + model.getSw() + " " +
-                    model.getSh());
-                bufferedWriter.newLine();
-                Matrix roundMatrix = model.getRoundMatrix();
-                for (int i = 0; i < 3; ++i) {
-                    bufferedWriter.write(roundMatrix.get(i, 0) + " " + roundMatrix.get(i, 1) + " " + roundMatrix.get(i, 2));
-                    bufferedWriter.newLine();
-                }
-
-                Color backgroundColor = model.getBackgroundColor();
-                bufferedWriter.write(backgroundColor.getRed() + " " + backgroundColor.getGreen() + " "
-                        + backgroundColor.getBlue());
-
-                bufferedWriter.newLine();
-                bufferedWriter.write(model.getShapes().size() + "");
-                bufferedWriter.newLine();
-
-                for (Shape shape : model.getShapes()) {
-                    Color color = shape.getColor();
-                    bufferedWriter.write(color.getRed() + " " + color.getGreen() + " " + color.getBlue());
-                    bufferedWriter.newLine();
-                    bufferedWriter.write(shape.getCx() + " " + shape.getCy() + " " + shape.getCz());
-
-                    Matrix shapeMatrix = shape.getRoundMatrix();
-                    for (int i = 0; i < 3; ++i) {
-                        bufferedWriter.write(shapeMatrix.get(i, 0) + " " + shapeMatrix.get(i, 1) + " " + shapeMatrix.get(i, 2));
-                        bufferedWriter.newLine();
-                    }
-
-                    bufferedWriter.write(shape.getPoints().size() + "");
-                    bufferedWriter.newLine();
-
-                    for (Point point : shape.getPoints()) {
-                        bufferedWriter.write(point.getX() + " " + point.getY());
-                        bufferedWriter.newLine();
-                    }
-                }
+            try {
+                ModelSaver.saveModel(saveFileChooser.getSelectedFile(), model);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(this, "Error", "Can't save. Reason: " + e.getMessage(),
                         JOptionPane.ERROR_MESSAGE);
