@@ -31,8 +31,8 @@ public class MainFrame extends JFrame {
     private static final String ABOUT_TEXT = "Wireframe\nCreated 21.04.2017 by Chirikhin Alexander";
     private static final String DATA_FOLDER = "./FIT_g14201_Chirikhin_Wireframe_Data";
     private static final String CAN_T_OPEN = "Can't open";
-    private static final int DEFAULT_SHAPE_VIEW_WIDTH = 600;
-    private static final int DEFAULT_SHAPE_VIEW_HEIGHT = 400;
+    private static final int DEFAULT_SHAPE_VIEW_WIDTH = 1024;
+    private static final int DEFAULT_SHAPE_VIEW_HEIGHT = 800;
 
     private Model model;
     private final ShapeView shapeView = new ShapeView(DEFAULT_SHAPE_VIEW_WIDTH, DEFAULT_SHAPE_VIEW_HEIGHT);
@@ -85,6 +85,7 @@ public class MainFrame extends JFrame {
             try {
                 ModelLoader modelLoader = new ModelLoader(jFileChooser.getSelectedFile());
                 this.model = modelLoader.getModel();
+                shapeView.setModel(model);
             } catch (ParserException | TypeConversionException |
                     TypeMatchingException | NoObjectFactoryException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(),

@@ -11,8 +11,8 @@ public class Model {
     private int k;
     private float a;
     private float b;
-    private float c;
-    private float d;
+    private int c;
+    private int d;
     private int zn;
     private int zf;
     private int sw;
@@ -63,11 +63,11 @@ public class Model {
         this.b = b;
     }
 
-    public void setC(float c) {
+    public void setC(int c) {
         this.c = c;
     }
 
-    public void setD(float d) {
+    public void setD(int d) {
         this.d = d;
     }
 
@@ -119,11 +119,11 @@ public class Model {
         return b;
     }
 
-    public float getC() {
+    public int getC() {
         return c;
     }
 
-    public float getD() {
+    public int getD() {
         return d;
     }
 

@@ -34,6 +34,55 @@ public class BSplineFunction {
         return new Point<>(xResultMatrix.get(0, 0), yResultMatrix.get(0, 0));
     }
 
+    public Point<Float, Float> getValue(float percentOfSplineLength) {
+        Point<Integer, Float> iAndTPoint = getIAndT(percentOfSplineLength);
+        return getValue(iAndTPoint.getX(), iAndTPoint.getY());
+    }
+
+    public float getLength() {
+        float totalLength = 0;
+        for (int i = getMinI(); i < getMaxI(); ++i) {
+            float localLength = 0;
+
+            Point<Float, Float> prevPoint = null;
+            for (float t = 0; t < 1; t = t + 0.01f) {
+                Point<Float, Float> p = getValue(i, t);
+                if (t > 0) {
+                    localLength += Math.sqrt(Math.pow(p.getX() - prevPoint.getX(), 2)
+                            + Math.pow(p.getY() - prevPoint.getY(), 2));
+                }
+                prevPoint = p;
+            }
+            totalLength += localLength;
+        }
+
+        return totalLength;
+    }
+
+    public Point<Integer, Float> getIAndT(float u) {
+        float appropriateLength = getLength() * u;
+
+        float totalLength = 0;
+        for (int i = getMinI(); i < getMaxI(); ++i) {
+
+            Point<Float, Float> prevPoint = null;
+            for (float t = 0; t < 1; t = t + 0.01f) {
+                Point<Float, Float> p = getValue(i, t);
+                if (t > 0) {
+                    totalLength += Math.sqrt(Math.pow(p.getX() - prevPoint.getX(), 2)
+                            + Math.pow(p.getY() - prevPoint.getY(), 2));
+
+                    if (totalLength > appropriateLength) {
+                        return new Point<>(i, t);
+                    }
+                }
+                prevPoint = p;
+            }
+        }
+
+        return new Point<>(getMaxI(), 0f);
+    }
+
     public int getMinI() {
         return 1;
     }

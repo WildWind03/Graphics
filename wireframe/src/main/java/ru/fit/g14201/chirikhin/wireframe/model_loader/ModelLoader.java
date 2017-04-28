@@ -43,8 +43,8 @@ public class ModelLoader {
         ParserConfigBuilder parserConfigBuilder = new ParserConfigBuilder()
                 .with(objectFactory)
                 .add(new TypeCheckRunnable(ListUtil.asList(Integer.class,
-                        Integer.class, Integer.class, Float.class, Float.class, Float.class,
-                        Float.class, Comment.class)) {
+                        Integer.class, Integer.class, Float.class, Float.class, Integer.class,
+                        Integer.class, Comment.class)) {
                     @Override
                     public void run(Object[] objects, ParserConfig parserConfig) {
                         model.setN((Integer) objects[0]);
@@ -52,8 +52,8 @@ public class ModelLoader {
                         model.setK((Integer) objects[2]);
                         model.setA((Float) objects[3]);
                         model.setB((Float) objects[4]);
-                        model.setC((Float) objects[5]);
-                        model.setD((Float) objects[6]);
+                        model.setC((Integer) objects[5]);
+                        model.setD((Integer) objects[6]);
                         parserConfig.nextIndex();
                     }
                 })

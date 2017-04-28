@@ -4,7 +4,6 @@ import chirikhin.swing.util.ListUtil;
 import ru.fit.g14201.chirikhin.wireframe.bspline.BSplineFunction;
 import chirikhin.support.Point;
 import ru.fit.g14201.chirikhin.wireframe.model.Shape;
-import ru.fit.g14201.chirikhin.wireframe.util.BSplineLengthMeasurerUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -236,17 +235,17 @@ public class SplineGraphic extends JPanel {
 
         BSplineFunction bSplineFunction = new BSplineFunction(shape.getPoints());
 
-        Point<Float, Integer> startPoint = BSplineLengthMeasurerUtil.getIAndTOfSpline(bSplineFunction, startLength);
-        Point<Float, Integer> endPoint = BSplineLengthMeasurerUtil.getIAndTOfSpline(bSplineFunction, endLength);
+        Point<Integer, Float> startPoint = bSplineFunction.getIAndT(startLength);
+        Point<Integer, Float> endPoint = bSplineFunction.getIAndT(endLength);
 
         graphics2D.setColor(Color.RED);
         for (int i = 1; i < shape.getPoints().size() - 2; ++i) {
             for (float t = 0; t < 1; t += 0.01) {
-                if (i == startPoint.getY() && t > startPoint.getX()) {
+                if (i == startPoint.getX() && t > startPoint.getY()) {
                     graphics2D.setColor(Color.WHITE);
                 }
 
-                if (i == endPoint.getY() && t > endPoint.getX()) {
+                if (i == endPoint.getX() && t > endPoint.getY()) {
                     graphics2D.setColor(Color.RED);
                 }
                 Point<Float, Float> point = bSplineFunction.getValue(i, t);

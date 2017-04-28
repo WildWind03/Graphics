@@ -5,6 +5,8 @@ import chirikhin.matrix.MatrixUtil;
 import chirikhin.support.Line;
 import chirikhin.support.Point;
 import chirikhin.support.Point3D;
+import ru.fit.g14201.chirikhin.wireframe.bspline.BSplineFunction;
+import ru.fit.g14201.chirikhin.wireframe.model.Model;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,8 +23,9 @@ public class ShapeView extends JPanel {
     private final BufferedImage bufferedImage;
     private final int height;
     private final int width;
-    private final ArrayList<Line<Point3D<Float, Float, Float>>> shapeLines = new ArrayList<>();
+    private ArrayList<Line<Point3D<Float, Float, Float>>> shapeLines = new ArrayList<>();
     private final int DEFAULT_SCALE_RATIO = 100;
+    private Model model;
 
     private Point<Integer, Integer> prevPoint = new Point<>(0, 0);
 
@@ -41,10 +44,10 @@ public class ShapeView extends JPanel {
         this.width = width;
         bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-        shapeLines.add(new Line<>(new Point3D<>(0f, 0f, 0f), new Point3D<>(0f, 1f, 0f)));
-        shapeLines.add(new Line<>(new Point3D<>(0f, 0f, 0f), new Point3D<>(1f, 0f, 0f)));
-        shapeLines.add(new Line<>(new Point3D<>(0f, 0f, 0f), new Point3D<>(0f, 0f, 1f)));
-        shapeLines.add(new Line<>(new Point3D<>(0f, 1f, 0f), new Point3D<>(0f, 0f, 1f)));
+//        shapeLines.add(new Line<>(new Point3D<>(0f, 0f, 0f), new Point3D<>(0f, 1f, 0f)));
+//        shapeLines.add(new Line<>(new Point3D<>(0f, 0f, 0f), new Point3D<>(1f, 0f, 0f)));
+//        shapeLines.add(new Line<>(new Point3D<>(0f, 0f, 0f), new Point3D<>(0f, 0f, 1f)));
+//        shapeLines.add(new Line<>(new Point3D<>(0f, 1f, 0f), new Point3D<>(0f, 0f, 1f)));
 
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -75,6 +78,19 @@ public class ShapeView extends JPanel {
                                 MatrixUtil.multiply(qxMatrix, M));
 
         repaint();
+    }
+
+    public void setModel(Model newModel) {
+        this.model = newModel;
+        BSplineFunction bSplineFunction = new BSplineFunction(model.getShapes().get(0).getPoints());
+        shapeLines = ShapeToLinesConverter.toLines(bSplineFunction, model.getN(), model.getM(), model.getK(),
+                model.getA(), model.getB(), model.getD(), model.getC());
+    }
+
+    public void update() {
+        BSplineFunction bSplineFunction = new BSplineFunction(model.getShapes().get(0).getPoints());
+        shapeLines = ShapeToLinesConverter.toLines(bSplineFunction, model.getN(), model.getM(), model.getK(),
+                model.getA(), model.getB(), model.getC(), model.getD());
     }
 
     private Matrix calculateZoomMatrix(int scaleX, int scaleY, int scaleZ) {
