@@ -18,9 +18,11 @@ import java.util.Optional;
 public class SplineGraphic extends JPanel {
     private static final int ovalRadius1 = 4;
     private static final int ovalRadius2 = 7;
-    private static final int MAX_WIDTH = 50;
     private static final Color POINTS_COLOR = Color.blue;
     private static final Color SELECTED_POINTS_COLOR = Color.green;
+    private static final Color EXTRA_SPLINE_PART_COLOR = Color.GRAY;
+    private static final Color SYSTEM_COORDINATE_COLOR = Color.WHITE;
+    private static final Color MAIN_SPLINE_COLOR = Color.WHITE;
 
     private final int width;
     private final int height;
@@ -30,6 +32,7 @@ public class SplineGraphic extends JPanel {
 
     private final BufferedImage bufferedImage;
     private PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter;
+    private float maxWidth = 10;
     private BSpline BSpline;
 
     private Point<Float, Float> selectedPoint = null;
@@ -41,10 +44,12 @@ public class SplineGraphic extends JPanel {
 
         this.height = height;
         this.width = width;
-        setMaxWidth(MAX_WIDTH);
+        setMaxWidth(maxWidth);
         this.bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
         setPreferredSize(new Dimension(width, height));
+
+        drawSpline();
 
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -231,22 +236,22 @@ public class SplineGraphic extends JPanel {
         drawPoints(BSpline.getPoints());
 
         Graphics2D graphics2D = bufferedImage.createGraphics();
-        graphics2D.setColor(Color.WHITE);
+        graphics2D.setColor(MAIN_SPLINE_COLOR);
 
         BSplineFunction bSplineFunction = new BSplineFunction(BSpline.getPoints());
 
         Point<Integer, Float> startPoint = bSplineFunction.getIAndT(startLength);
         Point<Integer, Float> endPoint = bSplineFunction.getIAndT(endLength);
 
-        graphics2D.setColor(Color.RED);
+        graphics2D.setColor(EXTRA_SPLINE_PART_COLOR);
         for (int i = 1; i < BSpline.getPoints().size() - 2; ++i) {
             for (float t = 0; t < 1; t += 0.01) {
                 if (i == startPoint.getX() && t > startPoint.getY()) {
-                    graphics2D.setColor(Color.WHITE);
+                    graphics2D.setColor(MAIN_SPLINE_COLOR);
                 }
 
                 if (i == endPoint.getX() && t > endPoint.getY()) {
-                    graphics2D.setColor(Color.RED);
+                    graphics2D.setColor(EXTRA_SPLINE_PART_COLOR);
                 }
                 Point<Float, Float> point = bSplineFunction.getValue(i, t);
 
@@ -271,9 +276,23 @@ public class SplineGraphic extends JPanel {
 
     private void drawCoordinateSystem() {
         Graphics2D graphics2D = bufferedImage.createGraphics();
-        graphics2D.setColor(Color.WHITE);
+        graphics2D.setColor(SYSTEM_COORDINATE_COLOR);
         graphics2D.drawLine(0, height / 2, width, height / 2);
         graphics2D.drawLine(width / 2, 0, width / 2, height);
+
+        float heightStep = (((float) height / 2f) / getMaxWidth());
+        float widthStep = (((float) width / 2f) / getMaxWidth());
+
+        for (int k = 0; k < getMaxWidth(); ++k) {
+            graphics2D.drawLine((int) (width / 2f) - 5, (int) ((height / 2f) - k * heightStep),
+                    (int) (width / 2f + 5), (int) ((height / 2f) - k * heightStep));
+            graphics2D.drawLine((int) ((width / 2f) - 5), (int) ((height / 2f) + k * heightStep),
+                    (int) (width / 2f + 5), (int) ((height / 2f) + k * heightStep));
+            graphics2D.drawLine((int) ((width / 2f) - k * widthStep), (int) (height / 2f) - 5,
+                    (int) ((width / 2f) - k * widthStep), (int) (height / 2f) + 5);
+            graphics2D.drawLine((int) ((width / 2f) + k * widthStep), (int) (height / 2f) - 5,
+                    (int) ((width / 2f) + k * widthStep), (int) (height / 2f) + 5);
+        }
 
         graphics2D.dispose();
     }
@@ -287,10 +306,12 @@ public class SplineGraphic extends JPanel {
     public void setMaxWidth(float maxWidth) {
         this.pixelCoordinateToAreaConverter = new PixelCoordinateToAreaConverter(-maxWidth, -maxWidth,
                 maxWidth, maxWidth, width, height);
+
+        this.maxWidth = maxWidth;
     }
 
     public float getMaxWidth() {
-        return pixelCoordinateToAreaConverter.getEndX();
+        return maxWidth;
     }
 
     public void onMouseDragged(MouseEvent e) {
@@ -358,6 +379,7 @@ public class SplineGraphic extends JPanel {
 
     public void scaleField(float scaleRate) {
         float newMaxField = getMaxWidth() * scaleRate;
+        this.maxWidth = newMaxField;
         setMaxWidth(newMaxField);
         drawSpline();
     }

@@ -1,13 +1,11 @@
 package ru.fit.g14201.chirikhin.wireframe.view;
 
-import chirikhin.matrix.Matrix;
 import chirikhin.support.Line;
 import chirikhin.support.Point;
 import chirikhin.support.Point3D;
 import ru.fit.g14201.chirikhin.wireframe.bspline.BSplineFunction;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ShapeToLinesConverter {
     private ShapeToLinesConverter() {
@@ -23,7 +21,7 @@ public class ShapeToLinesConverter {
         for (float i = a; i < b; i += stepSplinePace) {
             Point<Float, Float> currentPoint = bSplineFunction.getValue(i);
             Point<Float, Float> nextPoint = bSplineFunction.getValue(i + stepSplinePace);
-            for (float j = c; j < d; j += stepRotate) {
+            for (float j = c; j <= d; j += stepRotate) {
                 float currentAngleInRadians = (float) Math.toRadians(j);
                 float nextAngleInRadians = (float) Math.toRadians(j + stepRotate);
                 Point3D<Float, Float, Float> startPoint = new Point3D<>(
@@ -32,15 +30,17 @@ public class ShapeToLinesConverter {
                         currentPoint.getX()
                 );
 
-                Point3D<Float, Float, Float> rotateEndPoint = new Point3D<>(
-                        (float) (currentPoint.getY() * Math.cos(nextAngleInRadians)),
-                        (float) (currentPoint.getY() * Math.sin(nextAngleInRadians)),
-                        currentPoint.getX()
-                );
+                if (j + stepRotate <= d) {
+                    Point3D<Float, Float, Float> rotateEndPoint = new Point3D<>(
+                            (float) (currentPoint.getY() * Math.cos(nextAngleInRadians)),
+                            (float) (currentPoint.getY() * Math.sin(nextAngleInRadians)),
+                            currentPoint.getX()
+                    );
 
-                lines.add(new Line<>(startPoint, rotateEndPoint));
+                    lines.add(new Line<>(startPoint, rotateEndPoint));
+                }
 
-                if (null != nextPoint) {
+                if (null != nextPoint && i + stepSplinePace < b) {
                     Point3D<Float, Float, Float> lengthEndPoint = new Point3D<>(
                             (float) (nextPoint.getY() * Math.cos(currentAngleInRadians)),
                             (float) (nextPoint.getY() * Math.sin(currentAngleInRadians)),
