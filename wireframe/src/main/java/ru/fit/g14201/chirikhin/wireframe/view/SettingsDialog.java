@@ -7,9 +7,12 @@ import ru.fit.g14201.chirikhin.wireframe.model.Shape;
 import ru.fit.g14201.chirikhin.wireframe.model.ShapeBuilder;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Arc2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -21,6 +24,7 @@ public class SettingsDialog extends MyDialog {
     private static final int SHAPES_LIST_HEIGHT = 340;
     private static final float SCALE_RATE_PLUS = 1.1f;
     private static final float SCALE_RATE_MINUS = 0.9f;
+    private static final int DEFAILT_COLUMN_COUNT = 3;
 
 
     private SplineGraphic splineGraphic;
@@ -48,11 +52,12 @@ public class SettingsDialog extends MyDialog {
 
     @Override
     protected void onDialogCreated(HashMap<String, Object> propertyResourceBundle) {
-        splineGraphic = new SplineGraphic(WIDTH, HEIGHT);
         Model model = (propertyResourceBundle.get(MODEL_KEY) != null) ?
                 (Model) propertyResourceBundle.get(MODEL_KEY)
                 : new Model(10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, new Matrix(new float[][]{{1, 2, 3},
                 {4, 5, 6}, {7, 8, 9}}), Color.BLACK);
+
+        splineGraphic = new SplineGraphic(WIDTH, HEIGHT, model.getA(), model.getB());
 
         nSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
         mSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
@@ -63,10 +68,65 @@ public class SettingsDialog extends MyDialog {
         gColorSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));
         bColorSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));
 
-        aSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
-        bSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
-        cSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
-        dSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
+        aSpinner = new JSpinner(new SpinnerNumberModel(0.1f, -0.01f, 1.01f, 0.05f));
+        bSpinner = new JSpinner(new SpinnerNumberModel(0.1f, -0.01f, 1.01f, 0.05f));
+
+        aSpinner.addChangeListener(e -> {
+            float aFloatValue = getValueOfSpinner(aSpinner);
+            float bFloatValue = getValueOfSpinner(bSpinner);
+
+            if (aFloatValue > bFloatValue) {
+                aFloatValue = bFloatValue;
+                aSpinner.setValue(aFloatValue);
+            }
+
+            model.setA(aFloatValue);
+            splineGraphic.setNewStartLength(aFloatValue);
+        });
+
+        bSpinner.addChangeListener(e -> {
+            float aFloatValue = getValueOfSpinner(aSpinner);
+            float bFloatValue = getValueOfSpinner(bSpinner);
+
+            if (aFloatValue > bFloatValue) {
+                bFloatValue = aFloatValue;
+                bSpinner.setValue(bFloatValue);
+            }
+            model.setB(bFloatValue);
+            splineGraphic.setNewEndLength(bFloatValue);
+        });
+
+        ((JSpinner.DefaultEditor) aSpinner.getEditor()).getTextField().setColumns(DEFAILT_COLUMN_COUNT);
+        ((JSpinner.DefaultEditor) bSpinner.getEditor()).getTextField().setColumns(DEFAILT_COLUMN_COUNT);
+
+        cSpinner = new JSpinner(new SpinnerNumberModel(10, 0, 360, 1));
+        dSpinner = new JSpinner(new SpinnerNumberModel(10, 0, 360, 1));
+
+        cSpinner.addChangeListener(e -> {
+            int cValue = ((Number) cSpinner.getValue()).intValue();
+            int dValue = ((Number) dSpinner.getValue()).intValue();
+
+            if (cValue > dValue) {
+                cValue = dValue;
+                cSpinner.setValue(cValue);
+            }
+
+            model.setC(cValue);
+        });
+
+        dSpinner.addChangeListener(e -> {
+            int cValue = ((Number) cSpinner.getValue()).intValue();
+            int dValue = ((Number) dSpinner.getValue()).intValue();
+
+            if (cValue > dValue) {
+                dValue = cValue;
+                dSpinner.setValue(dValue);
+            }
+
+            model.setD(dValue);
+        });
+
+
         znSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
         zfSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
         shSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
@@ -195,6 +255,11 @@ public class SettingsDialog extends MyDialog {
 
     private void addNewComponent(int row, int column, JComponent jComponent) {
         addComponent(80 + row * 5, column * 2, 2, 5, jComponent);
+    }
+
+    private float getValueOfSpinner(JSpinner jSpinner) {
+        Number value = (Number) jSpinner.getValue();
+        return value.floatValue();
     }
 
     private String getShapeName(ArrayList<String> names) {

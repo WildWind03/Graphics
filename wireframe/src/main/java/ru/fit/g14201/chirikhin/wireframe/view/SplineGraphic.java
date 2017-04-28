@@ -4,6 +4,7 @@ import chirikhin.swing.util.ListUtil;
 import ru.fit.g14201.chirikhin.wireframe.bspline.BSplineFunction;
 import chirikhin.support.Point;
 import ru.fit.g14201.chirikhin.wireframe.model.Shape;
+import ru.fit.g14201.chirikhin.wireframe.util.BSplineLengthMeasurerUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,9 +20,14 @@ public class SplineGraphic extends JPanel {
     private static final int ovalRadius1 = 4;
     private static final int ovalRadius2 = 7;
     private static final int MAX_WIDTH = 50;
+    private static final Color POINTS_COLOR = Color.blue;
+    private static final Color SELECTED_POINTS_COLOR = Color.green;
 
     private final int width;
     private final int height;
+
+    private float startLength;
+    private float endLength;
 
     private final BufferedImage bufferedImage;
     private PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter;
@@ -29,8 +35,10 @@ public class SplineGraphic extends JPanel {
 
     private Point<Float, Float> selectedPoint = null;
 
-    public SplineGraphic(int width, int height) {
+    public SplineGraphic(int width, int height, float startLength, float endLength) {
         super(true);
+        this.startLength = startLength;
+        this.endLength = endLength;
 
         this.height = height;
         this.width = width;
@@ -107,6 +115,7 @@ public class SplineGraphic extends JPanel {
     private void onMouseDoubleClick(MouseEvent e) {
         if (e.getClickCount() == 2 && !e.isConsumed()) {
             e.consume();
+
             if (null != shape) {
                 int counter = 0;
                 for (Point<Float, Float> point : shape.getPoints()) {
@@ -164,7 +173,7 @@ public class SplineGraphic extends JPanel {
     private void drawPoints(ArrayList<Point<Float, Float>> points) {
         Graphics2D graphics2D = bufferedImage.createGraphics();
 
-        graphics2D.setColor(Color.RED);
+        graphics2D.setColor(POINTS_COLOR);
 
         int counter = 0;
         int prevRealX = 0;
@@ -175,14 +184,14 @@ public class SplineGraphic extends JPanel {
             int ovarRadius = (0 == counter % 2) ? ovalRadius1 : ovalRadius2;
 
             if (selectedPoint == p) {
-                graphics2D.setColor(Color.green);
+                graphics2D.setColor(SELECTED_POINTS_COLOR);
             }
 
             graphics2D.drawOval(realX - ovarRadius, realY - ovarRadius, ovarRadius * 2,
                     ovarRadius * 2);
 
             if (selectedPoint == p) {
-                graphics2D.setColor(Color.RED);
+                graphics2D.setColor(POINTS_COLOR);
             }
             if (counter++ > 0) {
                 graphics2D.drawLine(realX, realY, prevRealX, prevRealY);
@@ -198,6 +207,16 @@ public class SplineGraphic extends JPanel {
 
     public void setShape(Shape shape) {
         this.shape = shape;
+        drawSpline();
+    }
+
+    public void setNewStartLength(float newStartLength) {
+        this.startLength = newStartLength;
+        drawSpline();
+    }
+
+    public void setNewEndLength(float newEndLength) {
+        this.endLength = newEndLength;
         drawSpline();
     }
 
@@ -217,8 +236,19 @@ public class SplineGraphic extends JPanel {
 
         BSplineFunction bSplineFunction = new BSplineFunction(shape.getPoints());
 
+        Point<Float, Integer> startPoint = BSplineLengthMeasurerUtil.getIAndTOfSpline(bSplineFunction, startLength);
+        Point<Float, Integer> endPoint = BSplineLengthMeasurerUtil.getIAndTOfSpline(bSplineFunction, endLength);
+
+        graphics2D.setColor(Color.RED);
         for (int i = 1; i < shape.getPoints().size() - 2; ++i) {
             for (float t = 0; t < 1; t += 0.01) {
+                if (i == startPoint.getY() && t > startPoint.getX()) {
+                    graphics2D.setColor(Color.WHITE);
+                }
+
+                if (i == endPoint.getY() && t > endPoint.getX()) {
+                    graphics2D.setColor(Color.RED);
+                }
                 Point<Float, Float> point = bSplineFunction.getValue(i, t);
 
                 int realX = pixelCoordinateToAreaConverter.toPixelX(point.getX());
