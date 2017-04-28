@@ -3,7 +3,7 @@ package ru.fit.g14201.chirikhin.wireframe.view;
 import chirikhin.swing.util.ListUtil;
 import ru.fit.g14201.chirikhin.wireframe.bspline.BSplineFunction;
 import chirikhin.support.Point;
-import ru.fit.g14201.chirikhin.wireframe.model.Shape;
+import ru.fit.g14201.chirikhin.wireframe.model.BSpline;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,7 +30,7 @@ public class SplineGraphic extends JPanel {
 
     private final BufferedImage bufferedImage;
     private PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter;
-    private Shape shape;
+    private BSpline BSpline;
 
     private Point<Float, Float> selectedPoint = null;
 
@@ -85,16 +85,16 @@ public class SplineGraphic extends JPanel {
     }
 
     private void onMouseReleased() {
-        if (null != shape && !shape.isEmpty()) {
+        if (null != BSpline && !BSpline.isEmpty()) {
             selectedPoint = null;
             drawSpline();
         }
     }
 
     private void onMousePressed(MouseEvent e) {
-        if (null != shape && !shape.isEmpty()) {
+        if (null != BSpline && !BSpline.isEmpty()) {
             int counter = 0;
-            for (Point<Float, Float> point : shape.getPoints()) {
+            for (Point<Float, Float> point : BSpline.getPoints()) {
                 int realX = pixelCoordinateToAreaConverter.toPixelX(point.getX());
                 int realY = pixelCoordinateToAreaConverter.toPixelY(point.getY());
                 int radius = (0 == counter % 2) ? ovalRadius1 : ovalRadius2;
@@ -115,9 +115,9 @@ public class SplineGraphic extends JPanel {
         if (e.getClickCount() == 2 && !e.isConsumed()) {
             e.consume();
 
-            if (null != shape) {
+            if (null != BSpline) {
                 int counter = 0;
-                for (Point<Float, Float> point : shape.getPoints()) {
+                for (Point<Float, Float> point : BSpline.getPoints()) {
                     int realX = pixelCoordinateToAreaConverter.toPixelX(point.getX());
                     int realY = pixelCoordinateToAreaConverter.toPixelY(point.getY());
                     int radius = (0 == counter % 2) ? ovalRadius1 : ovalRadius2;
@@ -133,7 +133,7 @@ public class SplineGraphic extends JPanel {
                 float fieldX = pixelCoordinateToAreaConverter.toRealX(e.getX());
                 float fieldY = pixelCoordinateToAreaConverter.toRealY(height - e.getY());
 
-                shape.addPoint(new Point<>(fieldX, fieldY));
+                BSpline.addPoint(new Point<>(fieldX, fieldY));
 
                 drawSpline();
             }
@@ -141,10 +141,10 @@ public class SplineGraphic extends JPanel {
     }
 
     private boolean onMouseRightButtonClick(MouseEvent e) {
-        if (null != shape) {
+        if (null != BSpline) {
             int counter = 0;
 
-            for (Point<Float, Float> point : shape.getPoints()) {
+            for (Point<Float, Float> point : BSpline.getPoints()) {
                 int realX = pixelCoordinateToAreaConverter.toPixelX(point.getX());
                 int realY = pixelCoordinateToAreaConverter.toPixelY(point.getY());
                 int radius = (0 == counter % 2) ? ovalRadius1 : ovalRadius2;
@@ -154,7 +154,7 @@ public class SplineGraphic extends JPanel {
                         JPopupMenu jPopupMenu = new JPopupMenu();
                         JMenuItem itemRemove = new JMenuItem("Delete");
                         itemRemove.addActionListener(e1 -> {
-                            shape.getPoints().remove(point);
+                            BSpline.getPoints().remove(point);
                             drawSpline();
                         });
 
@@ -204,8 +204,8 @@ public class SplineGraphic extends JPanel {
         graphics2D.dispose();
     }
 
-    public void setShape(Shape shape) {
-        this.shape = shape;
+    public void setBSpline(BSpline BSpline) {
+        this.BSpline = BSpline;
         drawSpline();
     }
 
@@ -223,23 +223,23 @@ public class SplineGraphic extends JPanel {
         clearImage();
         drawCoordinateSystem();
 
-        if (null == shape || shape.getPoints().isEmpty()) {
+        if (null == BSpline || BSpline.getPoints().isEmpty()) {
             repaint();
             return;
         }
 
-        drawPoints(shape.getPoints());
+        drawPoints(BSpline.getPoints());
 
         Graphics2D graphics2D = bufferedImage.createGraphics();
         graphics2D.setColor(Color.WHITE);
 
-        BSplineFunction bSplineFunction = new BSplineFunction(shape.getPoints());
+        BSplineFunction bSplineFunction = new BSplineFunction(BSpline.getPoints());
 
         Point<Integer, Float> startPoint = bSplineFunction.getIAndT(startLength);
         Point<Integer, Float> endPoint = bSplineFunction.getIAndT(endLength);
 
         graphics2D.setColor(Color.RED);
-        for (int i = 1; i < shape.getPoints().size() - 2; ++i) {
+        for (int i = 1; i < BSpline.getPoints().size() - 2; ++i) {
             for (float t = 0; t < 1; t += 0.01) {
                 if (i == startPoint.getX() && t > startPoint.getY()) {
                     graphics2D.setColor(Color.WHITE);
@@ -294,7 +294,7 @@ public class SplineGraphic extends JPanel {
     }
 
     public void onMouseDragged(MouseEvent e) {
-        if (null != shape && null != selectedPoint) {
+        if (null != BSpline && null != selectedPoint) {
             float oldMax = pixelCoordinateToAreaConverter.getEndX();
             float newX;
             float newY;
@@ -363,8 +363,8 @@ public class SplineGraphic extends JPanel {
     }
 
     public void autosizeField() {
-        if (null != shape) {
-            setMaxWidth(getMax(shape.getPoints()));
+        if (null != BSpline) {
+            setMaxWidth(getMax(BSpline.getPoints()));
         }
 
         drawSpline();

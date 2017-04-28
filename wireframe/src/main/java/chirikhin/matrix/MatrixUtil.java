@@ -30,17 +30,6 @@ public class MatrixUtil {
             throw new IllegalArgumentException("These matrixes can not be multiplied");
         }
 
-//        float newMatrixData[][] = new float[leftMatrix.getHeight()][rightMatrix.getWidth()];
-//
-//        for (int i = 0; i < newMatrixData.length; ++i) {
-//            for (int k = 0; k < newMatrixData[0].length; ++k) {
-//                newMatrixData[i][k] = 0;
-//                for (int z = 0; z < leftMatrix.getWidth(); ++z) {
-//                    newMatrixData[i][k] += leftMatrix.get(i, z) * rightMatrix.get(z, k);
-//                }
-//            }
-//        }
-
         float newMatrixData[][] = new float[leftMatrix.getHeight()][rightMatrix.getWidth()];
 
         for (int i = 0; i < newMatrixData.length; ++i) {

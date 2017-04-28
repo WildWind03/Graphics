@@ -36,6 +36,11 @@ public class BSplineFunction {
 
     public Point<Float, Float> getValue(float percentOfSplineLength) {
         Point<Integer, Float> iAndTPoint = getIAndT(percentOfSplineLength);
+
+        if (iAndTPoint.getX() < getMinI() || iAndTPoint.getX() >= getMaxI()) {
+            return null;
+        }
+
         return getValue(iAndTPoint.getX(), iAndTPoint.getY());
     }
 

@@ -31,7 +31,8 @@ public class Matrix {
 
     public float get(int h, int w) {
         if (h >= getHeight() || w >= getWidth()) {
-            throw new IndexOutOfBoundsException("Out of matrix: " + h + " " + getHeight() + " : " + w + " " + getWidth());
+            throw new IndexOutOfBoundsException("Out of matrix: " + h + " " + getHeight()
+                    + " : " + w + " " + getWidth());
         }
 
         return data[h][w];

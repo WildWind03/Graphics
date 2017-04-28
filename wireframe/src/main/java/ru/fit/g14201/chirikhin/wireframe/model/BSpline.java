@@ -6,7 +6,7 @@ import chirikhin.support.Point;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class Shape {
+public class BSpline {
     private final Color color;
     private final int cx;
     private final int cy;
@@ -14,7 +14,7 @@ public class Shape {
     private final Matrix roundMatrix;
     private final ArrayList<Point<Float, Float>> points;
 
-    Shape(Color color, int cx, int cy, int cz, Matrix roundMatrix, ArrayList<Point<Float, Float>> points) {
+    BSpline(Color color, int cx, int cy, int cz, Matrix roundMatrix, ArrayList<Point<Float, Float>> points) {
         this.color = color;
         this.cx = cx;
         this.cy = cy;

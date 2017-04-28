@@ -2,17 +2,14 @@ package ru.fit.g14201.chirikhin.wireframe.view;
 
 import chirikhin.matrix.Matrix;
 import chirikhin.swing.dialog.MyDialog;
+import ru.fit.g14201.chirikhin.wireframe.model.BSpline;
 import ru.fit.g14201.chirikhin.wireframe.model.Model;
-import ru.fit.g14201.chirikhin.wireframe.model.Shape;
-import ru.fit.g14201.chirikhin.wireframe.model.ShapeBuilder;
+import ru.fit.g14201.chirikhin.wireframe.model.BSplineBuilder;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Arc2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -59,9 +56,21 @@ public class SettingsDialog extends MyDialog {
 
         splineGraphic = new SplineGraphic(WIDTH, HEIGHT, model.getA(), model.getB());
 
-        nSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
-        mSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
+        nSpinner = new JSpinner(new SpinnerNumberModel(10, 3, 100, 1));
+        nSpinner.addChangeListener(e -> {
+            model.setN(((Number) nSpinner.getValue()).intValue());
+        });
+
+        mSpinner = new JSpinner(new SpinnerNumberModel(10, 3, 100, 1));
+        mSpinner.addChangeListener( e -> {
+            model.setM(((Number) mSpinner.getValue()).intValue());
+        });
+
         kSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
+        kSpinner.addChangeListener(e -> {
+            model.setK(((Number) kSpinner.getValue()).intValue());
+        });
+
         numSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
 
         rColorSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));
@@ -157,9 +166,9 @@ public class SettingsDialog extends MyDialog {
         addNewSpinnerLabel(2, 4, "b", bColorSpinner);
 
         ArrayList<String> shapes = new ArrayList<>();
-        int countOfShapes = model.getShapes().size();
+        int countOfShapes = model.getBSplines().size();
         for (int i = 0; i < countOfShapes; ++i) {
-            shapes.add("Shape " + i);
+            shapes.add("BSpline " + i);
         }
 
         nSpinner.setValue(model.getN());
@@ -184,14 +193,14 @@ public class SettingsDialog extends MyDialog {
         shapesList.addListSelectionListener(e -> {
             int selectedModelIndex = shapesList.getSelectedIndex();
             if (selectedModelIndex >= 0) {
-                Shape shape = model.getShapes().get(selectedModelIndex);
-                splineGraphic.setShape(shape);
+                BSpline BSpline = model.getBSplines().get(selectedModelIndex);
+                splineGraphic.setBSpline(BSpline);
             }
         });
 
         JButton addNewShapeButton = new JButton("Add a new shape to the model");
         addNewShapeButton.addActionListener(e -> {
-                if(model.getShapes().add(new ShapeBuilder()
+                if(model.getBSplines().add(new BSplineBuilder()
                         .withColor(Color.BLACK)
                         .withCx(0)
                         .withCy(0)
@@ -204,6 +213,7 @@ public class SettingsDialog extends MyDialog {
         });
 
         addComponent(95, 80, 5, 5, addNewShapeButton);
+
         JButton zoomPlusButton = new JButton("Zoom +");
         zoomPlusButton.addActionListener((e) -> splineGraphic.scaleField(SCALE_RATE_MINUS));
         addNewComponent(3, 0, zoomPlusButton);
@@ -214,22 +224,25 @@ public class SettingsDialog extends MyDialog {
 
         JButton autoSizeButton = new JButton("Autosize");
         autoSizeButton.addActionListener(e -> splineGraphic.autosizeField());
-
         addNewComponent(3, 2, autoSizeButton);
+
+        JButton okButton = new JButton("Ok");
+        okButton.addActionListener(e -> setVisible(false));
+        addNewComponent(3, 3, okButton);
 
         shapesList.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                if (SwingUtilities.isRightMouseButton(e) && model.getShapes().size() > 0) {
+                if (SwingUtilities.isRightMouseButton(e) && model.getBSplines().size() > 0) {
                     shapesList.setSelectedIndex(shapesList.locationToIndex(e.getPoint()));
                     JPopupMenu jPopupMenu = new JPopupMenu();
                     JMenuItem itemRemove = new JMenuItem("Remove");
                     itemRemove.addActionListener(e1 -> {
                         shapes.remove(shapesList.getSelectedValue());
-                        model.getShapes().remove(shapesList.locationToIndex(e.getPoint()));
+                        model.getBSplines().remove(shapesList.locationToIndex(e.getPoint()));
                         shapesList.setListData(shapes.toArray(new String[shapes.size()]));
-                        splineGraphic.setShape(null);
+                        splineGraphic.setBSpline(null);
                     });
 
                     jPopupMenu.add(itemRemove);
@@ -266,12 +279,12 @@ public class SettingsDialog extends MyDialog {
         m:
         for (int i = 0; ;++i) {
             for (String name : names) {
-                if (name.equals("Shape " + i)) {
+                if (name.equals("BSpline " + i)) {
                     continue m;
                 }
             }
 
-            return "Shape " + i;
+            return "BSpline " + i;
         }
     }
 }

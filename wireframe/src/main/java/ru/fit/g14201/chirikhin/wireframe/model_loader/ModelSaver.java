@@ -1,6 +1,7 @@
 package ru.fit.g14201.chirikhin.wireframe.model_loader;
 
 import chirikhin.matrix.Matrix;
+import ru.fit.g14201.chirikhin.wireframe.model.BSpline;
 import ru.fit.g14201.chirikhin.wireframe.model.Model;
 
 import java.awt.*;
@@ -33,25 +34,25 @@ public class ModelSaver {
                     + backgroundColor.getBlue());
 
             bufferedWriter.newLine();
-            bufferedWriter.write(model.getShapes().size() + "");
+            bufferedWriter.write(model.getBSplines().size() + "");
             bufferedWriter.newLine();
 
-            for (ru.fit.g14201.chirikhin.wireframe.model.Shape shape : model.getShapes()) {
-                Color color = shape.getColor();
+            for (BSpline BSpline : model.getBSplines()) {
+                Color color = BSpline.getColor();
                 bufferedWriter.write(color.getRed() + " " + color.getGreen() + " " + color.getBlue());
                 bufferedWriter.newLine();
-                bufferedWriter.write(shape.getCx() + " " + shape.getCy() + " " + shape.getCz());
+                bufferedWriter.write(BSpline.getCx() + " " + BSpline.getCy() + " " + BSpline.getCz());
 
-                Matrix shapeMatrix = shape.getRoundMatrix();
+                Matrix shapeMatrix = BSpline.getRoundMatrix();
                 for (int i = 0; i < 3; ++i) {
                     bufferedWriter.write(shapeMatrix.get(i, 0) + " " + shapeMatrix.get(i, 1) + " " + shapeMatrix.get(i, 2));
                     bufferedWriter.newLine();
                 }
 
-                bufferedWriter.write(shape.getPoints().size() + "");
+                bufferedWriter.write(BSpline.getPoints().size() + "");
                 bufferedWriter.newLine();
 
-                for (chirikhin.support.Point point : shape.getPoints()) {
+                for (chirikhin.support.Point point : BSpline.getPoints()) {
                     bufferedWriter.write(point.getX() + " " + point.getY());
                     bufferedWriter.newLine();
                 }

@@ -6,7 +6,8 @@ import chirikhin.support.Line;
 import chirikhin.support.Point;
 import chirikhin.support.Point3D;
 import ru.fit.g14201.chirikhin.wireframe.bspline.BSplineFunction;
-import ru.fit.g14201.chirikhin.wireframe.model.Model;
+import ru.fit.g14201.chirikhin.wireframe.model.*;
+import ru.fit.g14201.chirikhin.wireframe.model.BSpline;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +24,6 @@ public class ShapeView extends JPanel {
     private final BufferedImage bufferedImage;
     private final int height;
     private final int width;
-    private ArrayList<Line<Point3D<Float, Float, Float>>> shapeLines = new ArrayList<>();
     private final int DEFAULT_SCALE_RATIO = 100;
     private Model model;
 
@@ -43,11 +43,6 @@ public class ShapeView extends JPanel {
         this.height = height;
         this.width = width;
         bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
-//        shapeLines.add(new Line<>(new Point3D<>(0f, 0f, 0f), new Point3D<>(0f, 1f, 0f)));
-//        shapeLines.add(new Line<>(new Point3D<>(0f, 0f, 0f), new Point3D<>(1f, 0f, 0f)));
-//        shapeLines.add(new Line<>(new Point3D<>(0f, 0f, 0f), new Point3D<>(0f, 0f, 1f)));
-//        shapeLines.add(new Line<>(new Point3D<>(0f, 1f, 0f), new Point3D<>(0f, 0f, 1f)));
 
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -82,15 +77,11 @@ public class ShapeView extends JPanel {
 
     public void setModel(Model newModel) {
         this.model = newModel;
-        BSplineFunction bSplineFunction = new BSplineFunction(model.getShapes().get(0).getPoints());
-        shapeLines = ShapeToLinesConverter.toLines(bSplineFunction, model.getN(), model.getM(), model.getK(),
-                model.getA(), model.getB(), model.getD(), model.getC());
+        update();
     }
 
     public void update() {
-        BSplineFunction bSplineFunction = new BSplineFunction(model.getShapes().get(0).getPoints());
-        shapeLines = ShapeToLinesConverter.toLines(bSplineFunction, model.getN(), model.getM(), model.getK(),
-                model.getA(), model.getB(), model.getC(), model.getD());
+        repaint();
     }
 
     private Matrix calculateZoomMatrix(int scaleX, int scaleY, int scaleZ) {
@@ -138,7 +129,7 @@ public class ShapeView extends JPanel {
         });
     }
 
-    private void drawLine(Line<Point3D<Float, Float, Float>> line) {
+    private void drawLine(Line<Point3D<Float, Float, Float>> line, int cx, int cy, int cz) {
         Matrix start = new Matrix(new float[][] {{line.getStart().getX()},
                 {line.getStart().getY()},{line.getStart().getZ()}, {1}});
 
@@ -149,7 +140,7 @@ public class ShapeView extends JPanel {
         Matrix realEnd = MatrixUtil.multiply(M, end);
 
         Matrix zoomMatrix = calculateZoomMatrix(DEFAULT_SCALE_RATIO, DEFAULT_SCALE_RATIO, DEFAULT_SCALE_RATIO);
-        Matrix shiftMatrix = calculateShiftMatrix(getWidth() / 2, getHeight() / 2, 0);
+        Matrix shiftMatrix = calculateShiftMatrix(getWidth() / 2 + cx, getHeight() / 2 + cy, cz);
 
         realStart = MatrixUtil.multiply(shiftMatrix, MatrixUtil.multiply(zoomMatrix, realStart));
         realEnd = MatrixUtil.multiply(shiftMatrix, MatrixUtil.multiply(zoomMatrix, realEnd));
@@ -174,11 +165,24 @@ public class ShapeView extends JPanel {
         g2d.fillRect(0, 0, width, height);
         g2d.dispose();
 
-        for (Line<Point3D<Float, Float, Float>> line : shapeLines) {
-            drawLine(line);
+        if (null != model) {
+            for (BSpline BSpline : model.getBSplines()) {
+                drawShape(BSpline);
+            }
         }
 
         g.drawImage(bufferedImage, 0, 0, null);
+    }
+
+    private void drawShape(BSpline BSpline) {
+        BSplineFunction bSplineFunction = new BSplineFunction(BSpline.getPoints());
+        ArrayList<Line<Point3D<Float, Float, Float>>> shapeLines =
+                ShapeToLinesConverter.toLines(bSplineFunction, model.getN(), model.getM(), model.getK(),
+                    model.getA(), model.getB(), model.getD(), model.getC());
+
+        for (Line<Point3D<Float, Float, Float>> line : shapeLines) {
+            drawLine(line, BSpline.getCx(), BSpline.getCy(), BSpline.getCz());
+        }
     }
 
     @Override

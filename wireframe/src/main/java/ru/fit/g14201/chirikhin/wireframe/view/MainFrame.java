@@ -117,8 +117,11 @@ public class MainFrame extends JFrame {
     }
 
     private void onSettingButtonClick() {
-        SettingsDialog settingsDialog = new SettingsDialog(this, SETTINGS, -1, model);
-        settingsDialog.apparate();
+        if (null != model) {
+            SettingsDialog settingsDialog = new SettingsDialog(this, SETTINGS, -1, model);
+            settingsDialog.apparate();
+            shapeView.update();
+        }
     }
 
 }

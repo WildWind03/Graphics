@@ -4,7 +4,7 @@ import chirikhin.matrix.Matrix;
 import chirikhin.swing.util.ListUtil;
 import chirikhin.universal_parser.*;
 import ru.fit.g14201.chirikhin.wireframe.model.Model;
-import ru.fit.g14201.chirikhin.wireframe.model.ShapeBuilder;
+import ru.fit.g14201.chirikhin.wireframe.model.BSplineBuilder;
 import ru.fit.g14201.chirikhin.wireframe.model.ShapeBuildingException;
 
 import java.awt.*;
@@ -100,10 +100,10 @@ public class ModelLoader {
                     }
                 });
 
-        final ShapeBuilder[] shapeBuilder = {new ShapeBuilder()};
+        final BSplineBuilder[] BSplineBuilder = {new BSplineBuilder()};
             IntegerWrapper rowCounterForMatrix = new IntegerWrapper(0);
             Matrix roundMatrix = new Matrix(new float[3][3]);
-            shapeBuilder[0].withRoundMatrix(roundMatrix);
+            BSplineBuilder[0].withRoundMatrix(roundMatrix);
             IntegerWrapper countOfPoints = new IntegerWrapper(0);
             IntegerWrapper currentParserRunnableIndex = new IntegerWrapper(0);
             IntegerWrapper currentShape = new IntegerWrapper(0);
@@ -113,7 +113,7 @@ public class ModelLoader {
                             Comment.class)) {
                         @Override
                         public void run(Object[] objects, ParserConfig parserConfig) {
-                            shapeBuilder[0].withColor(new Color((Integer) objects[0],
+                            BSplineBuilder[0].withColor(new Color((Integer) objects[0],
                                     (Integer) objects[1],
                                     (Integer) objects[2]));
                             currentParserRunnableIndex.integer = parserConfig.getCurrentRunnableIndex();
@@ -124,7 +124,7 @@ public class ModelLoader {
                             Comment.class)) {
                         @Override
                         public void run(Object[] objects, ParserConfig parserConfig) {
-                            shapeBuilder[0]
+                            BSplineBuilder[0]
                                     .withCx((Integer) objects[0])
                                     .withCy((Integer) objects[1])
                                     .withCz((Integer) objects[2]);
@@ -159,20 +159,20 @@ public class ModelLoader {
                 Comment.class)) {
             @Override
             public void run(Object[] objects, ParserConfig parserConfig) {
-                shapeBuilder[0].addPoint((Float) objects[0], (Float) objects[1]);
+                BSplineBuilder[0].addPoint((Float) objects[0], (Float) objects[1]);
                 if (++currentPoint[0].integer >= countOfPoints.integer) {
                     try {
-                        model.addShape(shapeBuilder[0].build());
+                        model.addShape(BSplineBuilder[0].build());
                     } catch (ShapeBuildingException e) {
                         Logger.getLogger(ModelLoader.class.getName()).log(Level.WARNING,
-                                "Shape was not added. Builder worked not properly");
+                                "BSpline was not added. Builder worked not properly");
                     }
                     ++currentShape.integer;
                     rowCounterForMatrix.integer = 0;
                     currentPoint[0].integer = 0;
                     parserConfig.setCurrentRunnableIndex(currentParserRunnableIndex.integer);
-                    shapeBuilder[0] = new ShapeBuilder();
-                    shapeBuilder[0].withRoundMatrix(roundMatrix);
+                    BSplineBuilder[0] = new BSplineBuilder();
+                    BSplineBuilder[0].withRoundMatrix(roundMatrix);
                 }
             }
         });

@@ -19,7 +19,7 @@ public class Model {
     private int sh;
     private Matrix roundMatrix;
     private Color backgroundColor;
-    private final ArrayList<Shape> shapes = new ArrayList<>();
+    private final ArrayList<BSpline> BSplines = new ArrayList<>();
 
     public Model() {
 
@@ -95,8 +95,8 @@ public class Model {
         this.backgroundColor = backgroundColor;
     }
 
-    public void addShape(Shape shape) {
-        shapes.add(shape);
+    public void addShape(BSpline BSpline) {
+        BSplines.add(BSpline);
     }
 
     public int getN() {
@@ -152,7 +152,7 @@ public class Model {
     }
 
 
-    public ArrayList<Shape> getShapes() {
-        return shapes;
+    public ArrayList<BSpline> getBSplines() {
+        return BSplines;
     }
 }
