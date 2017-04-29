@@ -6,6 +6,7 @@ import chirikhin.support.Line;
 import chirikhin.support.Point;
 import chirikhin.support.Point3D;
 import ru.fit.g14201.chirikhin.wireframe.bspline.BSplineFunction;
+import ru.fit.g14201.chirikhin.wireframe.main.Main;
 import ru.fit.g14201.chirikhin.wireframe.model.*;
 import ru.fit.g14201.chirikhin.wireframe.model.BSpline;
 
@@ -16,6 +17,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -86,7 +89,7 @@ public class ShapeView extends JPanel {
 //        Matrix qzMatrix = calculateQzMatrix()
 //
         int dy = e.getX() - point.getX();
-        int dx = e.getY() - point.getY();
+        int dx = - (e.getY() - point.getY());
 
         Matrix qxMatrix = calculateQxMatrix((float) (((float) dx / (float) width) * 2 * Math.PI));
         Matrix qyMatrix = calculateQyMatrix((float) (((float) dy / (float) height) * 2 * Math.PI));
@@ -192,6 +195,8 @@ public class ShapeView extends JPanel {
         g2d.fillRect(0, 0, width, height);
         g2d.dispose();
 
+        drawCube();
+
         if (null != model) {
             for (BSpline BSpline : model.getbSplines()) {
                 drawShape(BSpline);
@@ -207,9 +212,67 @@ public class ShapeView extends JPanel {
                 ShapeToLinesConverter.toLines(bSplineFunction, model.getN(), model.getM(), model.getK(),
                     model.getA(), model.getB(), model.getD(), model.getC());
 
+
         for (Line<Point3D<Float, Float, Float>> line : shapeLines) {
             drawLine(line, BSpline.getCx(), BSpline.getCy(), BSpline.getCz());
         }
+    }
+
+    public void drawCube() {
+        ArrayList<Line<Point3D<Float, Float, Float>>> cubeLines = new ArrayList<>();
+        cubeLines.add(new Line<>(new Point3D<>(0f, 0f, 0f), new Point3D<>(1f, 0f, 0f)));
+        cubeLines.add(new Line<>(new Point3D<>(0f, 0f, 0f), new Point3D<>(0f, 1f, 0f)));
+        cubeLines.add(new Line<>(new Point3D<>(0f, 0f, 0f), new Point3D<>(0f, 0f, 1f)));
+
+        cubeLines.add(new Line<>(new Point3D<>(1f, 1f, 0f), new Point3D<>(1f, 0f, 0f)));
+        cubeLines.add(new Line<>(new Point3D<>(1f, 0f, 1f), new Point3D<>(1f, 0f, 0f)));
+        cubeLines.add(new Line<>(new Point3D<>(0f, 1f, 0f), new Point3D<>(1f, 1f, 0f)));
+        cubeLines.add(new Line<>(new Point3D<>(0f, 0f, 1f), new Point3D<>(1f, 0f, 1f)));
+
+        cubeLines.add(new Line<>(new Point3D<>(1f, 1f, 0f), new Point3D<>(1f, 1f, 1f)));
+        cubeLines.add(new Line<>(new Point3D<>(1f, 0f, 1f), new Point3D<>(1f, 1f, 1f)));
+        cubeLines.add(new Line<>(new Point3D<>(0f, 1f, 1f), new Point3D<>(1f, 1f, 1f)));
+
+        cubeLines.add(new Line<>(new Point3D<>(0f, 1f, 1f), new Point3D<>(0f, 1f, 0f)));
+        cubeLines.add(new Line<>(new Point3D<>(0f, 1f, 1f), new Point3D<>(0f, 0f, 1f)));
+
+        for (Line<Point3D<Float, Float, Float>> line : cubeLines) {
+            drawLine(line, 0, 0, 0);
+        }
+    }
+
+    private float getMaxValueOfLines(ArrayList<Line<Point3D<Float, Float, Float>>> lines) {
+        final float[] maxValue = {0};
+
+        lines.forEach(new Consumer<Line<Point3D<Float, Float, Float>>>() {
+            private ArrayList<Float> points = new ArrayList<>(6);
+            @Override
+            public void accept(Line<Point3D<Float, Float, Float>> point3DLine) {
+                Point3D<Float, Float, Float> startPoint = point3DLine.getStart();
+                Point3D<Float, Float, Float> endPoint = point3DLine.getEnd();
+
+                points.set(0, Math.abs(startPoint.getX()));
+                points.set(1, Math.abs(startPoint.getY()));
+                points.set(2, Math.abs(startPoint.getZ()));
+
+                points.set(3, Math.abs(endPoint.getX()));
+                points.set(4, Math.abs(endPoint.getY()));
+                points.set(5, Math.abs(endPoint.getZ()));
+
+                Optional<Float> localMaxOptional = points
+                        .stream()
+                        .max(Float::compareTo);
+
+                float localMax = localMaxOptional.orElse(0f);
+
+                if (localMax > maxValue[0]) {
+                    maxValue[0] = localMax;
+                }
+
+            }
+        });
+
+        return maxValue[0];
     }
 
     public Integer getSelectedShape() {
