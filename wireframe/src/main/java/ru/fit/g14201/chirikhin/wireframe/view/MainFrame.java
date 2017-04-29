@@ -68,6 +68,8 @@ public class MainFrame extends JFrame {
         MenuToolBarListenerUtil.addNewOption(aboutMenu, jToolBar, ABOUT_ICON_PNG, ABOUT,
                 () -> JOptionPane.showMessageDialog(this, ABOUT_TEXT));
 
+        loadModel(new File(DATA_FOLDER + "/test_config.txt"));
+
         pack();
         setVisible(true);
     }
@@ -82,15 +84,19 @@ public class MainFrame extends JFrame {
         int result = jFileChooser.showOpenDialog(this);
 
         if (JFileChooser.APPROVE_OPTION == result) {
-            try {
-                ModelLoader modelLoader = new ModelLoader(jFileChooser.getSelectedFile());
-                this.model = modelLoader.getModel();
-                shapeView.setModel(model);
-            } catch (ParserException | TypeConversionException |
-                    TypeMatchingException | NoObjectFactoryException e) {
-                JOptionPane.showMessageDialog(this, e.getMessage(),
-                        CAN_T_OPEN, JOptionPane.ERROR_MESSAGE);
-            }
+            loadModel(jFileChooser.getSelectedFile());
+        }
+    }
+
+    private void loadModel(File file) {
+        try {
+            ModelLoader modelLoader = new ModelLoader(file);
+            this.model = modelLoader.getModel();
+            shapeView.setModel(model);
+        } catch (ParserException | TypeConversionException |
+                TypeMatchingException | NoObjectFactoryException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(),
+                    CAN_T_OPEN, JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -118,7 +124,8 @@ public class MainFrame extends JFrame {
 
     private void onSettingButtonClick() {
         if (null != model) {
-            SettingsDialog settingsDialog = new SettingsDialog(this, SETTINGS, -1, model);
+            Integer selectedShape = shapeView.getSelectedShape();
+            SettingsDialog settingsDialog = new SettingsDialog(this, SETTINGS, -1, model, selectedShape);
             settingsDialog.apparate();
             shapeView.update();
         }

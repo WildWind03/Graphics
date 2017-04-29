@@ -34,10 +34,10 @@ public class ModelSaver {
                     + backgroundColor.getBlue());
 
             bufferedWriter.newLine();
-            bufferedWriter.write(model.getBSplines().size() + "");
+            bufferedWriter.write(model.getbSplines().size() + "");
             bufferedWriter.newLine();
 
-            for (BSpline BSpline : model.getBSplines()) {
+            for (BSpline BSpline : model.getbSplines()) {
                 Color color = BSpline.getColor();
                 bufferedWriter.write(color.getRed() + " " + color.getGreen() + " " + color.getBlue());
                 bufferedWriter.newLine();

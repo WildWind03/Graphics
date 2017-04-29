@@ -2,6 +2,7 @@ package ru.fit.g14201.chirikhin.wireframe.view;
 
 import chirikhin.matrix.Matrix;
 import chirikhin.swing.dialog.MyDialog;
+import javafx.util.Pair;
 import ru.fit.g14201.chirikhin.wireframe.model.BSpline;
 import ru.fit.g14201.chirikhin.wireframe.model.Model;
 import ru.fit.g14201.chirikhin.wireframe.model.BSplineBuilder;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 
 public class SettingsDialog extends MyDialog {
     private static final String MODEL_KEY = "MODEL_KEY";
+    private static final String SELECTED_SHAPE_KEY = "SELECTED_SHAPE_KEY";
     private static final int WIDTH = 600;
     private static final int HEIGHT = 300;
     private static final int SHAPES_LIST_WIDTH = 200;
@@ -41,10 +43,11 @@ public class SettingsDialog extends MyDialog {
     private JSpinner zfSpinner;
     private JSpinner swSpinner;
     private JSpinner shSpinner;
+    private Integer selectedShape;
 
 
-    public SettingsDialog(JFrame jFrame, String title, int rowForOkAndCancelButtons, Model model) {
-        super(jFrame, title, getArgs(model), rowForOkAndCancelButtons);
+    public SettingsDialog(JFrame jFrame, String title, int rowForOkAndCancelButtons, Model model, Integer selectedShape) {
+        super(jFrame, title, getArgs(model, selectedShape), rowForOkAndCancelButtons);
     }
 
     @Override
@@ -54,7 +57,12 @@ public class SettingsDialog extends MyDialog {
                 : new Model(10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, new Matrix(new float[][]{{1, 2, 3},
                 {4, 5, 6}, {7, 8, 9}}), Color.BLACK);
 
+        selectedShape = (Integer) propertyResourceBundle.get(SELECTED_SHAPE_KEY);
         splineGraphic = new SplineGraphic(WIDTH, HEIGHT, model.getA(), model.getB());
+        if (null != selectedShape) {
+            BSpline BSpline = model.getbSplines().get(selectedShape);
+            splineGraphic.setBSpline(BSpline);
+        }
 
         nSpinner = new JSpinner(new SpinnerNumberModel(10, 3, 100, 1));
         nSpinner.addChangeListener(e -> {
@@ -166,7 +174,7 @@ public class SettingsDialog extends MyDialog {
         addNewSpinnerLabel(2, 4, "b", bColorSpinner);
 
         ArrayList<String> shapes = new ArrayList<>();
-        int countOfShapes = model.getBSplines().size();
+        int countOfShapes = model.getbSplines().size();
         for (int i = 0; i < countOfShapes; ++i) {
             shapes.add("BSpline " + i);
         }
@@ -190,17 +198,24 @@ public class SettingsDialog extends MyDialog {
 
         JList<String> shapesList = new JList<>(shapes.toArray(new String[shapes.size()]));
 
+        if (null != selectedShape) {
+            shapesList.setSelectedIndex(selectedShape);
+        }
+
         shapesList.addListSelectionListener(e -> {
             int selectedModelIndex = shapesList.getSelectedIndex();
             if (selectedModelIndex >= 0) {
-                BSpline BSpline = model.getBSplines().get(selectedModelIndex);
+                BSpline BSpline = model.getbSplines().get(selectedModelIndex);
                 splineGraphic.setBSpline(BSpline);
+                selectedShape = selectedModelIndex;
+            } else {
+                selectedShape = null;
             }
         });
 
         JButton addNewShapeButton = new JButton("Add a new shape to the model");
         addNewShapeButton.addActionListener(e -> {
-                if(model.getBSplines().add(new BSplineBuilder()
+                if(model.getbSplines().add(new BSplineBuilder()
                         .withColor(Color.BLACK)
                         .withCx(0)
                         .withCy(0)
@@ -234,13 +249,13 @@ public class SettingsDialog extends MyDialog {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                if (SwingUtilities.isRightMouseButton(e) && model.getBSplines().size() > 0) {
+                if (SwingUtilities.isRightMouseButton(e) && model.getbSplines().size() > 0) {
                     shapesList.setSelectedIndex(shapesList.locationToIndex(e.getPoint()));
                     JPopupMenu jPopupMenu = new JPopupMenu();
                     JMenuItem itemRemove = new JMenuItem("Remove");
                     itemRemove.addActionListener(e1 -> {
                         shapes.remove(shapesList.getSelectedValue());
-                        model.getBSplines().remove(shapesList.locationToIndex(e.getPoint()));
+                        model.getbSplines().remove(shapesList.locationToIndex(e.getPoint()));
                         shapesList.setListData(shapes.toArray(new String[shapes.size()]));
                         splineGraphic.setBSpline(null);
                     });
@@ -255,9 +270,10 @@ public class SettingsDialog extends MyDialog {
         addComponent(5, 81, 50, 90, shapesListScrollPane);
     }
 
-    private static HashMap<String, Object> getArgs(Model model) {
+    private static HashMap<String, Object> getArgs(Model model, Integer selectedShape) {
         HashMap<String, Object> args = new HashMap<>();
         args.put(MODEL_KEY, model);
+        args.put(SELECTED_SHAPE_KEY, selectedShape);
         return args;
     }
 

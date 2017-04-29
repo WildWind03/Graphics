@@ -26,6 +26,7 @@ public class ShapeView extends JPanel {
     private final int width;
     private final int DEFAULT_SCALE_RATIO = 100;
     private Model model;
+    private Integer selectedShape = null;
 
     private Point<Integer, Integer> prevPoint = new Point<>(0, 0);
 
@@ -63,6 +64,27 @@ public class ShapeView extends JPanel {
     }
 
     private void onMouseDragged(MouseEvent e, Point<Integer, Integer> point) {
+//        int dy = e.getY() - point.getY();
+//        int dx = e.getX() - point.getX();
+
+//        float angle = (float) Math.atan((float) dy / (float) dx);
+//        float k = (float) (Math.sqrt(dx * dx + dy * dy) / Math.sqrt(width * width / 4 + height * height / 4));
+//
+//        float realAngle = angle * k;
+//
+//        Matrix qxMatrix = calculateQxMatrix((float) cos(realAngle));
+//        Matrix qyMatrix = calculateQyMatrix((float) sin(realAngle));
+
+//        Matrix qzMatrix = calculateQzMatrix(realAngle);
+
+//        Matrix qzMatrix = calculateQzMatrix((float) (((float) dx / (float) width) * 2 * Math.PI));
+//        float angleY = (float) Math.toRadians((((float) dy / (float) height) * 2 * Math.PI));
+//
+//        Matrix qxMatrix = calculateQxMatrix((float) cos(angleY));
+//        Matrix qyMatrix = calculateQyMatrix((float) sin(angleY));
+
+//        Matrix qzMatrix = calculateQzMatrix()
+//
         int dy = e.getX() - point.getX();
         int dx = e.getY() - point.getY();
 
@@ -77,6 +99,11 @@ public class ShapeView extends JPanel {
 
     public void setModel(Model newModel) {
         this.model = newModel;
+        if (!model.isEmpty()) {
+            selectedShape = 0;
+        } else {
+            selectedShape = null;
+        }
         update();
     }
 
@@ -166,7 +193,7 @@ public class ShapeView extends JPanel {
         g2d.dispose();
 
         if (null != model) {
-            for (BSpline BSpline : model.getBSplines()) {
+            for (BSpline BSpline : model.getbSplines()) {
                 drawShape(BSpline);
             }
         }
@@ -183,6 +210,10 @@ public class ShapeView extends JPanel {
         for (Line<Point3D<Float, Float, Float>> line : shapeLines) {
             drawLine(line, BSpline.getCx(), BSpline.getCy(), BSpline.getCz());
         }
+    }
+
+    public Integer getSelectedShape() {
+        return selectedShape;
     }
 
     @Override
