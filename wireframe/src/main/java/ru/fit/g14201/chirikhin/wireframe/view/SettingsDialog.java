@@ -8,11 +8,14 @@ import ru.fit.g14201.chirikhin.wireframe.model.Model;
 import ru.fit.g14201.chirikhin.wireframe.model.BSplineBuilder;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class SettingsDialog extends MyDialog {
     private static final String MODEL_KEY = "MODEL_KEY";
@@ -82,9 +85,20 @@ public class SettingsDialog extends MyDialog {
         numSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
 
         rColorSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));
-        gColorSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));
-        bColorSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));
 
+        ChangeListener changeColorListener = e -> {
+            if (null != selectedShape) {
+                int newR = ((Number) rColorSpinner.getValue()).intValue();
+                int newG = ((Number) gColorSpinner.getValue()).intValue();
+                int newB = ((Number) bColorSpinner.getValue()).intValue();
+                model.getbSplines().get(selectedShape).setColor(new Color(newR, newG, newB));
+            }
+        };
+        rColorSpinner.addChangeListener(changeColorListener);
+        gColorSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));
+        gColorSpinner.addChangeListener(changeColorListener);
+        bColorSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));
+        bColorSpinner.addChangeListener(changeColorListener);
         aSpinner = new JSpinner(new SpinnerNumberModel(0.1f, -0.01f, 1.01f, 0.05f));
         bSpinner = new JSpinner(new SpinnerNumberModel(0.1f, -0.01f, 1.01f, 0.05f));
 
@@ -183,9 +197,12 @@ public class SettingsDialog extends MyDialog {
         kSpinner.setValue(model.getK());
         mSpinner.setValue(model.getM());
 
-        rColorSpinner.setValue(model.getBackgroundColor().getRed());
-        gColorSpinner.setValue(model.getBackgroundColor().getGreen());
-        bColorSpinner.setValue(model.getBackgroundColor().getBlue());
+        if (null != selectedShape) {
+            Color currentShapeColor = model.getbSplines().get(selectedShape).getColor();
+            rColorSpinner.setValue(currentShapeColor.getRed());
+            gColorSpinner.setValue(currentShapeColor.getGreen());
+            bColorSpinner.setValue(currentShapeColor.getBlue());
+        }
 
         aSpinner.setValue(model.getA());
         bSpinner.setValue(model.getB());
@@ -216,11 +233,11 @@ public class SettingsDialog extends MyDialog {
         JButton addNewShapeButton = new JButton("Add a new shape to the model");
         addNewShapeButton.addActionListener(e -> {
                 if(model.getbSplines().add(new BSplineBuilder()
-                        .withColor(Color.BLACK)
-                        .withCx(0)
-                        .withCy(0)
-                        .withCz(0)
-                        .withRoundMatrix(new Matrix(new float[][] {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}))
+                        .withColor(getRandomColor())
+                        .withCx(0f)
+                        .withCy(0f)
+                        .withCz(0f)
+                        .withRoundMatrix(new Matrix(new float[][] {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}))
                         .build())) {
                     shapes.add(getShapeName(shapes));
                     shapesList.setListData(shapes.toArray(new String[shapes.size()]));
@@ -302,5 +319,14 @@ public class SettingsDialog extends MyDialog {
 
             return "BSpline " + i;
         }
+    }
+
+    private Color getRandomColor() {
+        Random random = new Random();
+        int r = random.nextInt(256);
+        int g = random.nextInt(256);
+        int b = random.nextInt(256);
+
+        return new Color(r, g, b);
     }
 }

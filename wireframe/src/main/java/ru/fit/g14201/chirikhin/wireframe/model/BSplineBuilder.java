@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 public class BSplineBuilder {
     private Color color = null;
-    private Integer cx = null;
-    private Integer cy = null;
-    private Integer cz = null;
+    private Float cx = null;
+    private Float cy = null;
+    private Float cz = null;
     private Matrix roundMatrix = null;
     private final ArrayList<Point<Float, Float>> points = new ArrayList<>();
 
@@ -23,17 +23,17 @@ public class BSplineBuilder {
         return this;
     }
 
-    public BSplineBuilder withCx(int cx) {
+    public BSplineBuilder withCx(Float cx) {
         this.cx = cx;
         return this;
     }
 
-    public BSplineBuilder withCy(int cy) {
+    public BSplineBuilder withCy(Float cy) {
         this.cy = cy;
         return this;
     }
 
-    public BSplineBuilder withCz(int cz) {
+    public BSplineBuilder withCz(Float cz) {
         this.cz = cz;
         return this;
     }

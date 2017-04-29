@@ -120,14 +120,14 @@ public class ModelLoader {
                             parserConfig.nextIndex();
                         }
                     })
-                    .add(new TypeCheckRunnable(ListUtil.asList(Integer.class, Integer.class, Integer.class,
+                    .add(new TypeCheckRunnable(ListUtil.asList(Float.class, Float.class, Float.class,
                             Comment.class)) {
                         @Override
                         public void run(Object[] objects, ParserConfig parserConfig) {
                             BSplineBuilder[0]
-                                    .withCx((Integer) objects[0])
-                                    .withCy((Integer) objects[1])
-                                    .withCz((Integer) objects[2]);
+                                    .withCx((Float) objects[0])
+                                    .withCy((Float) objects[1])
+                                    .withCz((Float) objects[2]);
 
                             parserConfig.nextIndex();
                         }

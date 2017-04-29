@@ -7,14 +7,14 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class BSpline {
-    private final Color color;
-    private final int cx;
-    private final int cy;
-    private final int cz;
+    private Color color;
+    private final float cx;
+    private final float cy;
+    private final float cz;
     private final Matrix roundMatrix;
     private final ArrayList<Point<Float, Float>> points;
 
-    BSpline(Color color, int cx, int cy, int cz, Matrix roundMatrix, ArrayList<Point<Float, Float>> points) {
+    BSpline(Color color, float cx, float cy, float cz, Matrix roundMatrix, ArrayList<Point<Float, Float>> points) {
         this.color = color;
         this.cx = cx;
         this.cy = cy;
@@ -31,15 +31,15 @@ public class BSpline {
         return color;
     }
 
-    public int getCx() {
+    public float getCx() {
         return cx;
     }
 
-    public int getCy() {
+    public float getCy() {
         return cy;
     }
 
-    public int getCz() {
+    public float getCz() {
         return cz;
     }
 
@@ -53,5 +53,9 @@ public class BSpline {
 
     public boolean isEmpty() {
         return getPoints().isEmpty();
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 }
