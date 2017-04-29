@@ -142,16 +142,63 @@ public class ShapeView extends JPanel {
         });
     }
 
+    private Point3D<Float, Float, Float> multiplyVectors(Point3D<Float, Float, Float> vector1,
+                                                         Point3D<Float, Float, Float> vector2) {
+        return new Point3D<>(vector1.getY() * vector2.getZ() - vector1.getZ() * vector2.getY(),
+                vector1.getX() * vector2.getZ() - vector1.getZ() * vector2.getX(),
+                vector1.getX() * vector2.getY() - vector1.getY() * vector2.getX());
+    }
+
     private Matrix calculateCameraMatrix(Point3D<Float, Float, Float> cameraPosition,
                                          Point3D<Float, Float, Float> viewPoint,
                                          Point3D<Float, Float, Float> upVector) {
-        float wx = (cameraPosition.getX() - viewPoint.getX()) /
-                Math.abs(cameraPosition.getX() - viewPoint.getX());
+        float normalizeForK = (float) Math.sqrt((cameraPosition.getX() - viewPoint.getX()) * (cameraPosition.getX() - viewPoint.getX())
+                + (cameraPosition.getY() - viewPoint.getY()) * (cameraPosition.getY() - viewPoint.getY()) +
+                (cameraPosition.getZ() - viewPoint.getZ()) * (cameraPosition.getZ() - viewPoint.getZ()));
 
-        //float wy = ();
+        float kx = (cameraPosition.getX() - viewPoint.getX()) /
+                normalizeForK;
+        float ky = (cameraPosition.getY() - viewPoint.getY()) /
+                normalizeForK;
+        float kz = (cameraPosition.getZ() - viewPoint.getZ()) /
+                normalizeForK;
+
+        Point3D<Float, Float, Float> iVector = multiplyVectors(upVector, new Point3D<>(kx, ky, kz));
+
+        float normalizeForI = (float) Math.sqrt(iVector.getX() * iVector.getX() +
+                iVector.getY() * iVector.getY() +
+                iVector.getZ() * iVector.getZ());
+        float ix = iVector.getX() / normalizeForI;
+        float iy = iVector.getY() / normalizeForI;
+        float iz = iVector.getZ() / normalizeForI;
+
+        Point3D<Float, Float, Float> jVector = multiplyVectors(new Point3D<>(kx, ky, kz),
+                new Point3D<>(ix, iy, iz));
+
+        return MatrixUtil.multiply(new Matrix(new float[][] {
+                {ix, iy, iz, 0},
+                {jVector.getX(), jVector.getY(), jVector.getZ(), 0},
+                {kx, ky, kz, 0},
+                {0, 0, 0, 1}
+        }), new Matrix(new float[][] {
+                {1, 0, 0, -cameraPosition.getX()},
+                {0, 1, 0, -cameraPosition.getY()},
+                {0, 0, 1, -cameraPosition.getZ()},
+                {0, 0, 0, 1}
+        }));
     }
 
-    private void drawLine(Line<Point3D<Float, Float, Float>> line, float cx, float cy, float cz, Color color) {
+    private Matrix calculateProjMatrix(float sw, float sh, float zf, float zn) {
+        return new Matrix(new float[][] {
+                {2 * zf / sw, 0, 0, 0},
+                {0, 2 * zf / sh, 0, 0},
+                {0, 0, zn / (zn - zf), 0},
+                {0, 0, 1, 0}
+        });
+    };
+
+    private void drawLine(Line<Point3D<Float, Float, Float>> line,
+                          float cx, float cy, float cz, Color color) {
         Matrix start = new Matrix(new float[][] {{line.getStart().getX()},
                 {line.getStart().getY()},{line.getStart().getZ()}, {1}});
 
@@ -165,8 +212,20 @@ public class ShapeView extends JPanel {
         Matrix shiftMatrix = calculateShiftMatrix(cx,
                 cy , cz);
 
-        realStart = MatrixUtil.multiply(zoomMatrix, MatrixUtil.multiply(shiftMatrix, realStart));
-        realEnd = MatrixUtil.multiply(zoomMatrix, MatrixUtil.multiply(shiftMatrix, realEnd));
+        Matrix cameraMatrix = calculateCameraMatrix(new Point3D<>(-10f, 0f,0f),
+                new Point3D<>(10f, 0f, 0f),
+                new Point3D<>(0f, 1f, 0f));
+
+        Matrix projMatrix = calculateProjMatrix(model.getSw(),
+                model.getSh(), model.getZf(), model.getZn());
+
+        realStart = MatrixUtil.multiply(projMatrix,
+                MatrixUtil.multiply(cameraMatrix, MatrixUtil.multiply(shiftMatrix, realStart)));
+        realEnd = MatrixUtil.multiply(projMatrix,
+                MatrixUtil.multiply(cameraMatrix, MatrixUtil.multiply(shiftMatrix, realEnd)));
+//
+//        realStart = MatrixUtil.multiply(projMatrix, MatrixUtil.multiply(shiftMatrix, realStart));
+//        realEnd = MatrixUtil.multiply(projMatrix, MatrixUtil.multiply(shiftMatrix, realEnd));
 
         float x0 = realStart.get(0, 0) + width / 2;
         float y0 = realStart.get(1, 0) + height / 2;
@@ -212,21 +271,22 @@ public class ShapeView extends JPanel {
 
     public void drawCube() {
         ArrayList<Line<Point3D<Float, Float, Float>>> cubeLines = new ArrayList<>();
-        cubeLines.add(new Line<>(new Point3D<>(0f, 0f, 0f), new Point3D<>(1f, 0f, 0f)));
-        cubeLines.add(new Line<>(new Point3D<>(0f, 0f, 0f), new Point3D<>(0f, 1f, 0f)));
-        cubeLines.add(new Line<>(new Point3D<>(0f, 0f, 0f), new Point3D<>(0f, 0f, 1f)));
 
-        cubeLines.add(new Line<>(new Point3D<>(1f, 1f, 0f), new Point3D<>(1f, 0f, 0f)));
-        cubeLines.add(new Line<>(new Point3D<>(1f, 0f, 1f), new Point3D<>(1f, 0f, 0f)));
-        cubeLines.add(new Line<>(new Point3D<>(0f, 1f, 0f), new Point3D<>(1f, 1f, 0f)));
-        cubeLines.add(new Line<>(new Point3D<>(0f, 0f, 1f), new Point3D<>(1f, 0f, 1f)));
+        cubeLines.add(new Line<>(new Point3D<>(-1f, -1f, -1f), new Point3D<>(1f, -1f, -1f)));
+        cubeLines.add(new Line<>(new Point3D<>(-1f, -1f, -1f), new Point3D<>(-1f, 1f, -1f)));
+        cubeLines.add(new Line<>(new Point3D<>(-1f, -1f, -1f), new Point3D<>(-1f, -1f, 1f)));
 
-        cubeLines.add(new Line<>(new Point3D<>(1f, 1f, 0f), new Point3D<>(1f, 1f, 1f)));
-        cubeLines.add(new Line<>(new Point3D<>(1f, 0f, 1f), new Point3D<>(1f, 1f, 1f)));
-        cubeLines.add(new Line<>(new Point3D<>(0f, 1f, 1f), new Point3D<>(1f, 1f, 1f)));
+        cubeLines.add(new Line<>(new Point3D<>(1f, 1f, -1f), new Point3D<>(1f, -1f, -1f)));
+        cubeLines.add(new Line<>(new Point3D<>(1f, -1f, 1f), new Point3D<>(1f, -1f, -1f)));
+        cubeLines.add(new Line<>(new Point3D<>(-1f, 1f, -1f), new Point3D<>(1f, 1f, -1f)));
+        cubeLines.add(new Line<>(new Point3D<>(-1f, -1f, 1f), new Point3D<>(1f, -1f, 1f)));
 
-        cubeLines.add(new Line<>(new Point3D<>(0f, 1f, 1f), new Point3D<>(0f, 1f, 0f)));
-        cubeLines.add(new Line<>(new Point3D<>(0f, 1f, 1f), new Point3D<>(0f, 0f, 1f)));
+        cubeLines.add(new Line<>(new Point3D<>(1f, 1f, -1f), new Point3D<>(1f, 1f, 1f)));
+        cubeLines.add(new Line<>(new Point3D<>(1f, -1f, 1f), new Point3D<>(1f, 1f, 1f)));
+        cubeLines.add(new Line<>(new Point3D<>(-1f, 1f, 1f), new Point3D<>(1f, 1f, 1f)));
+
+        cubeLines.add(new Line<>(new Point3D<>(-1f, 1f, 1f), new Point3D<>(-1f, 1f, -1f)));
+        cubeLines.add(new Line<>(new Point3D<>(-1f, 1f, 1f), new Point3D<>(-1f, -1f, 1f)));
 
         for (Line<Point3D<Float, Float, Float>> line : cubeLines) {
             drawLine(line, 0, 0, 0, Color.WHITE);
@@ -235,6 +295,10 @@ public class ShapeView extends JPanel {
 
     public Integer getSelectedShape() {
         return selectedShape;
+    }
+
+    public void setSelectedShape(Integer selectedShape) {
+        this.selectedShape = selectedShape;
     }
 
     @Override

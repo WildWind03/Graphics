@@ -33,7 +33,7 @@ public class ShapeToLinesConverter {
 
     public static ArrayList<Line<Point3D<Float, Float, Float>>> toLines(BSplineFunction bSplineFunction, int n, int m, int k,
                                                      float a, float b, float d, float c) {
-        float max = getMaxOfSpline(bSplineFunction, n, k, a, b) * 2;
+        float max = getMaxOfSpline(bSplineFunction, n, k, a, b);
 
         ArrayList<Line<Point3D<Float, Float, Float>>> lines = new ArrayList<>();
 

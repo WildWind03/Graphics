@@ -159,9 +159,28 @@ public class SettingsDialog extends MyDialog {
 
 
         znSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
+        znSpinner.addChangeListener(e -> {
+            Number znNumber = (Number) znSpinner.getValue();
+            model.setZn(znNumber.intValue());
+        });
+
         zfSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
+        zfSpinner.addChangeListener(e -> {
+            Number zfNumber = (Number) zfSpinner.getValue();
+            model.setZf(zfNumber.intValue());
+        });
+
         shSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
+        shSpinner.addChangeListener(e -> {
+            Number shNumber = (Number) shSpinner.getValue();
+            model.setSh(shNumber.intValue());
+        });
+
         swSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
+        swSpinner.addChangeListener(e -> {
+            Number swNumber = (Number) swSpinner.getValue();
+            model.setSw(swNumber.intValue());
+        });
 
         JLabel listOfShapesLabel = new JLabel("List of shapes");
         listOfShapesLabel.setFont(new Font(listOfShapesLabel.getFont().getName(), Font.PLAIN, 20));
@@ -197,12 +216,7 @@ public class SettingsDialog extends MyDialog {
         kSpinner.setValue(model.getK());
         mSpinner.setValue(model.getM());
 
-        if (null != selectedShape) {
-            Color currentShapeColor = model.getbSplines().get(selectedShape).getColor();
-            rColorSpinner.setValue(currentShapeColor.getRed());
-            gColorSpinner.setValue(currentShapeColor.getGreen());
-            bColorSpinner.setValue(currentShapeColor.getBlue());
-        }
+        updateColorParams(model);
 
         aSpinner.setValue(model.getA());
         bSpinner.setValue(model.getB());
@@ -225,6 +239,7 @@ public class SettingsDialog extends MyDialog {
                 BSpline BSpline = model.getbSplines().get(selectedModelIndex);
                 splineGraphic.setBSpline(BSpline);
                 selectedShape = selectedModelIndex;
+                updateColorParams(model);
             } else {
                 selectedShape = null;
             }
@@ -287,6 +302,15 @@ public class SettingsDialog extends MyDialog {
         addComponent(5, 81, 50, 90, shapesListScrollPane);
     }
 
+    private void updateColorParams(Model model) {
+        if (null != selectedShape) {
+            Color currentShapeColor = model.getbSplines().get(selectedShape).getColor();
+            rColorSpinner.setValue(currentShapeColor.getRed());
+            gColorSpinner.setValue(currentShapeColor.getGreen());
+            bColorSpinner.setValue(currentShapeColor.getBlue());
+        }
+    }
+
     private static HashMap<String, Object> getArgs(Model model, Integer selectedShape) {
         HashMap<String, Object> args = new HashMap<>();
         args.put(MODEL_KEY, model);
@@ -319,6 +343,10 @@ public class SettingsDialog extends MyDialog {
 
             return "BSpline " + i;
         }
+    }
+
+    public Integer getSelectedShape() {
+        return selectedShape;
     }
 
     private Color getRandomColor() {

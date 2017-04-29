@@ -127,6 +127,7 @@ public class MainFrame extends JFrame {
             Integer selectedShape = shapeView.getSelectedShape();
             SettingsDialog settingsDialog = new SettingsDialog(this, SETTINGS, -1, model, selectedShape);
             settingsDialog.apparate();
+            shapeView.setSelectedShape(settingsDialog.getSelectedShape());
             shapeView.update();
         }
     }
