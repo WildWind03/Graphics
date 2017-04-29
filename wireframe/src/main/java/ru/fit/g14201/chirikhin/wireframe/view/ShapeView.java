@@ -6,7 +6,6 @@ import chirikhin.support.Line;
 import chirikhin.support.Point;
 import chirikhin.support.Point3D;
 import ru.fit.g14201.chirikhin.wireframe.bspline.BSplineFunction;
-import ru.fit.g14201.chirikhin.wireframe.main.Main;
 import ru.fit.g14201.chirikhin.wireframe.model.BSpline;
 import ru.fit.g14201.chirikhin.wireframe.model.Model;
 
@@ -212,8 +211,8 @@ public class ShapeView extends JPanel {
         Matrix shiftMatrix = calculateShiftMatrix(cx,
                 cy , cz);
 
-        Matrix cameraMatrix = calculateCameraMatrix(new Point3D<>(-10f, 0f,0f),
-                new Point3D<>(10f, 0f, 0f),
+        Matrix cameraMatrix = calculateCameraMatrix(new Point3D<>(0f, 0f,-10f),
+                new Point3D<>(1f, 0f, 0f),
                 new Point3D<>(0f, 1f, 0f));
 
         Matrix projMatrix = calculateProjMatrix(model.getSw(),
@@ -223,9 +222,6 @@ public class ShapeView extends JPanel {
                 MatrixUtil.multiply(cameraMatrix, MatrixUtil.multiply(shiftMatrix, realStart)));
         realEnd = MatrixUtil.multiply(projMatrix,
                 MatrixUtil.multiply(cameraMatrix, MatrixUtil.multiply(shiftMatrix, realEnd)));
-//
-//        realStart = MatrixUtil.multiply(projMatrix, MatrixUtil.multiply(shiftMatrix, realStart));
-//        realEnd = MatrixUtil.multiply(projMatrix, MatrixUtil.multiply(shiftMatrix, realEnd));
 
         float x0 = realStart.get(0, 0) + width / 2;
         float y0 = realStart.get(1, 0) + height / 2;
