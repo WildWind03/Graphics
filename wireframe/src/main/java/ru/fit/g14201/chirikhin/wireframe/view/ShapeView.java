@@ -5,6 +5,7 @@ import chirikhin.matrix.MatrixUtil;
 import chirikhin.support.Line;
 import chirikhin.support.Point;
 import chirikhin.support.Point3D;
+import chirikhin.swing.util.ListUtil;
 import ru.fit.g14201.chirikhin.wireframe.bspline.BSplineFunction;
 import ru.fit.g14201.chirikhin.wireframe.model.BSpline;
 import ru.fit.g14201.chirikhin.wireframe.model.Model;
@@ -14,6 +15,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -29,12 +33,12 @@ public class ShapeView extends JPanel {
 
     private Point<Integer, Integer> prevPoint = new Point<>(0, 0);
 
-    private Matrix SCENE_ROTATION_MATRIX = new Matrix(new float[][] {
+    private Matrix SCENE_ROTATION_MATRIX = new Matrix(new float[][]{
             {1, 0, 0, 0},
             {0, 1, 0, 0},
             {0, 0, 1, 0},
             {0, 0, 0, 1}
-        });
+    });
 
     public ShapeView(int width, int height) {
         super(true);
@@ -82,14 +86,14 @@ public class ShapeView extends JPanel {
     }
 
     private void onMouseDragged(MouseEvent e, Point<Integer, Integer> point) {
-        int dx = - (e.getX() - point.getX());
-        int dy = - (e.getY() - point.getY());
+        int dx = -(e.getX() - point.getX());
+        int dy = -(e.getY() - point.getY());
 
         Matrix qzMatrix = calculateQzMatrix((float) (((float) dy / (float) height) * 2 * Math.PI));
         Matrix qyMatrix = calculateQyMatrix((float) (((float) dx / (float) width) * 2 * Math.PI));
 
         SCENE_ROTATION_MATRIX = MatrixUtil.multiply(qzMatrix,
-                                MatrixUtil.multiply(qyMatrix, SCENE_ROTATION_MATRIX));
+                MatrixUtil.multiply(qyMatrix, SCENE_ROTATION_MATRIX));
         repaint();
     }
 
@@ -107,7 +111,7 @@ public class ShapeView extends JPanel {
         repaint();
     }
 
-    private Matrix calculateZoomMatrix(int scaleX, int scaleY, int scaleZ) {
+    private Matrix calculateZoomMatrix(float scaleX, float scaleY, float scaleZ) {
         return new Matrix(new float[][]{
                 {scaleX, 0, 0, 0},
                 {0, scaleY, 0, 0},
@@ -117,7 +121,7 @@ public class ShapeView extends JPanel {
     }
 
     private Matrix calculateShiftMatrix(float shiftX, float shiftY, float shiftZ) {
-        return new Matrix(new float[][] {
+        return new Matrix(new float[][]{
                 {1, 0, 0, shiftX},
                 {0, 1, 0, shiftY},
                 {0, 0, 1, shiftZ},
@@ -135,7 +139,7 @@ public class ShapeView extends JPanel {
     }
 
     private Matrix calculateQxMatrix(float angleX) {
-        return new Matrix(new float[][] {
+        return new Matrix(new float[][]{
                 {1, 0, 0, 0},
                 {0, (float) cos(angleX), (float) -sin(angleX), 0},
                 {0, (float) sin(angleX), (float) cos(angleX), 0},
@@ -186,12 +190,12 @@ public class ShapeView extends JPanel {
         Point3D<Float, Float, Float> jVector = multiplyVectors(new Point3D<>(kx, ky, kz),
                 new Point3D<>(ix, iy, iz));
 
-        return MatrixUtil.multiply(new Matrix(new float[][] {
+        return MatrixUtil.multiply(new Matrix(new float[][]{
                 {ix, iy, iz, 0},
                 {jVector.getX(), jVector.getY(), jVector.getZ(), 0},
                 {kx, ky, kz, 0},
                 {0, 0, 0, 1}
-        }), new Matrix(new float[][] {
+        }), new Matrix(new float[][]{
                 {1, 0, 0, -viewPoint.getX()},
                 {0, 1, 0, -viewPoint.getY()},
                 {0, 0, 1, -viewPoint.getZ()},
@@ -200,27 +204,40 @@ public class ShapeView extends JPanel {
     }
 
     private Matrix calculateProjMatrix(float sw, float sh, float zf, float zn) {
-        return new Matrix(new float[][] {
+        return new Matrix(new float[][]{
                 {2 * zf / sw, 0, 0, 0},
                 {0, 2 * zf / sh, 0, 0},
                 {0, 0, zn / (zn - zf), 0},
                 {0, 0, 1, 0}
         });
-    };
+    }
+
+    ;
 
     private void drawLine(Point3D<Float, Float, Float> startPoint,
                           Point3D<Float, Float, Float> endPoint,
                           Color color) {
-        Matrix start = new Matrix(new float[][] {{startPoint.getX()},
-                {startPoint.getY()},{startPoint.getZ()}, {1}});
+        drawLine(startPoint, endPoint, color, new Matrix(new float[][]{
+                {1, 0, 0, 0},
+                {0, 1, 0, 0},
+                {0, 0, 1, 0},
+                {0, 0, 0, 1}
+        }));
+    }
 
-        Matrix end = new Matrix(new float[][] {{endPoint.getX()},
+    private void drawLine(Point3D<Float, Float, Float> startPoint,
+                          Point3D<Float, Float, Float> endPoint,
+                          Color color, Matrix shapeMatrix) {
+        Matrix start = new Matrix(new float[][]{{startPoint.getX()},
+                {startPoint.getY()}, {startPoint.getZ()}, {1}});
+
+        Matrix end = new Matrix(new float[][]{{endPoint.getX()},
                 {endPoint.getY()}, {endPoint.getZ()}, {1}});
 
-        Matrix realStart = MatrixUtil.multiply(SCENE_ROTATION_MATRIX, start);
-        Matrix realEnd = MatrixUtil.multiply(SCENE_ROTATION_MATRIX, end);
+        Matrix realStart = MatrixUtil.multiply(SCENE_ROTATION_MATRIX, MatrixUtil.multiply(shapeMatrix, start));
+        Matrix realEnd = MatrixUtil.multiply(SCENE_ROTATION_MATRIX, MatrixUtil.multiply(shapeMatrix, end));
 
-        Matrix cameraMatrix = calculateCameraMatrix(new Point3D<>(-10f, 0f,0f),
+        Matrix cameraMatrix = calculateCameraMatrix(new Point3D<>(-10f, 0f, 0f),
                 new Point3D<>(10f, 0f, 0f),
                 new Point3D<>(0f, 1f, 0f));
 
@@ -261,13 +278,100 @@ public class ShapeView extends JPanel {
         drawCoordinateSystem(0, 0, 0, 1);
 
         if (null != model) {
+            //drawShapes(model.getbSplines());
+            float max = model.getbSplines()
+                    .stream()
+                    .flatMap(bSpline -> ShapeToLinesConverter.toLines(new BSplineFunction(bSpline.getPoints()),
+                            model.getN(), model.getM(), model.getK(), model.getA(), model.getB(), model.getD(), model.getC(), -1).stream())
+                    .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX(),
+                            point3DLine.getEnd().getX()).stream())
+                    .map(Math::abs)
+                    .max(Float::compareTo)
+                    .orElse(Float.MIN_VALUE);
+
             for (BSpline BSpline : model.getbSplines()) {
-                drawShape(BSpline);
+                drawShape(BSpline, max);
             }
         }
 
         g.drawImage(bufferedImage, 0, 0, null);
     }
+
+    /*private void drawShapes(ArrayList<BSpline> bSplines) {
+        float max = bSplines
+                .stream()
+                .flatMap(bSpline -> ShapeToLinesConverter.toLines(new BSplineFunction(bSpline.getPoints()),
+                        model.getN(), model.getM(), model.getK(), model.getA(), model.getB(), model.getD(), model.getC()).stream())
+                .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX(),
+                point3DLine.getEnd().getX()).stream())
+                .map(Math::abs)
+                .max(Float::compareTo)
+                .orElse(Float.MIN_VALUE);
+
+        for (BSpline bSpline : bSplines) {
+            drawShape(bSpline);
+        }
+        /*float globalMaxX = Float.MIN_VALUE;
+        float globalMaxY = Float.MIN_VALUE;
+        float globalMaxZ = Float.MIN_VALUE;
+        float globalMinX = Float.MAX_VALUE;
+        float globalMinY = Float.MAX_VALUE;
+        float globalMinZ = Float.MAX_VALUE;
+
+        ArrayList<ArrayList<Line<Point3D<Float, Float, Float>>>> splinesLines = new ArrayList<>();
+
+        for (BSpline bSpline : bSplines) {
+            BSplineFunction bSplineFunction = new BSplineFunction(bSpline.getPoints());
+            ArrayList<Line<Point3D<Float, Float, Float>>> shapeLines =
+                    ShapeToLinesConverter.toLines(bSplineFunction, model.getN(), model.getM(), model.getK(),
+                            model.getA(), model.getB(), model.getD(), model.getC());
+
+            float maxXValue = shapeLines
+                    .stream()
+                    .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX(),
+                            point3DLine.getEnd().getX()).stream())
+                    .max(Float::compareTo)
+                    .orElse(Float.MIN_VALUE) + bSpline.getCx();
+
+            float maxYValue = shapeLines
+                    .stream()
+                    .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getY(),
+                            point3DLine.getEnd().getY()).stream())
+                    .max(Float::compareTo)
+                    .orElse(Float.MIN_VALUE) + bSpline.getCy();
+
+            float maxZValue = shapeLines
+                    .stream()
+                    .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getZ(),
+                            point3DLine.getEnd().getZ()).stream())
+                    .max(Float::compareTo)
+                    .orElse(Float.MIN_VALUE) + bSpline.getCz();
+
+            float minXValue = shapeLines
+                    .stream()
+                    .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX(),
+                            point3DLine.getEnd().getX()).stream())
+                    .min(Float::compareTo)
+                    .orElse(Float.MIN_VALUE) + bSpline.getCx();
+
+            float minYValue = shapeLines
+                    .stream()
+                    .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getY(),
+                            point3DLine.getEnd().getY()).stream())
+                    .min(Float::compareTo)
+                    .orElse(Float.MIN_VALUE) + bSpline.getCy();
+
+            float minZValue = shapeLines
+                    .stream()
+                    .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getZ(),
+                            point3DLine.getEnd().getZ()).stream())
+                    .min(Float::compareTo)
+                    .orElse(Float.MIN_VALUE) + bSpline.getCz();
+
+            splinesLines.add(shapeLines);
+        }
+
+    }*/
 
     private void drawCoordinateSystem(float x, float y, float z, float length) {
         drawLine(new Point3D<>(x, y, z), new Point3D<>(x + length, y, z), Color.RED);
@@ -276,13 +380,64 @@ public class ShapeView extends JPanel {
 
     }
 
-    private void drawShape(BSpline BSpline) {
+    private void drawShape(BSpline BSpline, float max) {
         BSplineFunction bSplineFunction = new BSplineFunction(BSpline.getPoints());
         ArrayList<Line<Point3D<Float, Float, Float>>> shapeLines =
                 ShapeToLinesConverter.toLines(bSplineFunction, model.getN(), model.getM(), model.getK(),
-                    model.getA(), model.getB(), model.getD(), model.getC());
+                        model.getA(), model.getB(), model.getD(), model.getC(), max);
 
+        /*float maxXValue = shapeLines
+                .stream()
+                .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX(),
+                        point3DLine.getEnd().getX()).stream())
+                .max(Float::compareTo)
+                .orElse(Float.MIN_VALUE);
+
+        float maxYValue = shapeLines
+                .stream()
+                .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getY(),
+                        point3DLine.getEnd().getY()).stream())
+                .max(Float::compareTo)
+                .orElse(Float.MIN_VALUE);
+
+        float maxZValue = shapeLines
+                .stream()
+                .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getZ(),
+                        point3DLine.getEnd().getZ()).stream())
+                .max(Float::compareTo)
+                .orElse(Float.MIN_VALUE);
+
+        float minXValue = shapeLines
+                .stream()
+                .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX(),
+                        point3DLine.getEnd().getX()).stream())
+                .min(Float::compareTo)
+                .orElse(Float.MIN_VALUE);
+
+        float minYValue = shapeLines
+                .stream()
+                .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getY(),
+                        point3DLine.getEnd().getY()).stream())
+                .min(Float::compareTo)
+                .orElse(Float.MIN_VALUE);
+
+        float minZValue = shapeLines
+                .stream()
+                .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getZ(),
+                        point3DLine.getEnd().getZ()).stream())
+                .min(Float::compareTo)
+                .orElse(Float.MIN_VALUE);
+
+        float xDistance = Math.abs(maxXValue - minXValue);
+        float yDistance = Math.abs(maxYValue - minYValue);
+        float zDistance = Math.abs(maxZValue - minZValue);
+
+        Matrix moveMatrix = calculateShiftMatrix(- (xDistance / 2 + minXValue), - (yDistance / 2 + minYValue), - (zDistance / 2 + minZValue));
+        Matrix zoomMatrix = calculateZoomMatrix(2f / xDistance, 2f / yDistance, 2f / zDistance);
+
+*/
         for (Line<Point3D<Float, Float, Float>> line : shapeLines) {
+            //drawLine(line.getStart(), line.getEnd(), BSpline.getColor(), MatrixUtil.multiply(zoomMatrix, moveMatrix));
             drawLine(line.getStart(), line.getEnd(), BSpline.getColor());
         }
     }
