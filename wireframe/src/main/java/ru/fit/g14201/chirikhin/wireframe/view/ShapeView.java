@@ -12,12 +12,11 @@ import ru.fit.g14201.chirikhin.wireframe.model.Model;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -212,8 +211,6 @@ public class ShapeView extends JPanel {
         });
     }
 
-    ;
-
     private void drawLine(Point3D<Float, Float, Float> startPoint,
                           Point3D<Float, Float, Float> endPoint,
                           Color color) {
@@ -278,100 +275,40 @@ public class ShapeView extends JPanel {
         drawCoordinateSystem(0, 0, 0, 1);
 
         if (null != model) {
-            //drawShapes(model.getbSplines());
-            float max = model.getbSplines()
-                    .stream()
-                    .flatMap(bSpline -> ShapeToLinesConverter.toLines(new BSplineFunction(bSpline.getPoints()),
-                            model.getN(), model.getM(), model.getK(), model.getA(), model.getB(), model.getD(), model.getC(), -1).stream())
-                    .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX(),
-                            point3DLine.getEnd().getX()).stream())
+
+            ArrayList<ArrayList<Line<Point3D<Float, Float, Float>>>> linesOfSplines = new ArrayList<>();
+
+            float globalMax = Float.MIN_VALUE;
+            for (BSpline bSpline : model.getbSplines()) {
+                ArrayList<Line<Point3D<Float, Float, Float>>> splineLines = ShapeToLinesConverter.toLines(new BSplineFunction(bSpline.getPoints()),
+                            model.getN(), model.getM(), model.getK(), model.getA(), model.getB(), model.getD(), model.getC(), -1);
+                linesOfSplines.add(splineLines);
+
+                float localMax = splineLines
+                        .stream()
+                        .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX(),
+                            point3DLine.getEnd().getX(), point3DLine.getStart().getY(),
+                            point3DLine.getEnd().getY(), point3DLine.getStart().getZ(), point3DLine.getEnd().getZ()).stream())
                     .map(Math::abs)
                     .max(Float::compareTo)
                     .orElse(Float.MIN_VALUE);
 
-            for (BSpline BSpline : model.getbSplines()) {
-                drawShape(BSpline, max);
+                if (localMax > globalMax) {
+                    globalMax = localMax;
+                }
+            }
+
+            for (int k = 0; k < linesOfSplines.size(); ++k) {
+                ArrayList<Line<Point3D<Float, Float, Float>>> currentSplineLines = linesOfSplines.get(k);
+                    for (Line<Point3D<Float, Float, Float>> line : currentSplineLines) {
+                        Matrix scaleMatrix = calculateZoomMatrix(1f / globalMax, 1f / globalMax, 1f / globalMax);
+                        drawLine(line.getStart(), line.getEnd(), model.getbSplines().get(k).getColor(), scaleMatrix);
+                    }
             }
         }
 
         g.drawImage(bufferedImage, 0, 0, null);
     }
-
-    /*private void drawShapes(ArrayList<BSpline> bSplines) {
-        float max = bSplines
-                .stream()
-                .flatMap(bSpline -> ShapeToLinesConverter.toLines(new BSplineFunction(bSpline.getPoints()),
-                        model.getN(), model.getM(), model.getK(), model.getA(), model.getB(), model.getD(), model.getC()).stream())
-                .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX(),
-                point3DLine.getEnd().getX()).stream())
-                .map(Math::abs)
-                .max(Float::compareTo)
-                .orElse(Float.MIN_VALUE);
-
-        for (BSpline bSpline : bSplines) {
-            drawShape(bSpline);
-        }
-        /*float globalMaxX = Float.MIN_VALUE;
-        float globalMaxY = Float.MIN_VALUE;
-        float globalMaxZ = Float.MIN_VALUE;
-        float globalMinX = Float.MAX_VALUE;
-        float globalMinY = Float.MAX_VALUE;
-        float globalMinZ = Float.MAX_VALUE;
-
-        ArrayList<ArrayList<Line<Point3D<Float, Float, Float>>>> splinesLines = new ArrayList<>();
-
-        for (BSpline bSpline : bSplines) {
-            BSplineFunction bSplineFunction = new BSplineFunction(bSpline.getPoints());
-            ArrayList<Line<Point3D<Float, Float, Float>>> shapeLines =
-                    ShapeToLinesConverter.toLines(bSplineFunction, model.getN(), model.getM(), model.getK(),
-                            model.getA(), model.getB(), model.getD(), model.getC());
-
-            float maxXValue = shapeLines
-                    .stream()
-                    .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX(),
-                            point3DLine.getEnd().getX()).stream())
-                    .max(Float::compareTo)
-                    .orElse(Float.MIN_VALUE) + bSpline.getCx();
-
-            float maxYValue = shapeLines
-                    .stream()
-                    .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getY(),
-                            point3DLine.getEnd().getY()).stream())
-                    .max(Float::compareTo)
-                    .orElse(Float.MIN_VALUE) + bSpline.getCy();
-
-            float maxZValue = shapeLines
-                    .stream()
-                    .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getZ(),
-                            point3DLine.getEnd().getZ()).stream())
-                    .max(Float::compareTo)
-                    .orElse(Float.MIN_VALUE) + bSpline.getCz();
-
-            float minXValue = shapeLines
-                    .stream()
-                    .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX(),
-                            point3DLine.getEnd().getX()).stream())
-                    .min(Float::compareTo)
-                    .orElse(Float.MIN_VALUE) + bSpline.getCx();
-
-            float minYValue = shapeLines
-                    .stream()
-                    .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getY(),
-                            point3DLine.getEnd().getY()).stream())
-                    .min(Float::compareTo)
-                    .orElse(Float.MIN_VALUE) + bSpline.getCy();
-
-            float minZValue = shapeLines
-                    .stream()
-                    .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getZ(),
-                            point3DLine.getEnd().getZ()).stream())
-                    .min(Float::compareTo)
-                    .orElse(Float.MIN_VALUE) + bSpline.getCz();
-
-            splinesLines.add(shapeLines);
-        }
-
-    }*/
 
     private void drawCoordinateSystem(float x, float y, float z, float length) {
         drawLine(new Point3D<>(x, y, z), new Point3D<>(x + length, y, z), Color.RED);
@@ -385,59 +322,7 @@ public class ShapeView extends JPanel {
         ArrayList<Line<Point3D<Float, Float, Float>>> shapeLines =
                 ShapeToLinesConverter.toLines(bSplineFunction, model.getN(), model.getM(), model.getK(),
                         model.getA(), model.getB(), model.getD(), model.getC(), max);
-
-        /*float maxXValue = shapeLines
-                .stream()
-                .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX(),
-                        point3DLine.getEnd().getX()).stream())
-                .max(Float::compareTo)
-                .orElse(Float.MIN_VALUE);
-
-        float maxYValue = shapeLines
-                .stream()
-                .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getY(),
-                        point3DLine.getEnd().getY()).stream())
-                .max(Float::compareTo)
-                .orElse(Float.MIN_VALUE);
-
-        float maxZValue = shapeLines
-                .stream()
-                .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getZ(),
-                        point3DLine.getEnd().getZ()).stream())
-                .max(Float::compareTo)
-                .orElse(Float.MIN_VALUE);
-
-        float minXValue = shapeLines
-                .stream()
-                .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX(),
-                        point3DLine.getEnd().getX()).stream())
-                .min(Float::compareTo)
-                .orElse(Float.MIN_VALUE);
-
-        float minYValue = shapeLines
-                .stream()
-                .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getY(),
-                        point3DLine.getEnd().getY()).stream())
-                .min(Float::compareTo)
-                .orElse(Float.MIN_VALUE);
-
-        float minZValue = shapeLines
-                .stream()
-                .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getZ(),
-                        point3DLine.getEnd().getZ()).stream())
-                .min(Float::compareTo)
-                .orElse(Float.MIN_VALUE);
-
-        float xDistance = Math.abs(maxXValue - minXValue);
-        float yDistance = Math.abs(maxYValue - minYValue);
-        float zDistance = Math.abs(maxZValue - minZValue);
-
-        Matrix moveMatrix = calculateShiftMatrix(- (xDistance / 2 + minXValue), - (yDistance / 2 + minYValue), - (zDistance / 2 + minZValue));
-        Matrix zoomMatrix = calculateZoomMatrix(2f / xDistance, 2f / yDistance, 2f / zDistance);
-
-*/
         for (Line<Point3D<Float, Float, Float>> line : shapeLines) {
-            //drawLine(line.getStart(), line.getEnd(), BSpline.getColor(), MatrixUtil.multiply(zoomMatrix, moveMatrix));
             drawLine(line.getStart(), line.getEnd(), BSpline.getColor());
         }
     }
