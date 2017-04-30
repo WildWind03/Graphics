@@ -113,7 +113,7 @@ public class ShapeView extends JPanel {
     public void setModel(Model newModel) {
         this.model = newModel;
         if (!model.isEmpty()) {
-            selectedShape = 0;
+            setSelectedShape(0);
         } else {
             selectedShape = null;
         }
@@ -299,18 +299,22 @@ public class ShapeView extends JPanel {
                 linesOfSplines.add(splineLines);
 
                 Matrix roundMatrix = bSpline.getRoundMatrix();
+                Matrix moveMatrix = calculateShiftMatrix(bSpline.getCx(),
+                        bSpline.getCy(), bSpline.getCz());
+                Matrix shapeMatrix = MatrixUtil.multiply(roundMatrix, moveMatrix);
+
                 for (Line<Point3D<Float, Float, Float>> line : splineLines) {
 
-                    Matrix startPoint = MatrixUtil.multiply(roundMatrix, new Matrix(new float[][]{{line.getStart().getX()},
+                    Matrix startPoint = MatrixUtil.multiply(shapeMatrix, new Matrix(new float[][]{{line.getStart().getX()},
                             {line.getStart().getY()}, {line.getStart().getZ()}, {1}}));
 
-                    Matrix endPoint = MatrixUtil.multiply(roundMatrix, new Matrix(new float[][]{{line.getEnd().getX()},
+                    Matrix endPoint = MatrixUtil.multiply(shapeMatrix, new Matrix(new float[][]{{line.getEnd().getX()},
                             {line.getEnd().getY()}, {line.getEnd().getZ()}, {1}}));
 
-                    float localMax = ListUtil.asList(startPoint.get(1, 0) + bSpline.getCy(), startPoint.get(0, 0) + bSpline.getCx(),
-                            startPoint.get(2, 0) + bSpline.getCz(),
-                            endPoint.get(0, 0) + bSpline.getCx(), endPoint.get(1, 0) + bSpline.getCy(),
-                            endPoint.get(2, 0) + bSpline.getCz())
+                    float localMax = ListUtil.asList(startPoint.get(1, 0), startPoint.get(0, 0),
+                            startPoint.get(2, 0),
+                            endPoint.get(0, 0), endPoint.get(1, 0),
+                            endPoint.get(2, 0))
                             .stream()
                             .map(Math::abs)
                             .max(Float::compareTo)
