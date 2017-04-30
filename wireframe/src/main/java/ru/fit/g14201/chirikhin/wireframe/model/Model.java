@@ -13,10 +13,10 @@ public class Model {
     private float b;
     private int c;
     private int d;
-    private int zn;
-    private int zf;
-    private int sw;
-    private int sh;
+    private float zn;
+    private float zf;
+    private float sw;
+    private float sh;
     private Matrix roundMatrix;
     private Color backgroundColor;
     private final ArrayList<BSpline> bSplines = new ArrayList<>();
@@ -71,19 +71,19 @@ public class Model {
         this.d = d;
     }
 
-    public void setZn(int zn) {
+    public void setZn(float zn) {
         this.zn = zn;
     }
 
-    public void setZf(int zf) {
+    public void setZf(float zf) {
         this.zf = zf;
     }
 
-    public void setSw(int sw) {
+    public void setSw(float sw) {
         this.sw = sw;
     }
 
-    public void setSh(int sh) {
+    public void setSh(float sh) {
         this.sh = sh;
     }
 
@@ -127,19 +127,19 @@ public class Model {
         return d;
     }
 
-    public int getZn() {
+    public float getZn() {
         return zn;
     }
 
-    public int getZf() {
+    public float getZf() {
         return zf;
     }
 
-    public int getSw() {
+    public float getSw() {
         return sw;
     }
 
-    public int getSh() {
+    public float getSh() {
         return sh;
     }
 

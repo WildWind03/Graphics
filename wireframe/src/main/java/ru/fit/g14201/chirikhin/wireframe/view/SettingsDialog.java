@@ -2,13 +2,11 @@ package ru.fit.g14201.chirikhin.wireframe.view;
 
 import chirikhin.matrix.Matrix;
 import chirikhin.swing.dialog.MyDialog;
-import javafx.util.Pair;
 import ru.fit.g14201.chirikhin.wireframe.model.BSpline;
 import ru.fit.g14201.chirikhin.wireframe.model.Model;
 import ru.fit.g14201.chirikhin.wireframe.model.BSplineBuilder;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;

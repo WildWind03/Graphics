@@ -11,9 +11,7 @@ import ru.fit.g14201.chirikhin.wireframe.model.Model;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -21,6 +19,8 @@ import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 public class ShapeView extends JPanel {
+    private static final float ZOOM_PLUS_RATIO = 1.1f;
+    private static final float ZOOM_MINUS_RATIO = 0.9f;
     private final BufferedImage bufferedImage;
     private final int height;
     private final int width;
@@ -66,6 +66,18 @@ public class ShapeView extends JPanel {
                 super.mouseReleased(e);
                 prevPoint = new Point<>(e.getX(), e.getY());
 
+            }
+        });
+
+        addMouseWheelListener(e -> {
+            int notches = e.getWheelRotation();
+
+            if (notches < 0) {
+                model.setZf(model.getZf() * ZOOM_PLUS_RATIO);
+                repaint();
+            } else {
+                model.setZf(model.getZf() * ZOOM_MINUS_RATIO);
+                repaint();
             }
         });
     }
