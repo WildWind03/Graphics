@@ -329,8 +329,8 @@ public class ShapeView extends JPanel {
 
     private void drawCoordinateSystem(float x, float y, float z, float length) {
         drawLine(new Point3D<>(x, y, z), new Point3D<>(x + length, y, z), Color.RED);
-        drawLine(new Point3D<>(x, y, z), new Point3D<>(x, y + length, z), Color.BLUE);
-        drawLine(new Point3D<>(x, y, z), new Point3D<>(x, y, z + length), Color.GREEN);
+        drawLine(new Point3D<>(x, y, z), new Point3D<>(x, y + length, z), Color.GREEN);
+        drawLine(new Point3D<>(x, y, z), new Point3D<>(x, y, z + length), Color.BLUE);
 
     }
 
