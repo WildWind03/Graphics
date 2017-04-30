@@ -12,6 +12,8 @@ import ru.fit.g14201.chirikhin.wireframe.model_loader.ModelSaver;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.*;
 
 public class MainFrame extends JFrame {

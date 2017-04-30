@@ -30,7 +30,7 @@ public class ShapeView extends JPanel {
 
     private Point<Integer, Integer> prevPoint = new Point<>(0, 0);
 
-    private Matrix M = new Matrix(new float[][] {
+    private Matrix SCENE_ROTATION_MATRIX = new Matrix(new float[][] {
             {1, 0, 0, 0},
             {0, 1, 0, 0},
             {0, 0, 1, 0},
@@ -83,14 +83,14 @@ public class ShapeView extends JPanel {
     }
 
     private void onMouseDragged(MouseEvent e, Point<Integer, Integer> point) {
-        int dy = e.getX() - point.getX();
-        int dx = e.getY() - point.getY();
+        int dx = - (e.getX() - point.getX());
+        int dy = e.getY() - point.getY();
 
-        Matrix qxMatrix = calculateQxMatrix((float) (((float) dx / (float) width) * 2 * Math.PI));
-        Matrix qyMatrix = calculateQyMatrix((float) (((float) dy / (float) height) * 2 * Math.PI));
+        Matrix qzMatrix = calculateQzMatrix((float) (((float) dy / (float) height) * 2 * Math.PI));
+        Matrix qyMatrix = calculateQyMatrix((float) (((float) dx / (float) width) * 2 * Math.PI));
 
-        M = MatrixUtil.multiply(qyMatrix,
-                                MatrixUtil.multiply(qxMatrix, M));
+        SCENE_ROTATION_MATRIX = MatrixUtil.multiply(qzMatrix,
+                                MatrixUtil.multiply(qyMatrix, SCENE_ROTATION_MATRIX));
         repaint();
     }
 
@@ -208,6 +208,54 @@ public class ShapeView extends JPanel {
         });
     };
 
+    private void drawLine(Point3D<Float, Float, Float> startPoint,
+                          Point3D<Float, Float, Float> endPoint,
+                          Color color) {
+        Matrix start = new Matrix(new float[][] {{startPoint.getX()},
+                {startPoint.getY()},{startPoint.getZ()}, {1}});
+
+        Matrix end = new Matrix(new float[][] {{endPoint.getX()},
+                {endPoint.getY()}, {endPoint.getZ()}, {1}});
+
+        Matrix realStart = MatrixUtil.multiply(SCENE_ROTATION_MATRIX, start);
+        Matrix realEnd = MatrixUtil.multiply(SCENE_ROTATION_MATRIX, end);
+
+        Matrix cameraMatrix = calculateCameraMatrix(new Point3D<>(-10f, 0f,0f),
+                new Point3D<>(10f, 0f, 0f),
+                new Point3D<>(0f, 1f, 0f));
+
+        Matrix projMatrix = calculateProjMatrix(model.getSw(),
+                model.getSh(), model.getZf(), model.getZn());
+
+        realStart = MatrixUtil.multiply(projMatrix,
+                MatrixUtil.multiply(cameraMatrix, realStart));
+        realEnd = MatrixUtil.multiply(projMatrix,
+                MatrixUtil.multiply(cameraMatrix, realEnd));
+
+        float x0 = realStart.get(0, 0) / realStart.get(3, 0);
+        float y0 = realStart.get(1, 0) / realStart.get(3, 0);
+
+        float x1 = realEnd.get(0, 0) / realEnd.get(3, 0);
+        float y1 = realEnd.get(1, 0) / realEnd.get(3, 0);
+
+        PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter =
+                new PixelCoordinateToAreaConverter(-1, -1, 1, 1, width, height);
+
+//        float x0 = realStart.get(0, 0) + width / 2;
+//        float y0 = realStart.get(1, 0) + height / 2;
+//
+//        float x1 = realEnd.get(0, 0) + width / 2;
+//        float y1 = realEnd.get(1, 0) + height / 2;
+
+        Graphics2D g = bufferedImage.createGraphics();
+        g.setColor(color);
+       // g.drawLine((int) x0,  (int) y0, (int) x1, (int) y1);
+        g.drawLine(pixelCoordinateToAreaConverter.toPixelX(x0),
+                pixelCoordinateToAreaConverter.toPixelY(y0), pixelCoordinateToAreaConverter.toPixelX(x1),
+                pixelCoordinateToAreaConverter.toPixelY(y1));
+        g.dispose();
+    }
+
     private void drawLine(Line<Point3D<Float, Float, Float>> line,
                           float cx, float cy, float cz, Color color) {
         Matrix start = new Matrix(new float[][] {{line.getStart().getX()},
@@ -216,10 +264,9 @@ public class ShapeView extends JPanel {
         Matrix end = new Matrix(new float[][] {{line.getEnd().getX()},
                 {line.getEnd().getY()}, {line.getEnd().getZ()}, {1}});
 
-        Matrix realStart = MatrixUtil.multiply(M, start);
-        Matrix realEnd = MatrixUtil.multiply(M, end);
+        Matrix realStart = MatrixUtil.multiply(SCENE_ROTATION_MATRIX, start);
+        Matrix realEnd = MatrixUtil.multiply(SCENE_ROTATION_MATRIX, end);
 
-        Matrix zoomMatrix = calculateZoomMatrix(DEFAULT_SCALE_RATIO, DEFAULT_SCALE_RATIO, DEFAULT_SCALE_RATIO);
         Matrix shiftMatrix = calculateShiftMatrix(cx,
                 cy , cz);
 
@@ -235,15 +282,28 @@ public class ShapeView extends JPanel {
         realEnd = MatrixUtil.multiply(projMatrix,
                 MatrixUtil.multiply(cameraMatrix, MatrixUtil.multiply(shiftMatrix, realEnd)));
 
-        float x0 = realStart.get(0, 0) + width / 2;
-        float y0 = realStart.get(1, 0) + height / 2;
 
-        float x1 = realEnd.get(0, 0) + width / 2;
-        float y1 = realEnd.get(1, 0) + height / 2;
+
+//        float x0 = realStart.get(0, 0) + width / 2;
+//        float y0 = realStart.get(1, 0) + height / 2;
+//
+//        float x1 = realEnd.get(0, 0) + width / 2;
+//        float y1 = realEnd.get(1, 0) + height / 2;
+        float x0 = realStart.get(0, 0) / realStart.get(3, 0);
+        float y0 = realStart.get(1, 0) / realStart.get(3, 0);
+
+        float x1 = realEnd.get(0, 0) / realEnd.get(3, 0);
+        float y1 = realEnd.get(1, 0) / realEnd.get(3, 0);
+
+        PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter =
+                new PixelCoordinateToAreaConverter(x0, y0, x1, y1, width, height);
 
         Graphics2D g = bufferedImage.createGraphics();
         g.setColor(color);
-        g.drawLine((int) x0,  (int) y0, (int) x1, (int) y1);
+        //g.drawLine((int) x0,  (int) y0, (int) x1, (int) y1);
+        g.drawLine(pixelCoordinateToAreaConverter.toPixelX(x0),
+            pixelCoordinateToAreaConverter.toPixelY(y0), pixelCoordinateToAreaConverter.toPixelX(x1),
+            pixelCoordinateToAreaConverter.toPixelY(y1));
         g.dispose();
     }
 
@@ -256,6 +316,7 @@ public class ShapeView extends JPanel {
         g2d.dispose();
 
         drawCube();
+        drawCoordinateSystem(0, 0, 0, 1);
 
         if (null != model) {
             for (BSpline BSpline : model.getbSplines()) {
@@ -266,6 +327,13 @@ public class ShapeView extends JPanel {
         g.drawImage(bufferedImage, 0, 0, null);
     }
 
+    private void drawCoordinateSystem(float x, float y, float z, float length) {
+        drawLine(new Point3D<>(x, y, z), new Point3D<>(x + length, y, z), Color.RED);
+        drawLine(new Point3D<>(x, y, z), new Point3D<>(x, y + length, z), Color.BLUE);
+        drawLine(new Point3D<>(x, y, z), new Point3D<>(x, y, z + length), Color.GREEN);
+
+    }
+
     private void drawShape(BSpline BSpline) {
         BSplineFunction bSplineFunction = new BSplineFunction(BSpline.getPoints());
         ArrayList<Line<Point3D<Float, Float, Float>>> shapeLines =
@@ -273,7 +341,7 @@ public class ShapeView extends JPanel {
                     model.getA(), model.getB(), model.getD(), model.getC());
 
         for (Line<Point3D<Float, Float, Float>> line : shapeLines) {
-            drawLine(line, BSpline.getCx(), BSpline.getCy(), BSpline.getCz(), BSpline.getColor());
+            drawLine(line.getStart(), line.getEnd(), BSpline.getColor());
         }
     }
 
@@ -297,7 +365,7 @@ public class ShapeView extends JPanel {
         cubeLines.add(new Line<>(new Point3D<>(-1f, 1f, 1f), new Point3D<>(-1f, -1f, 1f)));
 
         for (Line<Point3D<Float, Float, Float>> line : cubeLines) {
-            drawLine(line, 0, 0, 0, Color.WHITE);
+            drawLine(line.getStart(), line.getEnd(), Color.WHITE);
         }
     }
 
