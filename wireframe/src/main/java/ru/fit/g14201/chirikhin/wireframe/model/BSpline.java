@@ -11,7 +11,7 @@ public class BSpline {
     private final float cx;
     private final float cy;
     private final float cz;
-    private final Matrix roundMatrix;
+    private Matrix roundMatrix;
     private final ArrayList<Point<Float, Float>> points;
 
     BSpline(Color color, float cx, float cy, float cz, Matrix roundMatrix, ArrayList<Point<Float, Float>> points) {
@@ -57,5 +57,9 @@ public class BSpline {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public void setRoundMatrix(Matrix roundMatrix) {
+        this.roundMatrix = roundMatrix;
     }
 }

@@ -25,7 +25,7 @@ public class ModelLoader {
     private final Model model = new Model();
 
     public ModelLoader(File file) throws ParserException, TypeConversionException, TypeMatchingException, NoObjectFactoryException {
-        Matrix matrix = new Matrix(new float[3][3]);
+        Matrix matrix = new Matrix(new float[4][4]);
         model.setRoundMatrix(matrix);
         final IntegerWrapper rowCountForMatrix = new IntegerWrapper(0);
         final IntegerWrapper countOfShapes = new IntegerWrapper(0);
@@ -77,6 +77,14 @@ public class ModelLoader {
                             matrix.set(rowCountForMatrix.integer, k, (Float) objects[k]);
                         }
 
+                        matrix.set(0, 3, 0);
+                        matrix.set(1, 3, 0);
+                        matrix.set(2, 3, 0);
+                        matrix.set(3, 0, 0);
+                        matrix.set(3, 1, 0);
+                        matrix.set(3, 2, 0);
+                        matrix.set(3, 3, 1);
+
                         if (++rowCountForMatrix.integer > 2) {
                             parserConfig.nextIndex();
                         }
@@ -103,9 +111,8 @@ public class ModelLoader {
 
         final BSplineBuilder[] BSplineBuilder = {new BSplineBuilder()};
             IntegerWrapper rowCounterForMatrix = new IntegerWrapper(0);
-//            Matrix roundMatrix = new Matrix(new float[3][3]);
             ArrayList<Matrix> roundMatrix = new ArrayList<>();
-            roundMatrix.add(new Matrix(new float[3][3]));
+            roundMatrix.add(new Matrix(new float[4][4]));
             BSplineBuilder[0].withRoundMatrix(roundMatrix.get(0));
             IntegerWrapper countOfPoints = new IntegerWrapper(0);
             IntegerWrapper currentParserRunnableIndex = new IntegerWrapper(0);
@@ -143,6 +150,14 @@ public class ModelLoader {
                                 roundMatrix.get(0).set(rowCounterForMatrix.integer, k, (Float) objects[k]);
                             }
 
+                            roundMatrix.get(0).set(0, 3, 0);
+                            roundMatrix.get(0).set(1, 3, 0);
+                            roundMatrix.get(0).set(2, 3, 0);
+                            roundMatrix.get(0).set(3, 0, 0);
+                            roundMatrix.get(0).set(3, 1, 0);
+                            roundMatrix.get(0).set(3, 2, 0);
+                            roundMatrix.get(0).set(3, 3, 1);
+
                             if (++rowCounterForMatrix.integer > 2) {
                                 parserConfig.nextIndex();
                             }
@@ -175,7 +190,7 @@ public class ModelLoader {
                     currentPoint[0].integer = 0;
                     parserConfig.setCurrentRunnableIndex(currentParserRunnableIndex.integer);
                     BSplineBuilder[0] = new BSplineBuilder();
-                    roundMatrix.set(0, new Matrix(new float[3][3]));
+                    roundMatrix.set(0, new Matrix(new float[4][4]));
                     BSplineBuilder[0].withRoundMatrix(roundMatrix.get(0));
                 }
             }

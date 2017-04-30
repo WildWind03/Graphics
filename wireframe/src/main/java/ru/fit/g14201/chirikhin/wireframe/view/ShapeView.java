@@ -30,7 +30,8 @@ public class ShapeView extends JPanel {
     private Model model;
     private Integer selectedShape = null;
 
-    private Point<Integer, Integer> prevPoint = new Point<>(0, 0);
+    private Point<Integer, Integer> prevPointScene = new Point<>(0, 0);
+    private Point<Integer, Integer> prevPointShape = new Point<>(0, 0);
 
     private Matrix SCENE_ROTATION_MATRIX = new Matrix(new float[][]{
             {1, 0, 0, 0},
@@ -38,6 +39,8 @@ public class ShapeView extends JPanel {
             {0, 0, 1, 0},
             {0, 0, 0, 1}
     });
+
+    private Matrix shapeRotationMatrix;
 
     public ShapeView(int width, int height) {
         super(true);
@@ -51,8 +54,8 @@ public class ShapeView extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
-                onMouseDragged(e, prevPoint);
-                prevPoint = new Point<>(e.getX(), e.getY());
+                onMouseDragged(e);
+                prevPointScene = new Point<>(e.getX(), e.getY());
             }
         });
 
@@ -60,14 +63,11 @@ public class ShapeView extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                prevPoint = new Point<>(e.getX(), e.getY());
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                super.mouseReleased(e);
-                prevPoint = new Point<>(e.getX(), e.getY());
-
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    prevPointScene = new Point<>(e.getX(), e.getY());
+                } else {
+                    prevPointShape = new Point<>(e.getX(), e.getY());
+                }
             }
         });
 
@@ -84,15 +84,29 @@ public class ShapeView extends JPanel {
         });
     }
 
-    private void onMouseDragged(MouseEvent e, Point<Integer, Integer> point) {
-        int dx = -(e.getX() - point.getX());
-        int dy = -(e.getY() - point.getY());
+    private void onMouseDragged(MouseEvent e) {
+        if (SwingUtilities.isLeftMouseButton(e)) {
+            int dx = -(e.getX() - prevPointScene.getX());
+            int dy = -(e.getY() - prevPointScene.getY());
 
-        Matrix qzMatrix = calculateQzMatrix((float) (((float) dy / (float) height) * 2 * Math.PI));
-        Matrix qyMatrix = calculateQyMatrix((float) (((float) dx / (float) width) * 2 * Math.PI));
+            Matrix qzMatrix = calculateQzMatrix((float) (((float) dy / (float) height) * 2 * Math.PI));
+            Matrix qyMatrix = calculateQyMatrix((float) (((float) dx / (float) width) * 2 * Math.PI));
 
-        SCENE_ROTATION_MATRIX = MatrixUtil.multiply(qzMatrix,
-                MatrixUtil.multiply(qyMatrix, SCENE_ROTATION_MATRIX));
+            SCENE_ROTATION_MATRIX = MatrixUtil.multiply(qzMatrix,
+                    MatrixUtil.multiply(qyMatrix, SCENE_ROTATION_MATRIX));
+        } else {
+            if (null != selectedShape && shapeRotationMatrix != null) {
+                int dx = -(e.getX() - prevPointShape.getX());
+                int dy = -(e.getY() - prevPointShape.getY());
+
+                Matrix qxMatrix = calculateQxMatrix((float) (((float) dy / (float) height) * 2 * Math.PI));
+                Matrix qyMatrix = calculateQyMatrix((float) (((float) dx / (float) width) * 2 * Math.PI));
+
+                shapeRotationMatrix = MatrixUtil.multiply(qyMatrix, MatrixUtil.multiply(qxMatrix, shapeRotationMatrix));
+                model.getbSplines().get(selectedShape).setRoundMatrix(shapeRotationMatrix);
+            }
+        }
+
         repaint();
     }
 
@@ -288,10 +302,10 @@ public class ShapeView extends JPanel {
                 for (Line<Point3D<Float, Float, Float>> line : splineLines) {
 
                     Matrix startPoint = MatrixUtil.multiply(roundMatrix, new Matrix(new float[][]{{line.getStart().getX()},
-                            {line.getStart().getY()}, {line.getStart().getZ()}}));
+                            {line.getStart().getY()}, {line.getStart().getZ()}, {1}}));
 
                     Matrix endPoint = MatrixUtil.multiply(roundMatrix, new Matrix(new float[][]{{line.getEnd().getX()},
-                            {line.getEnd().getY()}, {line.getEnd().getZ()}}));
+                            {line.getEnd().getY()}, {line.getEnd().getZ()}, {1}}));
 
                     float localMax = ListUtil.asList(startPoint.get(1, 0) + bSpline.getCy(), startPoint.get(0, 0) + bSpline.getCx(),
                             startPoint.get(2, 0) + bSpline.getCz(),
@@ -305,36 +319,8 @@ public class ShapeView extends JPanel {
                     if (localMax > globalMax) {
                         globalMax = localMax;
                     }
-
-//                    line.getStart().setX(startPoint.get(0, 0));
-//                    line.getStart().setY(startPoint.get(1, 0));
-//                    line.getStart().setZ(startPoint.get(2, 0));
-//
-//                    line.getEnd().setX(endPoint.get(0, 0));
-//                    line.getEnd().setY(endPoint.get(1, 0));
-//                    line.getEnd().setZ(endPoint.get(2, 0));
                 }
             }
-
-//            int index = 0;
-//            for (ArrayList<Line<Point3D<Float, Float, Float>>> splineLines : linesOfSplines) {
-//                BSpline bSpline = model.getbSplines().get(index);
-//                float localMax = splineLines
-//                        .stream()
-//                        .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX() + bSpline.getCx(),
-//                                point3DLine.getEnd().getX() + bSpline.getCx(), point3DLine.getStart().getY() + bSpline.getCy(),
-//                                point3DLine.getEnd().getY() + bSpline.getCy(), point3DLine.getStart().getZ() + bSpline.getCz(),
-//                                point3DLine.getEnd().getZ() + bSpline.getCz()).stream())
-//                        .map(Math::abs)
-//                        .max(Float::compareTo)
-//                        .orElse(Float.MIN_VALUE);
-//
-//                ++index;
-//
-//                if (localMax > globalMax) {
-//                    globalMax = localMax;
-//                }
-//            }
 
             Matrix scaleMatrix = calculateZoomMatrix(1f / globalMax, 1f / globalMax, 1f / globalMax);
 
@@ -344,15 +330,7 @@ public class ShapeView extends JPanel {
 
                 Matrix roundMatrix = model.getbSplines().get(k).getRoundMatrix();
 
-                Matrix extendedRoundMatrix = new Matrix(new float[][] {
-                        {roundMatrix.get(0, 0), roundMatrix.get(0, 1), roundMatrix.get(0,2 ), 0},
-                        {roundMatrix.get(1, 0), roundMatrix.get(1, 1), roundMatrix.get(1,2 ), 0},
-                        {roundMatrix.get(2, 0), roundMatrix.get(2, 1), roundMatrix.get(2,2 ), 0},
-                        {0, 0, 0, 1}
-
-                });
-
-                Matrix shapeMatrix = MatrixUtil.multiply(scaleMatrix, MatrixUtil.multiply(extendedRoundMatrix, moveMatrix));
+                Matrix shapeMatrix = MatrixUtil.multiply(scaleMatrix, MatrixUtil.multiply(roundMatrix, moveMatrix));
 
                 for (Line<Point3D<Float, Float, Float>> splineLine : linesOfSplines.get(k)) {
                     drawLine(splineLine.getStart(), splineLine.getEnd(), model.getbSplines().get(k).getColor(), shapeMatrix);
@@ -400,6 +378,7 @@ public class ShapeView extends JPanel {
 
     public void setSelectedShape(Integer selectedShape) {
         this.selectedShape = selectedShape;
+        shapeRotationMatrix = model.getbSplines().get(selectedShape).getRoundMatrix();
     }
 
     @Override
