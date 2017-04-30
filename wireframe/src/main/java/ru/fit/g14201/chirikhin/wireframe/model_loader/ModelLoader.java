@@ -9,6 +9,7 @@ import ru.fit.g14201.chirikhin.wireframe.model.ShapeBuildingException;
 
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,12 +69,12 @@ public class ModelLoader {
                         parserConfig.nextIndex();
                     }
                 })
-                .add(new TypeCheckRunnable(ListUtil.asList(Integer.class, Integer.class, Integer.class,
+                .add(new TypeCheckRunnable(ListUtil.asList(Float.class, Float.class, Float.class,
                         Comment.class)) {
                     @Override
                     public void run(Object[] objects, ParserConfig parserConfig) {
                         for (int k = 0; k < 3; ++k) {
-                            matrix.set(rowCountForMatrix.integer, k, (Integer) objects[k]);
+                            matrix.set(rowCountForMatrix.integer, k, (Float) objects[k]);
                         }
 
                         if (++rowCountForMatrix.integer > 2) {
@@ -102,8 +103,10 @@ public class ModelLoader {
 
         final BSplineBuilder[] BSplineBuilder = {new BSplineBuilder()};
             IntegerWrapper rowCounterForMatrix = new IntegerWrapper(0);
-            Matrix roundMatrix = new Matrix(new float[3][3]);
-            BSplineBuilder[0].withRoundMatrix(roundMatrix);
+//            Matrix roundMatrix = new Matrix(new float[3][3]);
+            ArrayList<Matrix> roundMatrix = new ArrayList<>();
+            roundMatrix.add(new Matrix(new float[3][3]));
+            BSplineBuilder[0].withRoundMatrix(roundMatrix.get(0));
             IntegerWrapper countOfPoints = new IntegerWrapper(0);
             IntegerWrapper currentParserRunnableIndex = new IntegerWrapper(0);
             IntegerWrapper currentShape = new IntegerWrapper(0);
@@ -132,12 +135,12 @@ public class ModelLoader {
                             parserConfig.nextIndex();
                         }
                     })
-                    .add(new TypeCheckRunnable(ListUtil.asList(Integer.class, Integer.class, Integer.class,
+                    .add(new TypeCheckRunnable(ListUtil.asList(Float.class, Float.class, Float.class,
                             Comment.class)) {
                         @Override
                         public void run(Object[] objects, ParserConfig parserConfig) {
                             for (int k = 0; k < 3; ++k) {
-                                roundMatrix.set(rowCounterForMatrix.integer, k, (Integer) objects[k]);
+                                roundMatrix.get(0).set(rowCounterForMatrix.integer, k, (Float) objects[k]);
                             }
 
                             if (++rowCounterForMatrix.integer > 2) {
@@ -172,7 +175,8 @@ public class ModelLoader {
                     currentPoint[0].integer = 0;
                     parserConfig.setCurrentRunnableIndex(currentParserRunnableIndex.integer);
                     BSplineBuilder[0] = new BSplineBuilder();
-                    BSplineBuilder[0].withRoundMatrix(roundMatrix);
+                    roundMatrix.set(0, new Matrix(new float[3][3]));
+                    BSplineBuilder[0].withRoundMatrix(roundMatrix.get(0));
                 }
             }
         });

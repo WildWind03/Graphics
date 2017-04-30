@@ -16,7 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.*;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -275,39 +275,92 @@ public class ShapeView extends JPanel {
         drawCoordinateSystem(0, 0, 0, 1);
 
         if (null != model) {
-
             ArrayList<ArrayList<Line<Point3D<Float, Float, Float>>>> linesOfSplines = new ArrayList<>();
 
             float globalMax = Float.MIN_VALUE;
+
             for (BSpline bSpline : model.getbSplines()) {
                 ArrayList<Line<Point3D<Float, Float, Float>>> splineLines = ShapeToLinesConverter.toLines(new BSplineFunction(bSpline.getPoints()),
-                            model.getN(), model.getM(), model.getK(), model.getA(), model.getB(), model.getD(), model.getC(), -1);
+                        model.getN(), model.getM(), model.getK(), model.getA(), model.getB(), model.getD(), model.getC(), -1);
                 linesOfSplines.add(splineLines);
 
-                float localMax = splineLines
-                        .stream()
-                        .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX(),
-                            point3DLine.getEnd().getX(), point3DLine.getStart().getY(),
-                            point3DLine.getEnd().getY(), point3DLine.getStart().getZ(), point3DLine.getEnd().getZ()).stream())
-                    .map(Math::abs)
-                    .max(Float::compareTo)
-                    .orElse(Float.MIN_VALUE);
+                Matrix roundMatrix = bSpline.getRoundMatrix();
+                for (Line<Point3D<Float, Float, Float>> line : splineLines) {
 
-                if (localMax > globalMax) {
-                    globalMax = localMax;
+                    Matrix startPoint = MatrixUtil.multiply(roundMatrix, new Matrix(new float[][]{{line.getStart().getX()},
+                            {line.getStart().getY()}, {line.getStart().getZ()}}));
+
+                    Matrix endPoint = MatrixUtil.multiply(roundMatrix, new Matrix(new float[][]{{line.getEnd().getX()},
+                            {line.getEnd().getY()}, {line.getEnd().getZ()}}));
+
+                    float localMax = ListUtil.asList(startPoint.get(1, 0) + bSpline.getCy(), startPoint.get(0, 0) + bSpline.getCx(),
+                            startPoint.get(2, 0) + bSpline.getCz(),
+                            endPoint.get(0, 0) + bSpline.getCx(), endPoint.get(1, 0) + bSpline.getCy(),
+                            endPoint.get(2, 0) + bSpline.getCz())
+                            .stream()
+                            .map(Math::abs)
+                            .max(Float::compareTo)
+                            .orElse(0f);
+
+                    if (localMax > globalMax) {
+                        globalMax = localMax;
+                    }
+
+//                    line.getStart().setX(startPoint.get(0, 0));
+//                    line.getStart().setY(startPoint.get(1, 0));
+//                    line.getStart().setZ(startPoint.get(2, 0));
+//
+//                    line.getEnd().setX(endPoint.get(0, 0));
+//                    line.getEnd().setY(endPoint.get(1, 0));
+//                    line.getEnd().setZ(endPoint.get(2, 0));
                 }
             }
 
-            for (int k = 0; k < linesOfSplines.size(); ++k) {
-                ArrayList<Line<Point3D<Float, Float, Float>>> currentSplineLines = linesOfSplines.get(k);
-                    for (Line<Point3D<Float, Float, Float>> line : currentSplineLines) {
-                        Matrix scaleMatrix = calculateZoomMatrix(1f / globalMax, 1f / globalMax, 1f / globalMax);
-                        drawLine(line.getStart(), line.getEnd(), model.getbSplines().get(k).getColor(), scaleMatrix);
-                    }
-            }
-        }
+//            int index = 0;
+//            for (ArrayList<Line<Point3D<Float, Float, Float>>> splineLines : linesOfSplines) {
+//                BSpline bSpline = model.getbSplines().get(index);
+//                float localMax = splineLines
+//                        .stream()
+//                        .flatMap(point3DLine -> ListUtil.asList(point3DLine.getStart().getX() + bSpline.getCx(),
+//                                point3DLine.getEnd().getX() + bSpline.getCx(), point3DLine.getStart().getY() + bSpline.getCy(),
+//                                point3DLine.getEnd().getY() + bSpline.getCy(), point3DLine.getStart().getZ() + bSpline.getCz(),
+//                                point3DLine.getEnd().getZ() + bSpline.getCz()).stream())
+//                        .map(Math::abs)
+//                        .max(Float::compareTo)
+//                        .orElse(Float.MIN_VALUE);
+//
+//                ++index;
+//
+//                if (localMax > globalMax) {
+//                    globalMax = localMax;
+//                }
+//            }
 
-        g.drawImage(bufferedImage, 0, 0, null);
+            Matrix scaleMatrix = calculateZoomMatrix(1f / globalMax, 1f / globalMax, 1f / globalMax);
+
+            for (int k = 0; k < model.getbSplines().size(); ++k) {
+                Matrix moveMatrix = calculateShiftMatrix(model.getbSplines().get(k).getCx(),
+                        model.getbSplines().get(k).getCy(), model.getbSplines().get(k).getCz());
+
+                Matrix roundMatrix = model.getbSplines().get(k).getRoundMatrix();
+
+                Matrix extendedRoundMatrix = new Matrix(new float[][] {
+                        {roundMatrix.get(0, 0), roundMatrix.get(0, 1), roundMatrix.get(0,2 ), 0},
+                        {roundMatrix.get(1, 0), roundMatrix.get(1, 1), roundMatrix.get(1,2 ), 0},
+                        {roundMatrix.get(2, 0), roundMatrix.get(2, 1), roundMatrix.get(2,2 ), 0},
+                        {0, 0, 0, 1}
+
+                });
+
+                Matrix shapeMatrix = MatrixUtil.multiply(scaleMatrix, MatrixUtil.multiply(extendedRoundMatrix, moveMatrix));
+
+                for (Line<Point3D<Float, Float, Float>> splineLine : linesOfSplines.get(k)) {
+                    drawLine(splineLine.getStart(), splineLine.getEnd(), model.getbSplines().get(k).getColor(), shapeMatrix);
+                }
+            }
+
+            g.drawImage(bufferedImage, 0, 0, null);
+        }
     }
 
     private void drawCoordinateSystem(float x, float y, float z, float length) {
@@ -315,16 +368,6 @@ public class ShapeView extends JPanel {
         drawLine(new Point3D<>(x, y, z), new Point3D<>(x, y + length, z), Color.GREEN);
         drawLine(new Point3D<>(x, y, z), new Point3D<>(x, y, z + length), Color.BLUE);
 
-    }
-
-    private void drawShape(BSpline BSpline, float max) {
-        BSplineFunction bSplineFunction = new BSplineFunction(BSpline.getPoints());
-        ArrayList<Line<Point3D<Float, Float, Float>>> shapeLines =
-                ShapeToLinesConverter.toLines(bSplineFunction, model.getN(), model.getM(), model.getK(),
-                        model.getA(), model.getB(), model.getD(), model.getC(), max);
-        for (Line<Point3D<Float, Float, Float>> line : shapeLines) {
-            drawLine(line.getStart(), line.getEnd(), BSpline.getColor());
-        }
     }
 
     public void drawCube() {
