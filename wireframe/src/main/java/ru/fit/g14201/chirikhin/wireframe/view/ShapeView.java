@@ -203,6 +203,10 @@ public class ShapeView extends JPanel {
         repaint();
     }
 
+    public void setSCENE_ROTATION_MATRIX(Matrix SCENE_ROTATION_MATRIX) {
+        this.SCENE_ROTATION_MATRIX = SCENE_ROTATION_MATRIX;
+    }
+
     public void setModel(Model newModel) {
         this.model = newModel;
         SCENE_ROTATION_MATRIX = newModel.getRoundMatrix();

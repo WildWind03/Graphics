@@ -1,5 +1,6 @@
 package ru.fit.g14201.chirikhin.wireframe.view;
 
+import chirikhin.matrix.Matrix;
 import chirikhin.swing.util.MenuToolBarListenerUtil;
 import chirikhin.universal_parser.NoObjectFactoryException;
 import chirikhin.universal_parser.ParserException;
@@ -145,7 +146,15 @@ public class MainFrame extends JFrame {
     }
 
     private void onInitButtonClick() {
-
+        if (null != model) {
+            shapeView.setSCENE_ROTATION_MATRIX(new Matrix(new float[][] {
+                    {1, 0, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 0, 1, 0},
+                    {0, 0, 0, 1}
+            }));
+            shapeView.update();
+        }
     }
 
     private void onSettingButtonClick() {
