@@ -24,9 +24,10 @@ import static java.lang.Math.sin;
 public class ShapeView extends JPanel {
     private static final float ZOOM_PLUS_RATIO = 1.1f;
     private static final float ZOOM_MINUS_RATIO = 0.9f;
-    private final BufferedImage bufferedImage;
-    private final int height;
-    private final int width;
+    private BufferedImage bufferedImage;
+    private int height;
+    private int width;
+
     private Model model;
     private Integer selectedShape = null;
 
@@ -120,6 +121,29 @@ public class ShapeView extends JPanel {
     }
 
     public void update() {
+        if (null != model) {
+            float sw = model.getSw();
+            float sh = model.getSh();
+
+            float necessaryK = sw / sh;
+            float currentK = (float) bufferedImage.getWidth() / (float) bufferedImage.getHeight();
+
+            if (currentK < necessaryK) {
+                height = (int) (bufferedImage.getWidth() * sh / sw);
+                width = bufferedImage.getWidth();
+            }
+
+            if (necessaryK < currentK) {
+                width = (int) (bufferedImage.getHeight() * sw / sh);
+                height = bufferedImage.getHeight();
+            }
+
+            Graphics2D graphics2D = bufferedImage.createGraphics();
+            graphics2D.setColor(Color.LIGHT_GRAY);
+            graphics2D.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
+            graphics2D.dispose();
+        }
+
         repaint();
     }
 
@@ -281,6 +305,7 @@ public class ShapeView extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = bufferedImage.createGraphics();
         g2d.setColor(model.getBackgroundColor());
+
         g2d.fillRect(0, 0, width, height);
         g2d.dispose();
 
@@ -339,9 +364,9 @@ public class ShapeView extends JPanel {
                     drawLine(splineLine.getStart(), splineLine.getEnd(), model.getbSplines().get(k).getColor(), shapeMatrix);
                 }
             }
-
-            g.drawImage(bufferedImage, 0, 0, null);
         }
+
+        g.drawImage(bufferedImage, 0, 0, null);
     }
 
     private void drawCoordinateSystem(float x, float y, float z, float length) {
@@ -382,15 +407,5 @@ public class ShapeView extends JPanel {
     public void setSelectedShape(Integer selectedShape) {
         this.selectedShape = selectedShape;
         shapeRotationMatrix = model.getbSplines().get(selectedShape).getRoundMatrix();
-    }
-
-    @Override
-    public int getHeight() {
-        return height;
-    }
-
-    @Override
-    public int getWidth() {
-        return width;
     }
 }
