@@ -58,14 +58,14 @@ public class ModelLoader {
                         parserConfig.nextIndex();
                     }
                 })
-                .add(new TypeCheckRunnable(ListUtil.asList(Integer.class,
-                        Integer.class, Integer.class, Integer.class, Comment.class)) {
+                .add(new TypeCheckRunnable(ListUtil.asList(Float.class,
+                        Float.class, Float.class, Float.class, Comment.class)) {
                     @Override
                     public void run(Object[] objects, ParserConfig parserConfig) {
-                        model.setZn((Integer) objects[0]);
-                        model.setZf((Integer) objects[1]);
-                        model.setSw((Integer) objects[2]);
-                        model.setSh((Integer) objects[3]);
+                        model.setZn((Float) objects[0]);
+                        model.setZf((Float) objects[1]);
+                        model.setSw((Float) objects[2]);
+                        model.setSh((Float) objects[3]);
                         parserConfig.nextIndex();
                     }
                 })

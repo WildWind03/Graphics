@@ -42,6 +42,7 @@ public class ModelSaver {
                 bufferedWriter.write(color.getRed() + " " + color.getGreen() + " " + color.getBlue());
                 bufferedWriter.newLine();
                 bufferedWriter.write(BSpline.getCx() + " " + BSpline.getCy() + " " + BSpline.getCz());
+                bufferedWriter.newLine();
 
                 Matrix shapeMatrix = BSpline.getRoundMatrix();
                 for (int i = 0; i < 3; ++i) {

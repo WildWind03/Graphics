@@ -32,7 +32,7 @@ public class SettingsDialog extends MyDialog {
     private JSpinner nSpinner;
     private JSpinner mSpinner;
     private JSpinner kSpinner;
-    private JSpinner numSpinner;
+    //private JSpinner numSpinner;
     private JSpinner rColorSpinner;
     private JSpinner gColorSpinner;
     private JSpinner bColorSpinner;
@@ -80,7 +80,7 @@ public class SettingsDialog extends MyDialog {
             model.setK(((Number) kSpinner.getValue()).intValue());
         });
 
-        numSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
+        //numSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
 
         rColorSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));
 
@@ -189,7 +189,7 @@ public class SettingsDialog extends MyDialog {
         addNewSpinnerLabel(0, 0, "n", nSpinner);
         addNewSpinnerLabel(0, 1, "m", mSpinner);
         addNewSpinnerLabel(0, 2, "k", kSpinner);
-        addNewSpinnerLabel(0, 3, "№", numSpinner);
+        //addNewSpinnerLabel(0, 3, "№", numSpinner);
         addNewSpinnerLabel(0, 4, "R", rColorSpinner);
 
         addNewSpinnerLabel(1, 0, "a", aSpinner);

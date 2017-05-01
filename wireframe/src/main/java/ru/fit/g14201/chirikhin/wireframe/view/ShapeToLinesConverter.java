@@ -78,13 +78,11 @@ public class ShapeToLinesConverter {
         if (max < 0) {
             max = 1;
         }
-        //float max = getMaxOfSpline(bSplineFunction, n, k, a, b);
-        //float max = 1;
 
         ArrayList<Line<Point3D<Float, Float, Float>>> lines = new ArrayList<>();
 
-        float stepSplinePace = ((b - a) / (n * k));
-        float stepRotate = ((d - c) / (m * k));
+        float stepSplinePace = ((b - a) / ((float) n * (float) k));
+        float stepRotate = ((d - c) / ((float) m * (float) k));
         for (float i = a; i < b; i += stepSplinePace) {
             Point<Float, Float> currentPoint = bSplineFunction.getValue(i);
             Point<Float, Float> nextPoint = bSplineFunction.getValue(i + stepSplinePace);
@@ -97,7 +95,7 @@ public class ShapeToLinesConverter {
                         currentPoint.getX() / max
                 );
 
-                if (j + stepRotate <= d) {
+                if (j + stepRotate <= d + 0.1F) {
                     Point3D<Float, Float, Float> rotateEndPoint = new Point3D<>(
                             (float) (currentPoint.getY() / max * Math.cos(nextAngleInRadians)),
                             (float) (currentPoint.getY() / max * Math.sin(nextAngleInRadians)),
