@@ -10,6 +10,7 @@ import ru.fit.g14201.chirikhin.wireframe.model_loader.ModelLoader;
 import ru.fit.g14201.chirikhin.wireframe.model_loader.ModelSaver;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -42,7 +43,11 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         super(WIREFRAME);
         JPanel mainFrameJPanel = new JPanel();
-        mainFrameJPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        Border marginBorder = BorderFactory.createEmptyBorder(10, 10, 10, 10);
+        Border lineBorder = BorderFactory.createLineBorder(Color.black);
+
+        Border border = BorderFactory.createCompoundBorder(marginBorder, lineBorder);
+        mainFrameJPanel.setBorder(border);
         mainFrameJPanel.setLayout(new BorderLayout());
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
