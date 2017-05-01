@@ -37,6 +37,8 @@ public class MainFrame extends JFrame {
     private static final int DEFAULT_SHAPE_VIEW_WIDTH = 1024;
     private static final int DEFAULT_SHAPE_VIEW_HEIGHT = 800;
 
+    private StatusBar statusBar = new StatusBar();
+
     private Model model;
     private final ShapeView shapeView = new ShapeView(DEFAULT_SHAPE_VIEW_WIDTH, DEFAULT_SHAPE_VIEW_HEIGHT);
 
@@ -66,6 +68,7 @@ public class MainFrame extends JFrame {
         JToolBar jToolBar = new JToolBar();
         add(jToolBar, BorderLayout.NORTH);
         add(mainFrameJPanel, BorderLayout.CENTER);
+        add(statusBar, BorderLayout.SOUTH);
         mainFrameJPanel.add(shapeView, BorderLayout.CENTER);
 
         MenuToolBarListenerUtil.addNewOption(fileMenu, jToolBar, OPEN_ICON_PNG,
@@ -116,6 +119,11 @@ public class MainFrame extends JFrame {
             ModelLoader modelLoader = new ModelLoader(file);
             this.model = modelLoader.getModel();
             shapeView.setModel(model);
+
+            if (!model.getbSplines().isEmpty()) {
+                shapeView.setSelectedShape(0);
+                statusBar.setText(0 + "", model.getbSplines().get(0).getColor());
+            }
     }
 
     private void onSaveButtonClick() {
@@ -145,6 +153,8 @@ public class MainFrame extends JFrame {
             Integer selectedShape = shapeView.getSelectedShape();
             SettingsDialog settingsDialog = new SettingsDialog(this, SETTINGS, -1, model, selectedShape);
             settingsDialog.apparate();
+            statusBar.setText("" + settingsDialog.getSelectedShape(), model.getbSplines().get(settingsDialog.getSelectedShape())
+                .getColor());
             shapeView.setSelectedShape(settingsDialog.getSelectedShape());
             shapeView.update();
         }

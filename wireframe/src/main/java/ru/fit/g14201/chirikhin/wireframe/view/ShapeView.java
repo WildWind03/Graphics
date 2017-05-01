@@ -385,8 +385,6 @@ public class ShapeView extends JPanel {
         float y1 = realEnd.get(1, 0) / realEnd.get(3, 0);
         float z1 = realEnd.get(2, 0) / realEnd.get(3, 0);
 
-        System.out.println(z0 + " " + z1);
-
         Clipper3D clipper3D = new Clipper3D(1, 1, 1, -1, -1, 0);
 
         Line<Point3D<Float, Float, Float>> clippedLine = clipper3D.getClippedLine(new Line<>(new Point3D<>(x0, y0, z0), new Point3D<>(x1, y1, z1)));
