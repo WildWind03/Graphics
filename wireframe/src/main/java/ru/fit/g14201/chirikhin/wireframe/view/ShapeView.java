@@ -1,5 +1,6 @@
 package ru.fit.g14201.chirikhin.wireframe.view;
 
+import chirikhin.clipper.Clipper3D;
 import chirikhin.matrix.Matrix;
 import chirikhin.matrix.MatrixUtil;
 import chirikhin.support.Line;
@@ -163,6 +164,10 @@ public class ShapeView extends JPanel {
             int notches = e.getWheelRotation();
 
             if (notches < 0) {
+                if (model.getZf() == 0) {
+                    model.setZf(0.1f);
+                }
+
                 model.setZf(model.getZf() * ZOOM_PLUS_RATIO);
                 repaint();
             } else {
@@ -332,7 +337,7 @@ public class ShapeView extends JPanel {
         return new Matrix(new float[][]{
                 {2 * zf / sw, 0, 0, 0},
                 {0, 2 * zf / sh, 0, 0},
-                {0, 0, zn / (zn - zf), 0},
+                {0, 0, zf / (zn - zf), - zn * zf / (zn - zf)},
                 {0, 0, 1, 0}
         });
     }
@@ -374,18 +379,31 @@ public class ShapeView extends JPanel {
 
         float x0 = realStart.get(0, 0) / realStart.get(3, 0);
         float y0 = realStart.get(1, 0) / realStart.get(3, 0);
+        float z0 = realStart.get(2, 0) / realStart.get(3, 0);
 
         float x1 = realEnd.get(0, 0) / realEnd.get(3, 0);
         float y1 = realEnd.get(1, 0) / realEnd.get(3, 0);
+        float z1 = realEnd.get(2, 0) / realEnd.get(3, 0);
+
+        System.out.println(z0 + " " + z1);
+
+        Clipper3D clipper3D = new Clipper3D(1, 1, 1, -1, -1, 0);
+
+        Line<Point3D<Float, Float, Float>> clippedLine = clipper3D.getClippedLine(new Line<>(new Point3D<>(x0, y0, z0), new Point3D<>(x1, y1, z1)));
+
+        if (null == clippedLine) {
+            return;
+        }
 
         PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter =
                 new PixelCoordinateToAreaConverter(-1, -1, 1, 1, width, height);
 
         Graphics2D g = bufferedImage.createGraphics();
         g.setColor(color);
-        g.drawLine(pixelCoordinateToAreaConverter.toPixelX(x0),
-                pixelCoordinateToAreaConverter.toPixelY(y0), pixelCoordinateToAreaConverter.toPixelX(x1),
-                pixelCoordinateToAreaConverter.toPixelY(y1));
+        g.drawLine(pixelCoordinateToAreaConverter.toPixelX(clippedLine.getStart().getX()),
+                pixelCoordinateToAreaConverter.toPixelY(clippedLine.getStart().getY()),
+                pixelCoordinateToAreaConverter.toPixelX(clippedLine.getEnd().getX()),
+                pixelCoordinateToAreaConverter.toPixelY(clippedLine.getEnd().getY()));
         g.dispose();
     }
 
@@ -395,7 +413,7 @@ public class ShapeView extends JPanel {
         Graphics2D g2d = bufferedImage.createGraphics();
         g2d.setColor(model.getBackgroundColor());
 
-        g2d.fillRect(0, 0, width, height);
+        g2d.fillRect(0, 0, width + 1, height + 1);
         g2d.dispose();
 
         drawCube();

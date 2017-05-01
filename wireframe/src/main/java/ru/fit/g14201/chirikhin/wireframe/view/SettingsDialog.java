@@ -159,13 +159,13 @@ public class SettingsDialog extends MyDialog {
         znSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
         znSpinner.addChangeListener(e -> {
             Number znNumber = (Number) znSpinner.getValue();
-            model.setZn(znNumber.intValue());
+            model.setZn(znNumber.floatValue());
         });
 
         zfSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
         zfSpinner.addChangeListener(e -> {
             Number zfNumber = (Number) zfSpinner.getValue();
-            model.setZf(zfNumber.intValue());
+            model.setZf(zfNumber.floatValue());
         });
 
         shSpinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 1));
