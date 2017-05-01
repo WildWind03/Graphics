@@ -424,8 +424,6 @@ public class ShapeView extends JPanel {
         drawCube();
         drawCoordinateSystem(0, 0, 0, 1);
 
-        //ArrayList<Matrix> shapeMatrixes = new ArrayList<>();
-
         if (null != model) {
             ArrayList<ArrayList<Line<Point3D<Float, Float, Float>>>> linesOfSplines = new ArrayList<>();
 
@@ -439,9 +437,7 @@ public class ShapeView extends JPanel {
                 Matrix roundMatrix = bSpline.getRoundMatrix();
                 Matrix moveMatrix = calculateShiftMatrix(bSpline.getCx(),
                         bSpline.getCy(), bSpline.getCz());
-                Matrix shapeMatrix = MatrixUtil.multiply(roundMatrix, moveMatrix);
-
-                //shapeMatrixes.add(shapeMatrix);
+                Matrix shapeMatrix = MatrixUtil.multiply(moveMatrix, roundMatrix);
 
                 for (Line<Point3D<Float, Float, Float>> line : splineLines) {
 
@@ -474,14 +470,14 @@ public class ShapeView extends JPanel {
 
                 BSpline bSpline = model.getbSplines().get(k);
 
-                float minLength = Math.min(1 - Math.abs(bSpline.getCx()) / globalMax, Math.min(1 - Math.abs(bSpline.getCy()) / globalMax,
-                        1 - Math.abs(bSpline.getCz()) / globalMax));
+                float minLength = Math.min(1 - bSpline.getCx() / globalMax, Math.min(1 - bSpline.getCy() / globalMax,
+                        1 - bSpline.getCz() / globalMax));
 
                 drawCoordinateSystem(bSpline.getCx() / globalMax, bSpline.getCy() / globalMax,
                         bSpline.getCz() / globalMax, minLength);
 
                 Matrix roundMatrix = bSpline.getRoundMatrix();
-                Matrix shapeMatrixPrev = MatrixUtil.multiply(roundMatrix, moveMatrix);
+                Matrix shapeMatrixPrev = MatrixUtil.multiply(moveMatrix, roundMatrix);
                 Matrix shapeMatrix = MatrixUtil.multiply(scaleMatrix, shapeMatrixPrev);
 
                 for (Line<Point3D<Float, Float, Float>> splineLine : linesOfSplines.get(k)) {
