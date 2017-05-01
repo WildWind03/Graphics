@@ -356,7 +356,15 @@ public class ShapeView extends JPanel {
                 Matrix moveMatrix = calculateShiftMatrix(model.getbSplines().get(k).getCx(),
                         model.getbSplines().get(k).getCy(), model.getbSplines().get(k).getCz());
 
-                Matrix roundMatrix = model.getbSplines().get(k).getRoundMatrix();
+                BSpline bSpline = model.getbSplines().get(k);
+
+                float minLength = Math.min(1 - bSpline.getCx() / globalMax, Math.min(1 - bSpline.getCy() / globalMax,
+                        1 - bSpline.getCz() / globalMax));
+
+                drawCoordinateSystem(bSpline.getCx() / globalMax, bSpline.getCy() / globalMax,
+                        bSpline.getCz() / globalMax, minLength);
+
+                Matrix roundMatrix = bSpline.getRoundMatrix();
 
                 Matrix shapeMatrix = MatrixUtil.multiply(scaleMatrix, MatrixUtil.multiply(roundMatrix, moveMatrix));
 
@@ -373,7 +381,6 @@ public class ShapeView extends JPanel {
         drawLine(new Point3D<>(x, y, z), new Point3D<>(x + length, y, z), Color.RED);
         drawLine(new Point3D<>(x, y, z), new Point3D<>(x, y + length, z), Color.GREEN);
         drawLine(new Point3D<>(x, y, z), new Point3D<>(x, y, z + length), Color.BLUE);
-
     }
 
     public void drawCube() {
