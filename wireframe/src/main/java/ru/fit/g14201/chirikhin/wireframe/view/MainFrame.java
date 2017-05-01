@@ -112,8 +112,7 @@ public class MainFrame extends JFrame {
 
         try {
             loadModel(new File(DATA_FOLDER + "/test_config.txt"));
-        } catch (ParserException | TypeConversionException |
-                TypeMatchingException | NoObjectFactoryException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(),
                     CAN_T_OPEN, JOptionPane.ERROR_MESSAGE);
             return;
@@ -135,8 +134,7 @@ public class MainFrame extends JFrame {
         if (JFileChooser.APPROVE_OPTION == result) {
             try {
                 loadModel(jFileChooser.getSelectedFile());
-            } catch (ParserException | TypeConversionException |
-                    TypeMatchingException | NoObjectFactoryException e) {
+            } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(),
                         CAN_T_OPEN, JOptionPane.ERROR_MESSAGE);
             }
