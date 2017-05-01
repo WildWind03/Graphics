@@ -83,9 +83,11 @@ public class ShapeToLinesConverter {
 
         float stepSplinePace = ((b - a) / ((float) n * (float) k));
         float stepRotate = ((d - c) / ((float) m * (float) k));
+
+        Point<Float, Float> currentPoint = bSplineFunction.getValue(a);
+        Point<Float, Float> nextPoint = bSplineFunction.getValue(a + stepSplinePace);
+
         for (float i = a; i < b; i += stepSplinePace) {
-            Point<Float, Float> currentPoint = bSplineFunction.getValue(i);
-            Point<Float, Float> nextPoint = bSplineFunction.getValue(i + stepSplinePace);
             for (float j = c; j <= d; j += stepRotate) {
                 float currentAngleInRadians = (float) Math.toRadians(j);
                 float nextAngleInRadians = (float) Math.toRadians(j + stepRotate);
@@ -114,22 +116,10 @@ public class ShapeToLinesConverter {
                     lines.add(new Line<>(startPoint, lengthEndPoint));
                 }
             }
-        }
 
-//        float globalMax = getMaxAbsoluteValue(lines);
-//
-//        if (globalMax < 0) {
-//            System.out.println("heh");
-//        }
-//
-//        for (Line<Point3D<Float, Float, Float>> line : lines) {
-//            line.getStart().setX(line.getStart().getX() / globalMax);
-//            line.getStart().setY(line.getStart().getY() / globalMax);
-//            line.getStart().setZ(line.getStart().getZ() / globalMax);
-//            line.getEnd().setX(line.getEnd().getX() / globalMax);
-//            line.getEnd().setY(line.getEnd().getY() / globalMax);
-//            line.getEnd().setZ(line.getEnd().getZ() / globalMax);
-//        }
+            currentPoint = nextPoint;
+            nextPoint = bSplineFunction.getValue(i + 2 * stepSplinePace);
+        }
 
         return lines;
     }

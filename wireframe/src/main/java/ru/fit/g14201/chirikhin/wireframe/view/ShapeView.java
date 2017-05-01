@@ -8,6 +8,7 @@ import chirikhin.support.Point;
 import chirikhin.support.Point3D;
 import chirikhin.swing.util.ListUtil;
 import ru.fit.g14201.chirikhin.wireframe.bspline.BSplineFunction;
+import ru.fit.g14201.chirikhin.wireframe.main.Main;
 import ru.fit.g14201.chirikhin.wireframe.model.BSpline;
 import ru.fit.g14201.chirikhin.wireframe.model.Model;
 
@@ -187,6 +188,7 @@ public class ShapeView extends JPanel {
 
             sceneRotationMatrix = MatrixUtil.multiply(qzMatrix,
                     MatrixUtil.multiply(qyMatrix, sceneRotationMatrix));
+
             model.setRoundMatrix(sceneRotationMatrix);
         } else {
             if (null != selectedShape && shapeRotationMatrix != null) {
@@ -422,6 +424,8 @@ public class ShapeView extends JPanel {
         drawCube();
         drawCoordinateSystem(0, 0, 0, 1);
 
+        //ArrayList<Matrix> shapeMatrixes = new ArrayList<>();
+
         if (null != model) {
             ArrayList<ArrayList<Line<Point3D<Float, Float, Float>>>> linesOfSplines = new ArrayList<>();
 
@@ -436,6 +440,8 @@ public class ShapeView extends JPanel {
                 Matrix moveMatrix = calculateShiftMatrix(bSpline.getCx(),
                         bSpline.getCy(), bSpline.getCz());
                 Matrix shapeMatrix = MatrixUtil.multiply(roundMatrix, moveMatrix);
+
+                //shapeMatrixes.add(shapeMatrix);
 
                 for (Line<Point3D<Float, Float, Float>> line : splineLines) {
 
@@ -468,15 +474,15 @@ public class ShapeView extends JPanel {
 
                 BSpline bSpline = model.getbSplines().get(k);
 
-                float minLength = Math.min(1 - bSpline.getCx() / globalMax, Math.min(1 - bSpline.getCy() / globalMax,
-                        1 - bSpline.getCz() / globalMax));
+                float minLength = Math.min(1 - Math.abs(bSpline.getCx()) / globalMax, Math.min(1 - Math.abs(bSpline.getCy()) / globalMax,
+                        1 - Math.abs(bSpline.getCz()) / globalMax));
 
                 drawCoordinateSystem(bSpline.getCx() / globalMax, bSpline.getCy() / globalMax,
                         bSpline.getCz() / globalMax, minLength);
 
                 Matrix roundMatrix = bSpline.getRoundMatrix();
-
-                Matrix shapeMatrix = MatrixUtil.multiply(scaleMatrix, MatrixUtil.multiply(roundMatrix, moveMatrix));
+                Matrix shapeMatrixPrev = MatrixUtil.multiply(roundMatrix, moveMatrix);
+                Matrix shapeMatrix = MatrixUtil.multiply(scaleMatrix, shapeMatrixPrev);
 
                 for (Line<Point3D<Float, Float, Float>> splineLine : linesOfSplines.get(k)) {
                     drawLine(splineLine.getStart(), splineLine.getEnd(), model.getbSplines().get(k).getColor(), shapeMatrix);
