@@ -14,6 +14,10 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.*;
 
 public class MainFrame extends JFrame {
@@ -50,6 +54,31 @@ public class MainFrame extends JFrame {
         Border border = BorderFactory.createCompoundBorder(marginBorder, lineBorder);
         mainFrameJPanel.setBorder(border);
         mainFrameJPanel.setLayout(new BorderLayout());
+
+        shapeView.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (!shapeView.hasFocus()) {
+                    shapeView.requestFocus();
+                    Border newBorder = BorderFactory.createLineBorder(Color.GREEN);
+                    mainFrameJPanel.setBorder(BorderFactory.createCompoundBorder(marginBorder, newBorder));
+                } else {
+                    shapeView.transferFocus();
+                    Border newBorder = BorderFactory.createLineBorder(Color.BLACK);
+                    mainFrameJPanel.setBorder(BorderFactory.createCompoundBorder(marginBorder, newBorder));
+                }
+            }
+        });
+
+        shapeView.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                super.focusLost(e);
+                Border newBorder = BorderFactory.createLineBorder(Color.BLACK);
+                mainFrameJPanel.setBorder(BorderFactory.createCompoundBorder(marginBorder, newBorder));
+            }
+        });
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
