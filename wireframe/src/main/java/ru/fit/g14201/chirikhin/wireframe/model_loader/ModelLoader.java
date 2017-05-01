@@ -196,7 +196,7 @@ public class ModelLoader {
             }
         });
 
-        Parser parser = new Parser(file, parserConfigBuilder.build(), ListUtil.asList(5), s -> {
+        new Parser(file, parserConfigBuilder.build(), ListUtil.asList(5), s -> {
             if (s.isEmpty()) {
                 return false;
             }

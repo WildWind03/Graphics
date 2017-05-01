@@ -187,6 +187,7 @@ public class ShapeView extends JPanel {
 
             sceneRotationMatrix = MatrixUtil.multiply(qzMatrix,
                     MatrixUtil.multiply(qyMatrix, sceneRotationMatrix));
+            model.setRoundMatrix(sceneRotationMatrix);
         } else {
             if (null != selectedShape && shapeRotationMatrix != null) {
                 int dx = -(e.getX() - prevPointShape.getX());
