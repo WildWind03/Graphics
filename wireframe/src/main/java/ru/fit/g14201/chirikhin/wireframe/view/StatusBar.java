@@ -20,6 +20,12 @@ public class StatusBar extends JPanel {
 
     public void setText(String string, Color color) {
         jLabel.setText(string);
-        colorPanel.setBackground(color);
+
+        if (null == color) {
+            colorPanel.setVisible(false);
+        } else {
+            colorPanel.setVisible(true);
+            colorPanel.setBackground(color);
+        }
     }
 }

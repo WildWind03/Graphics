@@ -14,8 +14,6 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.*;
 
 public class MainFrame extends JFrame {
@@ -147,7 +145,7 @@ public class MainFrame extends JFrame {
 
     private void onInitButtonClick() {
         if (null != model) {
-            shapeView.setSCENE_ROTATION_MATRIX(new Matrix(new float[][] {
+            shapeView.setSceneRotationMatrix(new Matrix(new float[][] {
                     {1, 0, 0, 0},
                     {0, 1, 0, 0},
                     {0, 0, 1, 0},
@@ -162,8 +160,14 @@ public class MainFrame extends JFrame {
             Integer selectedShape = shapeView.getSelectedShape();
             SettingsDialog settingsDialog = new SettingsDialog(this, SETTINGS, -1, model, selectedShape);
             settingsDialog.apparate();
-            statusBar.setText("" + settingsDialog.getSelectedShape(), model.getbSplines().get(settingsDialog.getSelectedShape())
-                .getColor());
+
+            if (null != settingsDialog.getSelectedShape()) {
+                statusBar.setText("" + settingsDialog.getSelectedShape(), model.getbSplines().get(settingsDialog.getSelectedShape())
+                        .getColor());
+            } else {
+                statusBar.setText("There's not any selected shape", null);
+            }
+
             shapeView.setSelectedShape(settingsDialog.getSelectedShape());
             shapeView.update();
         }

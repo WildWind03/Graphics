@@ -33,7 +33,7 @@ public class ShapeView extends JPanel {
     private Point<Integer, Integer> prevPointScene = new Point<>(0, 0);
     private Point<Integer, Integer> prevPointShape = new Point<>(0, 0);
 
-    private Matrix SCENE_ROTATION_MATRIX = new Matrix(new float[][]{
+    private Matrix sceneRotationMatrix = new Matrix(new float[][]{
             {1, 0, 0, 0},
             {0, 1, 0, 0},
             {0, 0, 1, 0},
@@ -185,8 +185,8 @@ public class ShapeView extends JPanel {
             Matrix qzMatrix = calculateQzMatrix((float) (((float) dy / (float) height) * 2 * Math.PI));
             Matrix qyMatrix = calculateQyMatrix((float) (((float) dx / (float) width) * 2 * Math.PI));
 
-            SCENE_ROTATION_MATRIX = MatrixUtil.multiply(qzMatrix,
-                    MatrixUtil.multiply(qyMatrix, SCENE_ROTATION_MATRIX));
+            sceneRotationMatrix = MatrixUtil.multiply(qzMatrix,
+                    MatrixUtil.multiply(qyMatrix, sceneRotationMatrix));
         } else {
             if (null != selectedShape && shapeRotationMatrix != null) {
                 int dx = -(e.getX() - prevPointShape.getX());
@@ -203,13 +203,13 @@ public class ShapeView extends JPanel {
         repaint();
     }
 
-    public void setSCENE_ROTATION_MATRIX(Matrix SCENE_ROTATION_MATRIX) {
-        this.SCENE_ROTATION_MATRIX = SCENE_ROTATION_MATRIX;
+    public void setSceneRotationMatrix(Matrix sceneRotationMatrix) {
+        this.sceneRotationMatrix = sceneRotationMatrix;
     }
 
     public void setModel(Model newModel) {
         this.model = newModel;
-        SCENE_ROTATION_MATRIX = newModel.getRoundMatrix();
+        sceneRotationMatrix = newModel.getRoundMatrix();
         if (!model.isEmpty()) {
             setSelectedShape(0);
         } else {
@@ -366,8 +366,8 @@ public class ShapeView extends JPanel {
         Matrix end = new Matrix(new float[][]{{endPoint.getX()},
                 {endPoint.getY()}, {endPoint.getZ()}, {1}});
 
-        Matrix realStart = MatrixUtil.multiply(SCENE_ROTATION_MATRIX, MatrixUtil.multiply(shapeMatrix, start));
-        Matrix realEnd = MatrixUtil.multiply(SCENE_ROTATION_MATRIX, MatrixUtil.multiply(shapeMatrix, end));
+        Matrix realStart = MatrixUtil.multiply(sceneRotationMatrix, MatrixUtil.multiply(shapeMatrix, start));
+        Matrix realEnd = MatrixUtil.multiply(sceneRotationMatrix, MatrixUtil.multiply(shapeMatrix, end));
 
         Matrix cameraMatrix = calculateCameraMatrix(new Point3D<>(-10f, 0f, 0f),
                 new Point3D<>(10f, 0f, 0f),
@@ -522,6 +522,8 @@ public class ShapeView extends JPanel {
 
     public void setSelectedShape(Integer selectedShape) {
         this.selectedShape = selectedShape;
-        shapeRotationMatrix = model.getbSplines().get(selectedShape).getRoundMatrix();
+        if (null != selectedShape) {
+            shapeRotationMatrix = model.getbSplines().get(selectedShape).getRoundMatrix();
+        }
     }
 }

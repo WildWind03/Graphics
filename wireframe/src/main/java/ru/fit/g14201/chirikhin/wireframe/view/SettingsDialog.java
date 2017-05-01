@@ -250,7 +250,7 @@ public class SettingsDialog extends MyDialog {
                         .withCx(0f)
                         .withCy(0f)
                         .withCz(0f)
-                        .withRoundMatrix(new Matrix(new float[][] {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}))
+                        .withRoundMatrix(new Matrix(new float[][] {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}}))
                         .build())) {
                     shapes.add(getShapeName(shapes));
                     shapesList.setListData(shapes.toArray(new String[shapes.size()]));
