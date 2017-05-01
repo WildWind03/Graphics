@@ -87,6 +87,10 @@ public class ShapeToLinesConverter {
         Point<Float, Float> currentPoint = bSplineFunction.getValue(a);
         Point<Float, Float> nextPoint = bSplineFunction.getValue(a + stepSplinePace);
 
+        if (null == currentPoint || nextPoint == null) {
+            return lines;
+        }
+
         for (float i = a; i < b; i += stepSplinePace) {
             for (float j = c; j <= d; j += stepRotate) {
                 float currentAngleInRadians = (float) Math.toRadians(j);
