@@ -12,11 +12,9 @@ import ru.fit.g14201.chirikhin.wireframe.model.Model;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.ArrayList;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -50,6 +48,90 @@ public class ShapeView extends JPanel {
         this.width = width;
         bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
+                "xLeftEvent");
+
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "xRightEvent");
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "zUpEvent");
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "zDownEvent");
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), "yLeftEvent");
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), "yRightEvent");
+
+        getActionMap().put("xLeftEvent",
+                new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (null != selectedShape) {
+                            BSpline currentBSpline = model.getbSplines().get(selectedShape);
+                            currentBSpline.setCx(currentBSpline.getCx() - 0.5f);
+                            update();
+                        }
+                    }
+                });
+
+        getActionMap().put("xRightEvent",
+                new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (null != selectedShape) {
+                            BSpline currentBSpline = model.getbSplines().get(selectedShape);
+                            currentBSpline.setCx(currentBSpline.getCx() + 0.5f);
+                            update();
+                        }
+                    }
+                });
+
+        getActionMap().put("zDownEvent",
+                new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (null != selectedShape) {
+                            BSpline currentBSpline = model.getbSplines().get(selectedShape);
+                            currentBSpline.setCz(currentBSpline.getCz() - 0.5f);
+                            update();
+                        }
+                    }
+                });
+
+        getActionMap().put("zUpEvent",
+                new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (null != selectedShape) {
+                            BSpline currentBSpline = model.getbSplines().get(selectedShape);
+                            currentBSpline.setCz(currentBSpline.getCz() + 0.5f);
+                            update();
+                        }
+                    }
+                });
+
+        getActionMap().put("yLeftEvent",
+                new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (null != selectedShape) {
+                            BSpline currentBSpline = model.getbSplines().get(selectedShape);
+                            currentBSpline.setCy(currentBSpline.getCy() - 0.5f);
+                            update();
+                        }
+                    }
+                });
+
+        getActionMap().put("yRightEvent",
+                new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (null != selectedShape) {
+                            BSpline currentBSpline = model.getbSplines().get(selectedShape);
+                            currentBSpline.setCy(currentBSpline.getCy() + 0.5f);
+                            update();
+                        }
+                    }
+                });
+
+
+
+
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -68,6 +150,12 @@ public class ShapeView extends JPanel {
                 } else {
                     prevPointShape = new Point<>(e.getX(), e.getY());
                 }
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                ShapeView.this.requestFocus();
             }
         });
 
@@ -112,6 +200,7 @@ public class ShapeView extends JPanel {
 
     public void setModel(Model newModel) {
         this.model = newModel;
+        SCENE_ROTATION_MATRIX = newModel.getRoundMatrix();
         if (!model.isEmpty()) {
             setSelectedShape(0);
         } else {

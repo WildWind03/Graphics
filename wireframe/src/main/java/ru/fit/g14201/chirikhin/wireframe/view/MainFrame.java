@@ -79,7 +79,14 @@ public class MainFrame extends JFrame {
         MenuToolBarListenerUtil.addNewOption(aboutMenu, jToolBar, ABOUT_ICON_PNG, ABOUT,
                 () -> JOptionPane.showMessageDialog(this, ABOUT_TEXT));
 
-        loadModel(new File(DATA_FOLDER + "/test_config.txt"));
+        try {
+            loadModel(new File(DATA_FOLDER + "/test_config.txt"));
+        } catch (ParserException | TypeConversionException |
+                TypeMatchingException | NoObjectFactoryException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(),
+                    CAN_T_OPEN, JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         pack();
         setVisible(true);
@@ -95,20 +102,20 @@ public class MainFrame extends JFrame {
         int result = jFileChooser.showOpenDialog(this);
 
         if (JFileChooser.APPROVE_OPTION == result) {
-            loadModel(jFileChooser.getSelectedFile());
+            try {
+                loadModel(jFileChooser.getSelectedFile());
+            } catch (ParserException | TypeConversionException |
+                    TypeMatchingException | NoObjectFactoryException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(),
+                        CAN_T_OPEN, JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
-    private void loadModel(File file) {
-        try {
+    private void loadModel(File file) throws NoObjectFactoryException, ParserException, TypeMatchingException, TypeConversionException {
             ModelLoader modelLoader = new ModelLoader(file);
             this.model = modelLoader.getModel();
             shapeView.setModel(model);
-        } catch (ParserException | TypeConversionException |
-                TypeMatchingException | NoObjectFactoryException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(),
-                    CAN_T_OPEN, JOptionPane.ERROR_MESSAGE);
-        }
     }
 
     private void onSaveButtonClick() {

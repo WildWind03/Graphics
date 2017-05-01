@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 public class BSpline {
     private Color color;
-    private final float cx;
-    private final float cy;
-    private final float cz;
+    private float cx;
+    private float cy;
+    private float cz;
     private Matrix roundMatrix;
     private final ArrayList<Point<Float, Float>> points;
 
@@ -61,5 +61,17 @@ public class BSpline {
 
     public void setRoundMatrix(Matrix roundMatrix) {
         this.roundMatrix = roundMatrix;
+    }
+
+    public void setCx(float cx) {
+        this.cx = cx;
+    }
+
+    public void setCy(float cy) {
+        this.cy = cy;
+    }
+
+    public void setCz(float cz) {
+        this.cz = cz;
     }
 }
