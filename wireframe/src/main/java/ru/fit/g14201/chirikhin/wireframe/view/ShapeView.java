@@ -44,7 +44,6 @@ public class ShapeView extends JPanel {
 
     public ShapeView(int width, int height) {
         super(true);
-
         setPreferredSize(new Dimension(width, height));
         this.height = height;
         this.width = width;

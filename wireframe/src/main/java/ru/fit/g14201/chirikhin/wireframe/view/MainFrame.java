@@ -41,8 +41,11 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         super(WIREFRAME);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
+        JPanel mainFrameJPanel = new JPanel();
+        mainFrameJPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mainFrameJPanel.setLayout(new BorderLayout());
+
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
         JMenuBar jMenubar = new JMenuBar();
 
@@ -57,7 +60,8 @@ public class MainFrame extends JFrame {
 
         JToolBar jToolBar = new JToolBar();
         add(jToolBar, BorderLayout.NORTH);
-        add(shapeView, BorderLayout.CENTER);
+        add(mainFrameJPanel, BorderLayout.CENTER);
+        mainFrameJPanel.add(shapeView, BorderLayout.CENTER);
 
         MenuToolBarListenerUtil.addNewOption(fileMenu, jToolBar, OPEN_ICON_PNG,
                 OPEN, this::onOpenButtonClick);
