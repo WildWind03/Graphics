@@ -1,10 +1,15 @@
 package chirikhin.matrix;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.util.Arrays;
+
 
 public class Matrix {
     private final float data[][];
 
+
+    @SuppressFBWarnings
     public Matrix(float[][] data) {
         if (null == data || null == data[0]) {
             throw new IllegalArgumentException("Data can not be null");
