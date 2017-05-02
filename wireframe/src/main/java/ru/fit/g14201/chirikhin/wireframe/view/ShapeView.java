@@ -8,7 +8,6 @@ import chirikhin.support.Point;
 import chirikhin.support.Point3D;
 import chirikhin.swing.util.ListUtil;
 import ru.fit.g14201.chirikhin.wireframe.bspline.BSplineFunction;
-import ru.fit.g14201.chirikhin.wireframe.main.Main;
 import ru.fit.g14201.chirikhin.wireframe.model.BSpline;
 import ru.fit.g14201.chirikhin.wireframe.model.Model;
 
@@ -293,8 +292,8 @@ public class ShapeView extends JPanel {
         });
     }
 
-    private Point3D<Float, Float, Float> multiplyVectors(Point3D<Float, Float, Float> vector1,
-                                                         Point3D<Float, Float, Float> vector2) {
+    private Point3D<Float, Float, Float> crossProduct(Point3D<Float, Float, Float> vector1,
+                                                      Point3D<Float, Float, Float> vector2) {
         return new Point3D<>(vector1.getY() * vector2.getZ() - vector1.getZ() * vector2.getY(),
                 vector1.getX() * vector2.getZ() - vector1.getZ() * vector2.getX(),
                 vector1.getX() * vector2.getY() - vector1.getY() * vector2.getX());
@@ -314,7 +313,7 @@ public class ShapeView extends JPanel {
         float kz = (viewPoint.getZ() - cameraPosition.getZ()) /
                 normalizeForK;
 
-        Point3D<Float, Float, Float> iVector = multiplyVectors(upVector, new Point3D<>(kx, ky, kz));
+        Point3D<Float, Float, Float> iVector = crossProduct(upVector, new Point3D<>(kx, ky, kz));
 
         float normalizeForI = (float) Math.sqrt(iVector.getX() * iVector.getX() +
                 iVector.getY() * iVector.getY() +
@@ -324,7 +323,7 @@ public class ShapeView extends JPanel {
         float iy = iVector.getY() / normalizeForI;
         float iz = iVector.getZ() / normalizeForI;
 
-        Point3D<Float, Float, Float> jVector = multiplyVectors(new Point3D<>(kx, ky, kz),
+        Point3D<Float, Float, Float> jVector = crossProduct(new Point3D<>(kx, ky, kz),
                 new Point3D<>(ix, iy, iz));
 
         return MatrixUtil.multiply(new Matrix(new float[][]{
