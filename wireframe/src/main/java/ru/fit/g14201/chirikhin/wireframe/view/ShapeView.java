@@ -431,7 +431,7 @@ public class ShapeView extends JPanel {
 
             for (BSpline bSpline : model.getbSplines()) {
                 ArrayList<Line<Point3D<Float, Float, Float>>> splineLines = ShapeToLinesConverter.toLines(new BSplineFunction(bSpline.getPoints()),
-                        model.getN(), model.getM(), model.getK(), model.getA(), model.getB(), model.getD(), model.getC(), -1);
+                        model.getN(), model.getM(), model.getK(), model.getA(), model.getB(), model.getD(), model.getC());
                 linesOfSplines.add(splineLines);
 
                 Matrix roundMatrix = bSpline.getRoundMatrix();
