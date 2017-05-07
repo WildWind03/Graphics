@@ -22,7 +22,7 @@
                 <configuration>
                     <archive>
                        <manifest>
-                            <mainClass>ru.nsu.fit.g14201.chirikhin.wireframe.main.Main</mainClass>
+                            <mainClass>ru.fit.g14201.chirikhin.wireframe.main.Main</mainClass>
                        </manifest>
                     </archive>
                      <descriptorRefs>
