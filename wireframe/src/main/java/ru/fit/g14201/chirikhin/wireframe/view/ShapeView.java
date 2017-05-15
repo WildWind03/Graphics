@@ -191,11 +191,11 @@ public class ShapeView extends JPanel {
             model.setRoundMatrix(sceneRotationMatrix);
         } else {
             if (null != selectedShape && shapeRotationMatrix != null) {
-                int dx = (int) ((-(e.getX() - prevPointShape.getX())) / 7f);
-                int dy = (int) ((-(e.getY() - prevPointShape.getY())) / 7f);
+                int dx = ((-(e.getX() - prevPointShape.getX())));
+                int dy = ((-(e.getY() - prevPointShape.getY())));
 
-                Matrix qxMatrix = calculateQxMatrix((float) (((float) dy / (float) height) * 2 *Math.PI));
-                Matrix qyMatrix = calculateQyMatrix((float) (((float) dx / (float) width) * 2 * Math.PI));
+                Matrix qxMatrix = calculateQxMatrix((float) (((float) dy / (float) height) * Math.PI / 4));
+                Matrix qyMatrix = calculateQyMatrix((float) (((float) dx / (float) width) * Math.PI / 4));
 
                 shapeRotationMatrix = MatrixUtil.multiply(qyMatrix, MatrixUtil.multiply(qxMatrix, shapeRotationMatrix));
                 model.getbSplines().get(selectedShape).setRoundMatrix(shapeRotationMatrix);
