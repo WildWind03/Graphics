@@ -194,8 +194,8 @@ public class ShapeView extends JPanel {
                 int dx = ((-(e.getX() - prevPointShape.getX())));
                 int dy = ((-(e.getY() - prevPointShape.getY())));
 
-                Matrix qxMatrix = calculateQxMatrix((float) (((float) dy / (float) height) * Math.PI / 4));
-                Matrix qyMatrix = calculateQyMatrix((float) (((float) dx / (float) width) * Math.PI / 4));
+                Matrix qxMatrix = calculateQxMatrix((float) (((float) dy / (float) height) * Math.PI / 5));
+                Matrix qyMatrix = calculateQyMatrix((float) (((float) dx / (float) width) * Math.PI / 5));
 
                 shapeRotationMatrix = MatrixUtil.multiply(qyMatrix, MatrixUtil.multiply(qxMatrix, shapeRotationMatrix));
                 model.getbSplines().get(selectedShape).setRoundMatrix(shapeRotationMatrix);
