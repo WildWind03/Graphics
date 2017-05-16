@@ -179,8 +179,8 @@ public class ShapeView extends JPanel {
 
     private void onMouseDragged(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) {
-            int dx = -(e.getX() - prevPointScene.getX());
-            int dy = -(e.getY() - prevPointScene.getY());
+            int dx = (e.getX() - prevPointScene.getX());
+            int dy = - (e.getY() - prevPointScene.getY());
 
             Matrix qzMatrix = calculateQzMatrix((float) (((float) dy / (float) height) * 2 * Math.PI));
             Matrix qyMatrix = calculateQyMatrix((float) (((float) dx / (float) width) * 2 * Math.PI));
@@ -191,8 +191,8 @@ public class ShapeView extends JPanel {
             model.setRoundMatrix(sceneRotationMatrix);
         } else {
             if (null != selectedShape && shapeRotationMatrix != null) {
-                int dx = ((-(e.getX() - prevPointShape.getX())));
-                int dy = ((-(e.getY() - prevPointShape.getY())));
+                int dx = (((e.getX() - prevPointShape.getX())));
+                int dy =  - (((e.getY() - prevPointShape.getY())));
 
                 Matrix qxMatrix = calculateQxMatrix((float) (((float) dy / (float) height) * Math.PI / 5));
                 Matrix qyMatrix = calculateQyMatrix((float) (((float) dx / (float) width) * Math.PI / 5));
@@ -343,8 +343,8 @@ public class ShapeView extends JPanel {
         return new Matrix(new float[][]{
                 {2 * zf / sw, 0, 0, 0},
                 {0, 2 * zf / sh, 0, 0},
-                {0, 0, zf / (zn - zf), - zn * zf / (zn - zf)},
-                {0, 0, 1, 0}
+                {0, 0, zf / (zn - zf), zn * zf / (zn - zf)},
+                {0, 0, -1, 0}
         });
     }
 
@@ -405,9 +405,10 @@ public class ShapeView extends JPanel {
         Graphics2D g = bufferedImage.createGraphics();
         g.setColor(color);
         g.drawLine(pixelCoordinateToAreaConverter.toPixelX(clippedLine.getStart().getX()),
-                pixelCoordinateToAreaConverter.toPixelY(clippedLine.getStart().getY()),
+                height
+                 - pixelCoordinateToAreaConverter.toPixelY(clippedLine.getStart().getY()),
                 pixelCoordinateToAreaConverter.toPixelX(clippedLine.getEnd().getX()),
-                pixelCoordinateToAreaConverter.toPixelY(clippedLine.getEnd().getY()));
+                height - pixelCoordinateToAreaConverter.toPixelY(clippedLine.getEnd().getY()));
         g.dispose();
     }
 
