@@ -26,7 +26,7 @@ public class SceneConfigParser {
 
     }
 
-    public static SceneConfig getSceneConfig(String path) throws ParserException {
+    public static SceneConfig getSceneConfig(File file) throws ParserException {
         try {
             SceneConfigBuilder sceneConfigBuilder = new SceneConfigBuilder();
 
@@ -198,7 +198,7 @@ public class SceneConfigParser {
                             }
                         }
                     }).build()
-                    .execute(new File(path), s -> {
+                    .execute(file, s -> {
                         if (s.isEmpty()) {
                             return false;
                         }

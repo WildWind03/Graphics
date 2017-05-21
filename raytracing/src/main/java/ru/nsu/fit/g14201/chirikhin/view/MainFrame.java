@@ -1,18 +1,24 @@
 package ru.nsu.fit.g14201.chirikhin.view;
 
 import chirikhin.swing.util.MenuToolBarListenerUtil;
+import ru.nsu.fit.g14201.chirikhin.model.RenderSettings;
+import ru.nsu.fit.g14201.chirikhin.model.SceneConfig;
+import ru.nsu.fit.g14201.chirikhin.parser.RenderConfigParser;
+import ru.nsu.fit.g14201.chirikhin.parser.SceneConfigParser;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.io.File;
 
 public class MainFrame extends JFrame {
     private static final String FILE = "File";
     private static final String SETTINGS = "Settings";
     private static final String ABOUT = "About";
 
-    private static final int DEFAULT_SHAPE_VIEW_WIDTH = 300;
-    private static final int DEFAULT_SHAPE_VIEW_HEIGHT = 200;
+    private static final int DEFAULT_SHAPE_VIEW_WIDTH = 800;
+    private static final int DEFAULT_SHAPE_VIEW_HEIGHT = 300;
 
     private static final int MARGIN_BORDER = 10;
 
@@ -37,6 +43,9 @@ public class MainFrame extends JFrame {
     private static final String ABOUT_PNG = "about_icon.png";
 
     private static final String APP_NAME = "Raytracing";
+
+    private static final String DATA_FOLDER = "./FIT_g14201_Chirikhin_Raytracing_Data";
+    private static final String CAN_T_OPEN = "Can not open";
 
 
     private StatusBar statusBar = new StatusBar();
@@ -118,10 +127,42 @@ public class MainFrame extends JFrame {
     }
 
     private void onLoadRenderSettingsClick() {
+        JFileChooser jFileChooser = new JFileChooser();
 
+        FileNameExtensionFilter modelFilter = new FileNameExtensionFilter("*.txt", "txt");
+        jFileChooser.addChoosableFileFilter(modelFilter);
+        jFileChooser.setCurrentDirectory(new File(DATA_FOLDER));
+
+        int result = jFileChooser.showOpenDialog(this);
+
+        if (JFileChooser.APPROVE_OPTION == result) {
+            try {
+                RenderSettings renderSettings = RenderConfigParser.getRenderSettings(jFileChooser.getSelectedFile());
+                shapeView.setRenderSettings(renderSettings);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(),
+                        CAN_T_OPEN, JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     private void onOpenSceneButtonClick() {
+        JFileChooser jFileChooser = new JFileChooser();
 
+        FileNameExtensionFilter modelFilter = new FileNameExtensionFilter("*.txt", "txt");
+        jFileChooser.addChoosableFileFilter(modelFilter);
+        jFileChooser.setCurrentDirectory(new File(DATA_FOLDER));
+
+        int result = jFileChooser.showOpenDialog(this);
+
+        if (JFileChooser.APPROVE_OPTION == result) {
+            try {
+                SceneConfig sceneConfig = SceneConfigParser.getSceneConfig(jFileChooser.getSelectedFile());
+                shapeView.setSceneConfig(sceneConfig);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(),
+                        CAN_T_OPEN, JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 }

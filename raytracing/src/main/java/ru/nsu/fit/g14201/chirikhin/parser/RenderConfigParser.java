@@ -16,7 +16,7 @@ public class RenderConfigParser {
 
     }
 
-    public static RenderSettings getRenderSettings(String path) throws ParserException {
+    public static RenderSettings getRenderSettings(File file) throws ParserException {
         RenderSettingsBuilder renderSettingsBuilder = new RenderSettingsBuilder();
 
         try {
@@ -81,7 +81,7 @@ public class RenderConfigParser {
                     renderSettingsBuilder.setSh((float) objects[1]);
                     parserConfig.nextIndex();
                 }
-            }).build().execute(new File(path), s -> {
+            }).build().execute(file, s -> {
                 if (s.isEmpty()) {
                     return false;
                 }
