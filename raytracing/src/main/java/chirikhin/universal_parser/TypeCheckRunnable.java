@@ -1,6 +1,10 @@
 package chirikhin.universal_parser;
 
+import chirikhin.swing.util.ListUtil;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public abstract class TypeCheckRunnable {
 
@@ -8,8 +12,12 @@ public abstract class TypeCheckRunnable {
 
     private boolean isLastArgumentMandatory = false;
 
-    public TypeCheckRunnable(ArrayList<Class<?>> types) throws TypeConversionException {
+    public TypeCheckRunnable(ArrayList<Class<?>> types) {
         this.types = types;
+    }
+
+    public TypeCheckRunnable(Class<?>... classes){
+        types = ListUtil.asList(classes);
     }
 
     public void setLastArgumentsBehavior(boolean isMandatory) {
@@ -19,7 +27,8 @@ public abstract class TypeCheckRunnable {
     public void run(String[] strings, ParserConfig parserConfig, MyFactory objectFactory)
             throws TypeConversionException, TypeMatchingException, ParserException {
         if (strings.length < types.size() - (isLastArgumentMandatory ? 0 : 1)) {
-            throw new TypeMatchingException("Different count of arguments in the type mask and in the config file");
+            throw new TypeMatchingException("Different count of arguments in the type mask and in the config file." +
+                    " Your strings are " + Arrays.toString(strings) + " Types are " + Arrays.toString(new ArrayList[]{types}));
         }
 
         Object[] objects = new Object[types.size()];

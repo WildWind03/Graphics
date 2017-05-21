@@ -16,7 +16,8 @@ public class MyFactory implements ObjectFactory {
         return typeMaker.create(string);
     }
 
-    public void addTypeMaker(Class<?> clazz, TypeMaker typeMaker) {
+    public MyFactory addTypeMaker(Class<?> clazz, TypeMaker typeMaker) {
         typeMakers.put(clazz, typeMaker);
+        return this;
     }
 }

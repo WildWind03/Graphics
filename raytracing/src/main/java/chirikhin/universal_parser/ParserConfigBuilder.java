@@ -1,9 +1,11 @@
 package chirikhin.universal_parser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ParserConfigBuilder {
     private final ArrayList<TypeCheckRunnable> runnables = new ArrayList<>();
+
     private MyFactory objectFactory;
 
     public ParserConfigBuilder() {
