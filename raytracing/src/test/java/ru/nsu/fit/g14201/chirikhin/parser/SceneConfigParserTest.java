@@ -11,7 +11,6 @@ public class SceneConfigParserTest {
     public void getSceneConfig() throws Exception {
         String path = "C:\\Users\\userg\\Documents\\Programming\\Graphics\\g14201_Chirihin\\raytracing\\FIT_g14201_Chirikhin_Raytracing_Data\\test_config.txt";
         SceneConfig config = SceneConfigParser.getSceneConfig(path);
-        System.out.println("Hey");
     }
 
 }
