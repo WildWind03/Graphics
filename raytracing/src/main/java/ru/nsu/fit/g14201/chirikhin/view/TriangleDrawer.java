@@ -4,7 +4,7 @@ import ru.nsu.fit.g14201.chirikhin.model.Triangle;
 
 import java.awt.*;
 
-public class TriangleDrawer implements Drawer {
+public class TriangleDrawer extends Drawer {
     private final Triangle triangle;
     private final Color color;
 
@@ -15,8 +15,12 @@ public class TriangleDrawer implements Drawer {
 
     @Override
     public void draw(ShapeView shapeView) {
-        shapeView.drawLine(triangle.getPoint1(), triangle.getPoint2(), color);
-        shapeView.drawLine(triangle.getPoint2(), triangle.getPoint3(), color);
-        shapeView.drawLine(triangle.getPoint3(), triangle.getPoint1(), color);
+        shapeView.drawLine(triangle.getPoint1().getX() / getRate(),
+                triangle.getPoint1().getY() / getRate(),
+                triangle.getPoint1().getZ() / getRate(),
+                triangle.getPoint2().getX() / getRate(),
+                triangle.getPoint2().getY() / getRate(),
+                triangle.getPoint2().getZ() / getRate(),
+                color);
     }
 }

@@ -1,5 +1,6 @@
 package ru.nsu.fit.g14201.chirikhin.model;
 
+import chirikhin.support.MathSupport;
 import chirikhin.support.Point3D;
 
 public class Box extends Shape{
@@ -18,5 +19,10 @@ public class Box extends Shape{
 
     public Point3D<Float, Float, Float> getMaxPoint() {
         return maxPoint;
+    }
+
+    @Override
+    public float getMaxCoordinate() {
+        return MathSupport.getMax(minPoint, maxPoint);
     }
 }

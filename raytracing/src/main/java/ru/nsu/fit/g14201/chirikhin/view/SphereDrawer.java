@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class SphereDrawer implements Drawer {
+public class SphereDrawer extends Drawer {
     private final Sphere sphere;
     private final Color color;
 

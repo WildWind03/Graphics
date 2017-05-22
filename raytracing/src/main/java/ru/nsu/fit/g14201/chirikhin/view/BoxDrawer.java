@@ -4,7 +4,7 @@ import ru.nsu.fit.g14201.chirikhin.model.Box;
 
 import java.awt.*;
 
-public class BoxDrawer implements Drawer {
+public class BoxDrawer extends Drawer {
     private final Box box;
     private final Color color;
 

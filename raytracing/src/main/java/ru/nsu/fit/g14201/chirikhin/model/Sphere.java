@@ -19,4 +19,9 @@ public class Sphere extends Shape {
     public float getRadius() {
         return radius;
     }
+
+    @Override
+    public float getMaxCoordinate() {
+        return 0;
+    }
 }

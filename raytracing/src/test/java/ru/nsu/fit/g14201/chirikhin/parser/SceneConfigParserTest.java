@@ -12,8 +12,8 @@ import static org.junit.Assert.*;
 public class SceneConfigParserTest {
     @Test
     public void getSceneConfig() throws Exception {
-        String path = "C:\\Users\\userg\\Documents\\Programming\\Graphics\\g14201_Chirihin\\raytracing\\FIT_g14201_Chirikhin_Raytracing_Data\\StandfordBunny.scene";
-        SceneConfig config = SceneConfigParser.getSceneConfig(new File(path));
+//        String path = "C:\\Users\\userg\\Documents\\Programming\\Graphics\\g14201_Chirihin\\raytracing\\FIT_g14201_Chirikhin_Raytracing_Data\\StandfordBunny.scene";
+//        SceneConfig config = SceneConfigParser.getSceneConfig(new File(path));
     }
 
 }

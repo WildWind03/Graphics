@@ -10,4 +10,6 @@ public abstract class Shape {
     public OpticalCharacteristics getOpticalCharacteristics() {
         return opticalCharacteristics;
     }
+
+    public abstract float getMaxCoordinate();
 }

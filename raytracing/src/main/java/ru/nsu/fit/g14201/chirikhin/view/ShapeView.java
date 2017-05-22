@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.cos;
+import static java.lang.Math.floor;
 import static java.lang.Math.sin;
 
 public class ShapeView extends JPanel {
@@ -76,13 +77,19 @@ public class ShapeView extends JPanel {
 
             if (null != renderSettings) {
                 if (notches < 0) {
+                    if (renderSettings.getZn() == 0) {
+                        renderSettings.setZn(0.1f);
+                    }
+
                     if (renderSettings.getZf() == 0) {
                         renderSettings.setZf(0.1f);
                     }
 
+                    renderSettings.setZn(renderSettings.getZn() * ZOOM_PLUS_RATIO);
                     renderSettings.setZf(renderSettings.getZf() * ZOOM_PLUS_RATIO);
                     repaint();
                 } else {
+                    renderSettings.setZn(renderSettings.getZn() * ZOOM_MINUS_RATIO);
                     renderSettings.setZf(renderSettings.getZf() * ZOOM_MINUS_RATIO);
                     repaint();
                 }
@@ -92,13 +99,23 @@ public class ShapeView extends JPanel {
 
     public void setSceneConfig(SceneConfig sceneConfig) {
         this.sceneConfig = sceneConfig;
+        float max = 0;
+        for (int k = 0; k < sceneConfig.getShapes().size(); ++k) {
+            if (sceneConfig.getShapes().get(k).getMaxCoordinate() > max) {
+                max = sceneConfig.getShapes().get(k).getMaxCoordinate();
+            }
+        }
 
+        float finalMax = max;
         sceneConfig.getShapes().forEach(shape -> {
-            shapeDrawers.add(DrawerFactory.createDrawer(shape, Color.BLACK));
-        });
+                    Drawer drawer = DrawerFactory.createDrawer(shape, Color.BLACK);
+                    drawer.setRate(finalMax);
+                    shapeDrawers.add(drawer);
+                });
 
         repaint();
     }
+
 
     public void setRenderSettings(RenderSettings renderSettings) {
         this.renderSettings = renderSettings;
@@ -240,21 +257,19 @@ public class ShapeView extends JPanel {
 
     private Matrix calculateProjMatrix(float sw, float sh, float zf, float zn) {
         return new Matrix(new float[][]{
-                {2 * zf / sw, 0, 0, 0},
-                {0, 2 * zf / sh, 0, 0},
-                {0, 0, zf / (zn - zf), zn * zf / (zn - zf)},
+                {2 * zn / sw, 0, 0, 0},
+                {0, 2 * zn / sh, 0, 0},
+                {0, 0, zn / (zf - zn), zf * zn / (zf - zn)},
                 {0, 0, -1, 0}
         });
     }
 
-    protected void drawLine(Point3D<Float, Float, Float> startPoint,
-                          Point3D<Float, Float, Float> endPoint,
-                          Color color) {
-        Matrix start = new Matrix(new float[][]{{startPoint.getX()},
-                {startPoint.getY()}, {startPoint.getZ()}, {1}});
+    protected void drawLine(float startX, float startY, float startZ, float endX, float endY, float endZ, Color color) {
+        Matrix start = new Matrix(new float[][]{{startX},
+                {startY}, {startZ}, {1}});
 
-        Matrix end = new Matrix(new float[][]{{endPoint.getX()},
-                {endPoint.getY()}, {endPoint.getZ()}, {1}});
+        Matrix end = new Matrix(new float[][]{{endX},
+                {endY}, {endZ}, {1}});
 
         Matrix realStart = MatrixUtil.multiply(sceneRotationMatrix, start);
         Matrix realEnd = MatrixUtil.multiply(sceneRotationMatrix, end);
@@ -300,6 +315,13 @@ public class ShapeView extends JPanel {
                 height - pixelCoordinateToAreaConverter.toPixelY(clippedLine.getEnd().getY()));
 
         g.dispose();
+    }
+
+    protected void drawLine(Point3D<Float, Float, Float> startPoint,
+                          Point3D<Float, Float, Float> endPoint,
+                          Color color) {
+        drawLine(startPoint.getX(), startPoint.getY(), startPoint.getZ(),
+                endPoint.getX(), endPoint.getY(), endPoint.getZ(), color);
     }
 
     @Override

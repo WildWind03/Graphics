@@ -1,5 +1,6 @@
 package ru.nsu.fit.g14201.chirikhin.model;
 
+import chirikhin.support.MathSupport;
 import chirikhin.support.Point3D;
 
 public class Quadrangle extends Shape {
@@ -32,5 +33,10 @@ public class Quadrangle extends Shape {
 
     public Point3D<Float, Float, Float> getPoint4() {
         return point4;
+    }
+
+    @Override
+    public float getMaxCoordinate() {
+        return MathSupport.getMax(point1, point2, point3, point4);
     }
 }

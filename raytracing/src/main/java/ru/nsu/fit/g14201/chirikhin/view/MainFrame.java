@@ -17,8 +17,8 @@ public class MainFrame extends JFrame {
     private static final String SETTINGS = "Settings";
     private static final String ABOUT = "About";
 
-    private static final int DEFAULT_SHAPE_VIEW_WIDTH = 800;
-    private static final int DEFAULT_SHAPE_VIEW_HEIGHT = 300;
+    private static final int DEFAULT_SHAPE_VIEW_WIDTH = 1500;
+    private static final int DEFAULT_SHAPE_VIEW_HEIGHT = 600;
 
     private static final int MARGIN_BORDER = 10;
 
@@ -129,7 +129,7 @@ public class MainFrame extends JFrame {
     private void onLoadRenderSettingsClick() {
         JFileChooser jFileChooser = new JFileChooser();
 
-        FileNameExtensionFilter modelFilter = new FileNameExtensionFilter("*.txt", "txt");
+        FileNameExtensionFilter modelFilter = new FileNameExtensionFilter("*.render", "render");
         jFileChooser.addChoosableFileFilter(modelFilter);
         jFileChooser.setCurrentDirectory(new File(DATA_FOLDER));
 
@@ -149,7 +149,7 @@ public class MainFrame extends JFrame {
     private void onOpenSceneButtonClick() {
         JFileChooser jFileChooser = new JFileChooser();
 
-        FileNameExtensionFilter modelFilter = new FileNameExtensionFilter("*.txt", "txt");
+        FileNameExtensionFilter modelFilter = new FileNameExtensionFilter("*.scene", "scene");
         jFileChooser.addChoosableFileFilter(modelFilter);
         jFileChooser.setCurrentDirectory(new File(DATA_FOLDER));
 
