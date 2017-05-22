@@ -4,17 +4,20 @@ import chirikhin.clipper.Clipper3D;
 import chirikhin.graphics.PixelCoordinateToAreaConverter;
 import chirikhin.matrix.Matrix;
 import chirikhin.matrix.MatrixUtil;
-import chirikhin.support.*;
+import chirikhin.support.Line;
 import chirikhin.support.Point;
+import chirikhin.support.Point3D;
 import ru.nsu.fit.g14201.chirikhin.model.RenderSettings;
 import ru.nsu.fit.g14201.chirikhin.model.SceneConfig;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -28,6 +31,8 @@ public class ShapeView extends JPanel {
     private RenderSettings renderSettings;
     private int height;
     private int width;
+
+    private List<Drawer> shapeDrawers = new ArrayList<>();
 
     private Matrix sceneRotationMatrix = new Matrix(new float[][]{
             {1, 0, 0, 0},
@@ -56,6 +61,16 @@ public class ShapeView extends JPanel {
             }
         });
 
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    prevPointScene = new Point<>(e.getX(), e.getY());
+                }
+            }
+        });
+
         addMouseWheelListener(e -> {
             int notches = e.getWheelRotation();
 
@@ -78,13 +93,42 @@ public class ShapeView extends JPanel {
     public void setSceneConfig(SceneConfig sceneConfig) {
         this.sceneConfig = sceneConfig;
 
+        sceneConfig.getShapes().forEach(shape -> {
+            shapeDrawers.add(DrawerFactory.createDrawer(shape, Color.BLACK));
+        });
+
         repaint();
     }
 
     public void setRenderSettings(RenderSettings renderSettings) {
         this.renderSettings = renderSettings;
-
+        updateSwShSettings();
         repaint();
+    }
+
+    public void updateSwShSettings() {
+        if (null != renderSettings) {
+            float sw = renderSettings.getSw();
+            float sh = renderSettings.getSh();
+
+            float necessaryK = sw / sh;
+            float currentK = (float) bufferedImage.getWidth() / (float) bufferedImage.getHeight();
+
+            if (currentK < necessaryK) {
+                height = (int) (bufferedImage.getWidth() * sh / sw);
+                width = bufferedImage.getWidth();
+            }
+
+            if (necessaryK < currentK) {
+                width = (int) (bufferedImage.getHeight() * sw / sh);
+                height = bufferedImage.getHeight();
+            }
+
+            Graphics2D graphics2D = bufferedImage.createGraphics();
+            graphics2D.setColor(Color.LIGHT_GRAY);
+            graphics2D.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
+            graphics2D.dispose();
+        }
     }
 
     private void onMouseDragged(MouseEvent e) {
@@ -203,7 +247,7 @@ public class ShapeView extends JPanel {
         });
     }
 
-    private void drawLine(Point3D<Float, Float, Float> startPoint,
+    protected void drawLine(Point3D<Float, Float, Float> startPoint,
                           Point3D<Float, Float, Float> endPoint,
                           Color color) {
         Matrix start = new Matrix(new float[][]{{startPoint.getX()},
@@ -271,6 +315,10 @@ public class ShapeView extends JPanel {
             drawCube();
             drawCoordinateSystem(0, 0, 0, 1);
         }
+
+        shapeDrawers.forEach(drawer -> {
+            drawer.draw(this);
+        });
 
         g.drawImage(bufferedImage, 0, 0, null);
     }

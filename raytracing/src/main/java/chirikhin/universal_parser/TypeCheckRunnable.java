@@ -44,6 +44,8 @@ public abstract class TypeCheckRunnable {
                 objects[i] = objectFactory.createObject(strings[i], types.get(i));
             } catch (ArrayIndexOutOfBoundsException e) {
                 throw new TypeMatchingException("Real data doesn't fit to arg map");
+            } catch (Exception e) {
+                throw new TypeConversionException("Error while converting", e);
             }
         }
 

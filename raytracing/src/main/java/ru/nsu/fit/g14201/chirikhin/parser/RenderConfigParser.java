@@ -99,7 +99,7 @@ public class RenderConfigParser {
 
             return renderSettingsBuilder.createRenderSettings();
         } catch (Exception e) {
-            throw new ParserException(e.getLocalizedMessage(), e);
+            throw new ParserException(e.getMessage(), e);
         }
 
     }

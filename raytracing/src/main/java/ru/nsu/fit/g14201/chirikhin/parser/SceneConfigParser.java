@@ -59,6 +59,7 @@ public class SceneConfigParser {
 
                             if (parserConfig.getAlreadyExecuted() >= (int) parserConfig.getObject(COUNT_OF_LIGHT_SOURCES_TAG)) {
                                 parserConfig.nextIndex();
+                                parserConfig.saveObject(OPTICAL_CHARACTERISTICS_RUNNABLE_INDEX_TAG, parserConfig.getCurrentRunnableIndex() + 3);
                             }
                         }
                     }).add(new TypeCheckRunnable(String.class, Comment.class) {
@@ -111,7 +112,6 @@ public class SceneConfigParser {
                             Float.class, Float.class, Float.class, Float.class, Comment.class) {
                         @Override
                         public void run(Object[] objects, ParserConfig parserConfig) {
-                            parserConfig.saveObject(OPTICAL_CHARACTERISTICS_RUNNABLE_INDEX_TAG, parserConfig.getCurrentRunnableIndex());
                             Point3D<Float, Float, Float> diffuseReflectRate = new Point3D<>((float) objects[0], (float) objects[1],
                                     (float) objects[2]);
 
@@ -216,7 +216,7 @@ public class SceneConfigParser {
 
             return sceneConfigBuilder.build();
         } catch(Exception e) {
-            throw new ParserException(e.getLocalizedMessage(), e);
+            throw new ParserException(e.getMessage(), e);
         }
     }
 

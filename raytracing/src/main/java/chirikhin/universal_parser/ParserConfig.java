@@ -37,7 +37,7 @@ public class ParserConfig {
                     execute(nextString);
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ParserException(e.getMessage(), e);
         }
 
