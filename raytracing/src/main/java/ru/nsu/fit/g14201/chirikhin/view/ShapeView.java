@@ -5,6 +5,7 @@ import chirikhin.graphics.PixelCoordinateToAreaConverter;
 import chirikhin.matrix.Matrix;
 import chirikhin.matrix.MatrixUtil;
 import chirikhin.support.Line;
+import chirikhin.support.MathSupport;
 import chirikhin.support.Point;
 import chirikhin.support.Point3D;
 import ru.nsu.fit.g14201.chirikhin.model.RenderSettings;
@@ -16,11 +17,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.cos;
-import static java.lang.Math.floor;
 import static java.lang.Math.sin;
 
 public class ShapeView extends JPanel {
@@ -43,6 +44,7 @@ public class ShapeView extends JPanel {
     });
 
     private Point<Integer, Integer> prevPointScene = new chirikhin.support.Point<>(0, 0);
+    private PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter;
 
     public ShapeView(int defaultShapeViewWidth, int defaultShapeViewHeight) {
         super(true);
@@ -119,6 +121,15 @@ public class ShapeView extends JPanel {
 
     public void setRenderSettings(RenderSettings renderSettings) {
         this.renderSettings = renderSettings;
+
+        Point3D<Float, Float, Float> cameraPoint = renderSettings.getCameraPoint();
+        Point3D<Float, Float, Float> viewPoint = renderSettings.getViewPoint();
+        Point3D<Float, Float, Float> upVector = renderSettings.getUpVector();
+
+        Point3D<Float, Float, Float> z = MathSupport.minus(viewPoint, cameraPoint);
+        Point3D<Float, Float, Float> right = MathSupport.crossProduct(z, upVector);
+        Point3D<Float, Float, Float> newUpVector = MathSupport.crossProduct(right, z);
+        this.renderSettings.setUpVector(newUpVector);
         updateSwShSettings();
         repaint();
     }
@@ -208,13 +219,6 @@ public class ShapeView extends JPanel {
         });
     }
 
-    private Point3D<Float, Float, Float> crossProduct(Point3D<Float, Float, Float> vector1,
-                                                      Point3D<Float, Float, Float> vector2) {
-        return new Point3D<>(vector1.getY() * vector2.getZ() - vector1.getZ() * vector2.getY(),
-                vector1.getX() * vector2.getZ() - vector1.getZ() * vector2.getX(),
-                vector1.getX() * vector2.getY() - vector1.getY() * vector2.getX());
-    }
-
     private Matrix calculateCameraMatrix(Point3D<Float, Float, Float> cameraPosition,
                                          Point3D<Float, Float, Float> viewPoint,
                                          Point3D<Float, Float, Float> upVector) {
@@ -229,7 +233,7 @@ public class ShapeView extends JPanel {
         float kz = (viewPoint.getZ() - cameraPosition.getZ()) /
                 normalizeForK;
 
-        Point3D<Float, Float, Float> iVector = crossProduct(upVector, new Point3D<>(kx, ky, kz));
+        Point3D<Float, Float, Float> iVector = MathSupport.crossProduct(upVector, new Point3D<>(kx, ky, kz));
 
         float normalizeForI = (float) Math.sqrt(iVector.getX() * iVector.getX() +
                 iVector.getY() * iVector.getY() +
@@ -239,7 +243,7 @@ public class ShapeView extends JPanel {
         float iy = iVector.getY() / normalizeForI;
         float iz = iVector.getZ() / normalizeForI;
 
-        Point3D<Float, Float, Float> jVector = crossProduct(new Point3D<>(kx, ky, kz),
+        Point3D<Float, Float, Float> jVector = MathSupport.crossProduct(new Point3D<>(kx, ky, kz),
                 new Point3D<>(ix, iy, iz));
 
         return MatrixUtil.multiply(new Matrix(new float[][]{
@@ -274,9 +278,16 @@ public class ShapeView extends JPanel {
         Matrix realStart = MatrixUtil.multiply(sceneRotationMatrix, start);
         Matrix realEnd = MatrixUtil.multiply(sceneRotationMatrix, end);
 
-        Matrix cameraMatrix = calculateCameraMatrix(new Point3D<>(-10f, 0f, 0f),
-                new Point3D<>(10f, 0f, 0f),
-                new Point3D<>(0f, 1f, 0f));
+        Matrix cameraMatrix = calculateCameraMatrix(new Point3D<>(renderSettings.getCameraPoint().getX(),
+                        renderSettings.getCameraPoint().getY(), renderSettings.getCameraPoint().getZ()),
+                new Point3D<>(renderSettings.getViewPoint().getX(), renderSettings.getViewPoint().getY(),
+                        renderSettings.getViewPoint().getZ()),
+                new Point3D<>(renderSettings.getUpVector().getX(), renderSettings.getUpVector().getY(),
+                        renderSettings.getUpVector().getZ()));
+
+//        Matrix cameraMatrix = calculateCameraMatrix(new Point3D<>(-10f, 0f, 0f),
+//                new Point3D<>(10f, 0f, 0f),
+//                new Point3D<>(0f, 1f, 0f));
 
         Matrix projMatrix = calculateProjMatrix(renderSettings.getSw(),
                 renderSettings.getSh(), renderSettings.getZf(), renderSettings.getZn());
@@ -303,16 +314,14 @@ public class ShapeView extends JPanel {
             return;
         }
 
-        PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter =
-                new PixelCoordinateToAreaConverter(-1, -1, 1, 1, width, height);
+        pixelCoordinateToAreaConverter = new PixelCoordinateToAreaConverter(-1, -1, 1, 1, width, height);
 
         Graphics2D g = bufferedImage.createGraphics();
         g.setColor(color);
-        g.drawLine(pixelCoordinateToAreaConverter.toPixelX(clippedLine.getStart().getX()),
-                height
-                        - pixelCoordinateToAreaConverter.toPixelY(clippedLine.getStart().getY()),
-                pixelCoordinateToAreaConverter.toPixelX(clippedLine.getEnd().getX()),
-                height - pixelCoordinateToAreaConverter.toPixelY(clippedLine.getEnd().getY()));
+        g.drawLine(width - pixelCoordinateToAreaConverter.toPixelX(clippedLine.getStart().getX()),
+                pixelCoordinateToAreaConverter.toPixelY(clippedLine.getStart().getY()),
+                width - pixelCoordinateToAreaConverter.toPixelX(clippedLine.getEnd().getX()),
+                pixelCoordinateToAreaConverter.toPixelY(clippedLine.getEnd().getY()));
 
         g.dispose();
     }
@@ -334,7 +343,7 @@ public class ShapeView extends JPanel {
         g2d.dispose();
 
         if (null != renderSettings) {
-            drawCube();
+            //drawCube();
             drawCoordinateSystem(0, 0, 0, 1);
         }
 
@@ -373,5 +382,17 @@ public class ShapeView extends JPanel {
         for (Line<Point3D<Float, Float, Float>> line : cubeLines) {
             drawLine(line.getStart(), line.getEnd(), Color.BLACK);
         }
+    }
+
+    private BufferedImage render() {
+        for (int i = 0; i < width; ++i) {
+            for (int k = 0; k < height; ++k) {
+                float worldX = pixelCoordinateToAreaConverter.toWorldX(i);
+                float worldY = pixelCoordinateToAreaConverter.toWorldY(k);
+
+
+            }
+        }
+        return null;
     }
 }

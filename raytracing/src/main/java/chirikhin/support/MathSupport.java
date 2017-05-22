@@ -31,4 +31,15 @@ public class MathSupport {
 
         return getMax(arrayList);
     }
+
+    public static Point3D<Float, Float, Float> crossProduct(Point3D<Float, Float, Float> vector1,
+                                                             Point3D<Float, Float, Float> vector2) {
+        return new Point3D<>(vector1.getY() * vector2.getZ() - vector1.getZ() * vector2.getY(),
+                - (vector1.getX() * vector2.getZ() - vector1.getZ() * vector2.getX()),
+                vector1.getX() * vector2.getY() - vector1.getY() * vector2.getX());
+    }
+
+    public static Point3D<Float, Float, Float> minus(Point3D<Float, Float, Float> point1, Point3D<Float, Float, Float> point2) {
+        return new Point3D<>(point1.getX() - point2.getX(), point1.getY() - point2.getY(), point1.getZ() - point2.getZ());
+    }
 }

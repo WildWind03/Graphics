@@ -18,11 +18,11 @@ public class PixelCoordinateToAreaConverter {
         this.pixelFieldHeight = pixelFieldHeight;
     }
 
-    public float toRealX(int u) {
+    public float toWorldX(int u) {
         return (((float) u) / pixelFieldWidth) * (endX - startX) + startX;
     }
 
-    public float toRealY(int v) {
+    public float toWorldY(int v) {
         return ((float) v / pixelFieldHeight) * (endY - startY) + startY;
     }
 

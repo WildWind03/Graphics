@@ -1,7 +1,7 @@
 package ru.nsu.fit.g14201.chirikhin.view;
 
 abstract class Drawer {
-    private float rate;
+    private float rate = 1;
 
     abstract void draw(ShapeView shapeView);
 
