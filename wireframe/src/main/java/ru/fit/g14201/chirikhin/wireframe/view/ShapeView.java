@@ -295,7 +295,7 @@ public class ShapeView extends JPanel {
     private Point3D<Float, Float, Float> crossProduct(Point3D<Float, Float, Float> vector1,
                                                       Point3D<Float, Float, Float> vector2) {
         return new Point3D<>(vector1.getY() * vector2.getZ() - vector1.getZ() * vector2.getY(),
-                vector1.getX() * vector2.getZ() - vector1.getZ() * vector2.getX(),
+                - (vector1.getX() * vector2.getZ() - vector1.getZ() * vector2.getX()),
                 vector1.getX() * vector2.getY() - vector1.getY() * vector2.getX());
     }
 
@@ -405,10 +405,9 @@ public class ShapeView extends JPanel {
         Graphics2D g = bufferedImage.createGraphics();
         g.setColor(color);
         g.drawLine(pixelCoordinateToAreaConverter.toPixelX(clippedLine.getStart().getX()),
-                height
-                 - pixelCoordinateToAreaConverter.toPixelY(clippedLine.getStart().getY()),
+                pixelCoordinateToAreaConverter.toPixelY(clippedLine.getStart().getY()),
                 pixelCoordinateToAreaConverter.toPixelX(clippedLine.getEnd().getX()),
-                height - pixelCoordinateToAreaConverter.toPixelY(clippedLine.getEnd().getY()));
+                pixelCoordinateToAreaConverter.toPixelY(clippedLine.getEnd().getY()));
         g.dispose();
     }
 
