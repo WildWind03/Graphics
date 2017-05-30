@@ -8,8 +8,12 @@ import chirikhin.support.Line;
 import chirikhin.support.MathSupport;
 import chirikhin.support.Point;
 import chirikhin.support.Point3D;
+import ru.nsu.fit.g14201.chirikhin.geometry.GLine;
+import ru.nsu.fit.g14201.chirikhin.geometry.GPlane;
+import ru.nsu.fit.g14201.chirikhin.model.Quadrangle;
 import ru.nsu.fit.g14201.chirikhin.model.RenderSettings;
 import ru.nsu.fit.g14201.chirikhin.model.SceneConfig;
+import ru.nsu.fit.g14201.chirikhin.model.Triangle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +21,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,17 +104,8 @@ public class ShapeView extends JPanel {
 
     public void setSceneConfig(SceneConfig sceneConfig) {
         this.sceneConfig = sceneConfig;
-        float max = 0;
-        for (int k = 0; k < sceneConfig.getShapes().size(); ++k) {
-            if (sceneConfig.getShapes().get(k).getMaxCoordinate() > max) {
-                max = sceneConfig.getShapes().get(k).getMaxCoordinate();
-            }
-        }
-
-        float finalMax = max;
         sceneConfig.getShapes().forEach(shape -> {
                     Drawer drawer = DrawerFactory.createDrawer(shape, Color.BLACK);
-                    drawer.setRate(finalMax);
                     shapeDrawers.add(drawer);
                 });
 
@@ -126,7 +120,7 @@ public class ShapeView extends JPanel {
         Point3D<Float, Float, Float> viewPoint = renderSettings.getViewPoint();
         Point3D<Float, Float, Float> upVector = renderSettings.getUpVector();
 
-        Point3D<Float, Float, Float> z = MathSupport.minus(viewPoint, cameraPoint);
+        Point3D<Float, Float, Float> z = MathSupport.minus(cameraPoint, viewPoint);
         Point3D<Float, Float, Float> right = MathSupport.crossProduct(z, upVector);
         Point3D<Float, Float, Float> newUpVector = MathSupport.crossProduct(right, z);
         this.renderSettings.setUpVector(newUpVector);
@@ -161,8 +155,8 @@ public class ShapeView extends JPanel {
 
     private void onMouseDragged(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) {
-            int dx = (e.getX() - prevPointScene.getX());
-            int dy = - (e.getY() - prevPointScene.getY());
+            int dx = -(e.getY() - prevPointScene.getY());
+            int dy =  (e.getX() - prevPointScene.getX());
 
             Matrix qzMatrix = calculateQzMatrix((float) (((float) dy / (float) height) * 2 * Math.PI));
             Matrix qyMatrix = calculateQyMatrix((float) (((float) dx / (float) width) * 2 * Math.PI));
@@ -222,15 +216,15 @@ public class ShapeView extends JPanel {
     private Matrix calculateCameraMatrix(Point3D<Float, Float, Float> cameraPosition,
                                          Point3D<Float, Float, Float> viewPoint,
                                          Point3D<Float, Float, Float> upVector) {
-        float normalizeForK = (float) Math.sqrt((cameraPosition.getX() - viewPoint.getX()) * (cameraPosition.getX() - viewPoint.getX())
+        float normalizeForK = (float) Math.sqrt((viewPoint.getX() - cameraPosition.getX()) * (viewPoint.getX() - cameraPosition.getX())
                 + (cameraPosition.getY() - viewPoint.getY()) * (cameraPosition.getY() - viewPoint.getY()) +
                 (cameraPosition.getZ() - viewPoint.getZ()) * (cameraPosition.getZ() - viewPoint.getZ()));
 
-        float kx = (viewPoint.getX() - cameraPosition.getX()) /
+        float kx = (cameraPosition.getX() - viewPoint.getX()) /
                 normalizeForK;
-        float ky = (viewPoint.getY() - cameraPosition.getY()) /
+        float ky = (cameraPosition.getY() - viewPoint.getY()) /
                 normalizeForK;
-        float kz = (viewPoint.getZ() - cameraPosition.getZ()) /
+        float kz = (cameraPosition.getZ() - viewPoint.getZ()) /
                 normalizeForK;
 
         Point3D<Float, Float, Float> iVector = MathSupport.crossProduct(upVector, new Point3D<>(kx, ky, kz));
@@ -252,9 +246,9 @@ public class ShapeView extends JPanel {
                 {kx, ky, kz, 0},
                 {0, 0, 0, 1}
         }), new Matrix(new float[][]{
-                {1, 0, 0, -viewPoint.getX()},
-                {0, 1, 0, -viewPoint.getY()},
-                {0, 0, 1, -viewPoint.getZ()},
+                {1, 0, 0, -cameraPosition.getX()},
+                {0, 1, 0, -cameraPosition.getY()},
+                {0, 0, 1, -cameraPosition.getZ()},
                 {0, 0, 0, 1}
         }));
     }
@@ -343,7 +337,7 @@ public class ShapeView extends JPanel {
         g2d.dispose();
 
         if (null != renderSettings) {
-            //drawCube();
+            drawCube();
             drawCoordinateSystem(0, 0, 0, 1);
         }
 
@@ -384,12 +378,41 @@ public class ShapeView extends JPanel {
         }
     }
 
-    private BufferedImage render() {
-        for (int i = 0; i < width; ++i) {
-            for (int k = 0; k < height; ++k) {
-                float worldX = pixelCoordinateToAreaConverter.toWorldX(i);
-                float worldY = pixelCoordinateToAreaConverter.toWorldY(k);
+    public BufferedImage render() {
+        float worldZ = renderSettings.getZn() + renderSettings.getCameraPoint().getZ();
+        float cameraX = renderSettings.getCameraPoint().getX();
+        float cameraY = renderSettings.getCameraPoint().getY();
+        float cameraZ = renderSettings.getCameraPoint().getZ();
 
+        float stepX = renderSettings.getSw() / width;
+        float stepY = renderSettings.getSh() / height;
+
+        float centerClippingPlaneX = cameraX;
+        float centerClippingPlaneY = cameraY;
+
+        for (float i = centerClippingPlaneX - renderSettings.getSw() / 2; i < centerClippingPlaneX + renderSettings.getSw() / 2; i += stepX) {
+            for (float k = centerClippingPlaneY - renderSettings.getSw() / 2; k < centerClippingPlaneY + renderSettings.getSh() / 2; k += stepY) {
+                GLine line = new GLine(cameraX, cameraY, cameraZ, i, k, worldZ);
+
+                shapeDrawers.forEach( it -> {
+                    GPlane gPlane = null;
+
+                    if (it instanceof QuadrangleDrawer) {
+                        Quadrangle quadrangle = ((QuadrangleDrawer) (it)).getQuadrangle();
+                        gPlane = new GPlane(quadrangle.getPoint1(), quadrangle.getPoint2(), quadrangle.getPoint3()).normalize();
+                    }
+
+                    if (it instanceof TriangleDrawer) {
+                        Triangle triangle = ((TriangleDrawer) (it)).getTriangle();
+                        gPlane = new GPlane(triangle.getPoint1(), triangle.getPoint2(), triangle.getPoint3()).normalize();
+                    }
+
+                    if (null == gPlane) {
+                        return;
+                    }
+
+                    System.out.println(gPlane.getA() * gPlane.getA() + gPlane.getB() * gPlane.getB() + gPlane.getC() * gPlane.getC());
+                });
 
             }
         }

@@ -22,5 +22,12 @@ public class TriangleDrawer extends Drawer {
                 triangle.getPoint2().getY() / getRate(),
                 triangle.getPoint2().getZ() / getRate(),
                 color);
+
+        shapeView.drawLine(triangle.getPoint2(), triangle.getPoint3(), color);
+        shapeView.drawLine(triangle.getPoint3(), triangle.getPoint1(), color);
+    }
+
+    public Triangle getTriangle() {
+        return triangle;
     }
 }

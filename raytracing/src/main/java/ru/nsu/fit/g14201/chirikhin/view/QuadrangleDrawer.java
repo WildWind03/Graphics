@@ -47,4 +47,8 @@ public class QuadrangleDrawer extends Drawer {
                 quadrangle.getPoint1().getZ() / getRate(),
                 color);
     }
+
+    public Quadrangle getQuadrangle() {
+        return quadrangle;
+    }
 }
