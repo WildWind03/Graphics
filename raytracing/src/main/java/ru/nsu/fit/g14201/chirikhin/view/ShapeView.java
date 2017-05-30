@@ -155,11 +155,11 @@ public class ShapeView extends JPanel {
 
     private void onMouseDragged(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) {
-            int dx = -(e.getY() - prevPointScene.getY());
-            int dy =  (e.getX() - prevPointScene.getX());
+            int dx = (e.getY() - prevPointScene.getY());
+            int dy = - (e.getX() - prevPointScene.getX());
 
             Matrix qzMatrix = calculateQzMatrix((float) (((float) dy / (float) height) * 2 * Math.PI));
-            Matrix qyMatrix = calculateQyMatrix((float) (((float) dx / (float) width) * 2 * Math.PI));
+            Matrix qyMatrix = calculateQxMatrix((float) (((float) dx / (float) width) * 2 * Math.PI));
 
             sceneRotationMatrix = MatrixUtil.multiply(qzMatrix,
                     MatrixUtil.multiply(qyMatrix, sceneRotationMatrix));
@@ -279,10 +279,6 @@ public class ShapeView extends JPanel {
                 new Point3D<>(renderSettings.getUpVector().getX(), renderSettings.getUpVector().getY(),
                         renderSettings.getUpVector().getZ()));
 
-//        Matrix cameraMatrix = calculateCameraMatrix(new Point3D<>(-10f, 0f, 0f),
-//                new Point3D<>(10f, 0f, 0f),
-//                new Point3D<>(0f, 1f, 0f));
-
         Matrix projMatrix = calculateProjMatrix(renderSettings.getSw(),
                 renderSettings.getSh(), renderSettings.getZf(), renderSettings.getZn());
 
@@ -312,9 +308,9 @@ public class ShapeView extends JPanel {
 
         Graphics2D g = bufferedImage.createGraphics();
         g.setColor(color);
-        g.drawLine(width - pixelCoordinateToAreaConverter.toPixelX(clippedLine.getStart().getX()),
+        g.drawLine(pixelCoordinateToAreaConverter.toPixelX(clippedLine.getStart().getX()),
                 pixelCoordinateToAreaConverter.toPixelY(clippedLine.getStart().getY()),
-                width - pixelCoordinateToAreaConverter.toPixelX(clippedLine.getEnd().getX()),
+                pixelCoordinateToAreaConverter.toPixelX(clippedLine.getEnd().getX()),
                 pixelCoordinateToAreaConverter.toPixelY(clippedLine.getEnd().getY()));
 
         g.dispose();
