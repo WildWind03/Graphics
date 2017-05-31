@@ -53,6 +53,18 @@ public class GPlane {
         return d;
     }
 
+    public void setA(float a) {
+        this.a = a;
+    }
+
+    public void setB(float b) {
+        this.b = b;
+    }
+
+    public void setC(float c) {
+        this.c = c;
+    }
+
     public GPlane normalize() {
         float normalizeK = 1f / (float) Math.sqrt(a * a + b * b + c * c);
         a = a * normalizeK;
