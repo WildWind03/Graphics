@@ -467,12 +467,10 @@ public class ShapeView extends JPanel {
                 Point3D<Float, Float, Float> endPoint3DInModel = new Point3D<>(endPointInModel.get(0, 0),
                         endPointInModel.get(1, 0), endPointInModel.get(2, 0));
 
-                int finalK = k;
-                int finalI = i;
-                shapeDrawers.forEach(it -> {
-                    Point3D<Float, Float, Float> crossPoint = null;
-                    if (it instanceof QuadrangleDrawer) {
-                        Quadrangle quadrangle = ((QuadrangleDrawer) (it)).getQuadrangle();
+                for (int counter  = 0; counter < shapeDrawers.size(); ++counter) {
+                    Point3D<Float, Float, Float> crossPoint;
+                    if (shapeDrawers.get(counter) instanceof QuadrangleDrawer) {
+                        Quadrangle quadrangle = ((QuadrangleDrawer) (shapeDrawers.get(counter))).getQuadrangle();
                         Triangle triangle1 = new Triangle(quadrangle.getPoint1(), quadrangle.getPoint2(), quadrangle.getPoint3(), quadrangle.getOpticalCharacteristics());
                         Triangle triangle2 = new Triangle(quadrangle.getPoint4(), quadrangle.getPoint1(), quadrangle.getPoint3(), quadrangle.getOpticalCharacteristics());
 
@@ -480,21 +478,27 @@ public class ShapeView extends JPanel {
                         Point3D<Float, Float, Float> p2 = handleTriangle(triangle2, start3DInModel, endPoint3DInModel);
 
                         crossPoint = p1 == null ? p2 : p1;
+
+                        if (null != crossPoint && (MathSupport.isInTriangle(triangle1, crossPoint) || MathSupport.isInTriangle(triangle2, crossPoint))) {
+                            bufferedImage.setRGB(k, i, Color.RED.getRGB());
+                            break;
+                        } else {
+                            bufferedImage.setRGB(k, i, renderSettings.getBackgroundColor().getRGB());
+                        }
                     }
 
-                    if (it instanceof TriangleDrawer) {
-                        Triangle triangle = ((TriangleDrawer) it).getTriangle();
+                    if (shapeDrawers.get(counter) instanceof TriangleDrawer) {
+                        Triangle triangle = ((TriangleDrawer) shapeDrawers.get(counter)).getTriangle();
                         crossPoint = handleTriangle(triangle, start3DInModel, endPoint3DInModel);
-                    }
 
-                    if (null != crossPoint) {
-                        bufferedImage.setRGB(finalI, finalK, Color.RED.getRGB());
-                    } else {
-                        bufferedImage.setRGB(finalI, finalK, renderSettings.getBackgroundColor().getRGB());
+                        if (null != crossPoint && (MathSupport.isInTriangle(triangle, crossPoint))) {
+                            bufferedImage.setRGB(k, i, Color.RED.getRGB());
+                            break;
+                        } else {
+                            bufferedImage.setRGB(k, i, renderSettings.getBackgroundColor().getRGB());
+                        }
                     }
-
-                    //System.out.println(gPlane.getA() * gPlane.getA() + gPlane.getB() * gPlane.getB() + gPlane.getC() * gPlane.getC());
-                });
+                }
             }
         }
 
@@ -506,23 +510,30 @@ public class ShapeView extends JPanel {
     private Point3D<Float, Float, Float> handleTriangle(Triangle triangle, Point3D<Float, Float, Float> firstPointInModel,
                                 Point3D<Float, Float, Float> endPointInModel) {
         GPlane gPlane = new GPlane(triangle.getPoint1(), triangle.getPoint2(), triangle.getPoint3()).normalize();
-        Point3D<Float, Float, Float> normalToGPlane = MathSupport.crossProduct(
-                MathSupport.createVector(triangle.getPoint1(), triangle.getPoint2()),
-                MathSupport.createVector(triangle.getPoint1(), triangle.getPoint3()));
+        endPointInModel = MathSupport.createVector(firstPointInModel, endPointInModel);
+
+        float lengthOfEndPointInModel = (float) Math.sqrt(endPointInModel.getX() * endPointInModel.getX()
+                + endPointInModel.getY() * endPointInModel.getY() + endPointInModel.getZ() * endPointInModel.getZ());
+
+        Point3D<Float, Float, Float> normalizedEndPointInModel = new Point3D<>(endPointInModel.getX() / lengthOfEndPointInModel,
+                endPointInModel.getY() / lengthOfEndPointInModel, endPointInModel.getZ() / lengthOfEndPointInModel);
+
+
+        Point3D<Float, Float, Float> normalToGPlane = new Point3D<>(gPlane.getA(), gPlane.getB(), gPlane.getC());
 
         float t = -(gPlane.getA() * firstPointInModel.getX()
                 + gPlane.getB() * firstPointInModel.getY()
                 + gPlane.getC() * firstPointInModel.getZ() + gPlane.getD()) /
-                (gPlane.getA() * endPointInModel.getX()
-                        + gPlane.getB() * endPointInModel.getY()
-                        + gPlane.getC() * endPointInModel.getZ());
+                (gPlane.getA() * normalizedEndPointInModel.getX()
+                        + gPlane.getB() * normalizedEndPointInModel.getY()
+                        + gPlane.getC() * normalizedEndPointInModel.getZ());
 
         float scalarMultiplicationResult = MathSupport.scalarMultiply(normalToGPlane, endPointInModel);
 
-        if (scalarMultiplicationResult >= 0 || t < 0) {
-            return new Point3D<>(firstPointInModel.getX() + endPointInModel.getX() * t,
-                    firstPointInModel.getY() * endPointInModel.getY() * t,
-                    firstPointInModel.getZ() * endPointInModel.getZ() * t);
+        if (scalarMultiplicationResult < 0 || t >= 0) {
+            return new Point3D<>(firstPointInModel.getX() + normalizedEndPointInModel.getX() * t,
+                    firstPointInModel.getY() + normalizedEndPointInModel.getY() * t,
+                    firstPointInModel.getZ() + normalizedEndPointInModel.getZ() * t);
         }
 
         return null;

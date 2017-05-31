@@ -96,4 +96,8 @@ public class Matrix {
     public int hashCode() {
         return Arrays.deepHashCode(data);
     }
+
+    public double scalarMult(Matrix v0) {
+        return v0.get(0, 0) * get(0, 0) + v0.get(1, 0) * get(1, 0) + v0.get(2, 0) * get(2, 0);
+    }
 }

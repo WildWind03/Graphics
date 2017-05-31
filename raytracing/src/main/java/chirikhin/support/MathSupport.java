@@ -59,7 +59,7 @@ public class MathSupport {
         Matrix v1 =  new Matrix(new float[][]{{triangle.getPoint2().getX()}, {triangle.getPoint2().getY()}, {triangle.getPoint2().getZ()}}).subtract(A);
         Matrix v2 =  new Matrix(new float[][]{{point3D.getX()}, {point3D.getY()}, {point3D.getZ()}}).subtract(A);
 
-        double dot00 = v0.scalarMult(v0); MathSupport.scalarMultiply(new Point3D<>(v0[]), v0);
+        double dot00 = v0.scalarMult(v0);
         double dot01 = v0.scalarMult(v1);
         double dot02 = v0.scalarMult(v2);
         double dot11 = v1.scalarMult(v1);

@@ -1,8 +1,6 @@
 package ru.nsu.fit.g14201.chirikhin.geometry;
 
-import chirikhin.support.*;
-
-import java.awt.*;
+import chirikhin.support.Point3D;
 
 public class GPlane {
     private float a;
@@ -36,7 +34,7 @@ public class GPlane {
     }
 
     private float getD(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3) {
-        return - (x1 * (y2 * z3 - y3 * z2) + x2 * (y3 * z1 - y1 * z3) + x3 * (y1 * z2 - y2 * z1));
+        return -(x1 * (y2 * z3 - y3 * z2) + x2 * (y3 * z1 - y1 * z3) + x3 * (y1 * z2 - y2 * z1));
     }
 
     public float getA() {
@@ -60,6 +58,7 @@ public class GPlane {
         a = a * normalizeK;
         b = b * normalizeK;
         c = c * normalizeK;
+        d = d * normalizeK;
 
         return this;
     }
