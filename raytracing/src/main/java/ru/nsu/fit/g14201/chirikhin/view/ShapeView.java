@@ -8,7 +8,6 @@ import chirikhin.support.Line;
 import chirikhin.support.MathSupport;
 import chirikhin.support.Point;
 import chirikhin.support.Point3D;
-import ru.nsu.fit.g14201.chirikhin.geometry.GLine;
 import ru.nsu.fit.g14201.chirikhin.geometry.GPlane;
 import ru.nsu.fit.g14201.chirikhin.model.Quadrangle;
 import ru.nsu.fit.g14201.chirikhin.model.RenderSettings;
@@ -31,11 +30,13 @@ public class ShapeView extends JPanel {
     private static final float ZOOM_PLUS_RATIO = 1.1f;
     private static final float ZOOM_MINUS_RATIO = 0.9f;
 
-    private final BufferedImage bufferedImage;
+    private BufferedImage bufferedImage;
     private SceneConfig sceneConfig;
     private RenderSettings renderSettings;
     private int height;
     private int width;
+
+    private boolean isRendered = false;
 
     private List<Drawer> shapeDrawers = new ArrayList<>();
 
@@ -253,6 +254,50 @@ public class ShapeView extends JPanel {
         }));
     }
 
+    private Matrix calculateToModelMatrix(Point3D<Float, Float, Float> cameraPosition,
+                                          Point3D<Float, Float, Float> viewPoint,
+                                          Point3D<Float, Float, Float> upVector) {
+        float normalizeForK = (float) Math.sqrt((viewPoint.getX() - cameraPosition.getX()) * (viewPoint.getX() - cameraPosition.getX())
+                + (cameraPosition.getY() - viewPoint.getY()) * (cameraPosition.getY() - viewPoint.getY()) +
+                (cameraPosition.getZ() - viewPoint.getZ()) * (cameraPosition.getZ() - viewPoint.getZ()));
+
+        float kx = (viewPoint.getX() - cameraPosition.getX()) /
+                normalizeForK;
+        float ky = (viewPoint.getY() - cameraPosition.getY()) /
+                normalizeForK;
+        float kz = (viewPoint.getZ() - cameraPosition.getZ()) /
+                normalizeForK;
+
+        Point3D<Float, Float, Float> iVector = MathSupport.crossProduct(upVector, new Point3D<>(kx, ky, kz));
+
+        float normalizeForI = (float) Math.sqrt(iVector.getX() * iVector.getX() +
+                iVector.getY() * iVector.getY() +
+                iVector.getZ() * iVector.getZ());
+
+        float ix = iVector.getX() / normalizeForI;
+        float iy = iVector.getY() / normalizeForI;
+        float iz = iVector.getZ() / normalizeForI;
+
+        Point3D<Float, Float, Float> jVector = MathSupport.crossProduct(new Point3D<>(kx, ky, kz),
+                new Point3D<>(ix, iy, iz));
+
+        Matrix leftMatrix = new Matrix(new float[][]{
+                {1, 0, 0, cameraPosition.getX()},
+                {0, 1, 0, cameraPosition.getY()},
+                {0, 0, 1, cameraPosition.getZ()},
+                {0, 0, 0, 1}}
+        );
+
+        Matrix rightMatrix = new Matrix(new float[][] {
+                {ix, jVector.getX(), kx, 0},
+                {iy, jVector.getY(), ky, 0},
+                {iz, jVector.getZ(), kz, 0},
+                {0, 0, 0, 1}
+        });
+
+        return MatrixUtil.multiply(leftMatrix, rightMatrix);
+    }
+
     private Matrix calculateProjMatrix(float sw, float sh, float zf, float zn) {
         return new Matrix(new float[][]{
                 {2 * zn / sw, 0, 0, 0},
@@ -326,6 +371,11 @@ public class ShapeView extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        if (isRendered) {
+            g.drawImage(bufferedImage, 0, 0, null);
+            return;
+        }
+
         Graphics2D g2d = bufferedImage.createGraphics();
         g2d.setColor(Color.WHITE);
 
@@ -374,11 +424,16 @@ public class ShapeView extends JPanel {
         }
     }
 
-    public BufferedImage render() {
-        float worldZ = renderSettings.getZn() + renderSettings.getCameraPoint().getZ();
-        float cameraX = renderSettings.getCameraPoint().getX();
-        float cameraY = renderSettings.getCameraPoint().getY();
-        float cameraZ = renderSettings.getCameraPoint().getZ();
+    public void render() {
+        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Matrix toModelMatrix = calculateToModelMatrix(renderSettings.getCameraPoint(),
+                renderSettings.getViewPoint(),
+                renderSettings.getUpVector());
+
+        float clippingPlaneZ = renderSettings.getZn();
+        float cameraX = 0;
+        float cameraY = 0;
+        float cameraZ = 0;
 
         float stepX = renderSettings.getSw() / width;
         float stepY = renderSettings.getSh() / height;
@@ -386,32 +441,90 @@ public class ShapeView extends JPanel {
         float centerClippingPlaneX = cameraX;
         float centerClippingPlaneY = cameraY;
 
-        for (float i = centerClippingPlaneX - renderSettings.getSw() / 2; i < centerClippingPlaneX + renderSettings.getSw() / 2; i += stepX) {
-            for (float k = centerClippingPlaneY - renderSettings.getSw() / 2; k < centerClippingPlaneY + renderSettings.getSh() / 2; k += stepY) {
-                GLine line = new GLine(cameraX, cameraY, cameraZ, i, k, worldZ);
+        float leftTopClippingPlaneX = centerClippingPlaneX - renderSettings.getSw() / 2;
+        float leftTopClippingPlaneY = centerClippingPlaneY + renderSettings.getSh() / 2;
 
-                shapeDrawers.forEach( it -> {
-                    GPlane gPlane = null;
+        for (int i = 0; i < height; ++i) {
+            float currentPointClippingPlaneY = leftTopClippingPlaneY - i * stepY;
+            float normalQualityY = currentPointClippingPlaneY - stepY / 2;
 
+            for (int k = 0; k < width; ++k) {
+                float currentPointClippingPlaneX = leftTopClippingPlaneX + k * stepX;
+                float normalQualityX = currentPointClippingPlaneX + stepX / 2;
+
+                Matrix start = new Matrix(new float[][]{{cameraX},
+                        {cameraY}, {cameraZ}, {1}});
+
+                Matrix end = new Matrix(new float[][]{{normalQualityX},
+                        {normalQualityY}, {clippingPlaneZ}, {1}});
+
+                Matrix firstPointInModel = MatrixUtil.multiply(toModelMatrix, start);
+                Matrix endPointInModel = MatrixUtil.multiply(toModelMatrix, end);
+
+                Point3D<Float, Float, Float> start3DInModel = new Point3D<>(firstPointInModel.get(0, 0),
+                        firstPointInModel.get(1, 0), firstPointInModel.get(2, 0));
+
+                Point3D<Float, Float, Float> endPoint3DInModel = new Point3D<>(endPointInModel.get(0, 0),
+                        endPointInModel.get(1, 0), endPointInModel.get(2, 0));
+
+                int finalK = k;
+                int finalI = i;
+                shapeDrawers.forEach(it -> {
+                    Point3D<Float, Float, Float> crossPoint = null;
                     if (it instanceof QuadrangleDrawer) {
                         Quadrangle quadrangle = ((QuadrangleDrawer) (it)).getQuadrangle();
-                        gPlane = new GPlane(quadrangle.getPoint1(), quadrangle.getPoint2(), quadrangle.getPoint3()).normalize();
+                        Triangle triangle1 = new Triangle(quadrangle.getPoint1(), quadrangle.getPoint2(), quadrangle.getPoint3(), quadrangle.getOpticalCharacteristics());
+                        Triangle triangle2 = new Triangle(quadrangle.getPoint4(), quadrangle.getPoint1(), quadrangle.getPoint3(), quadrangle.getOpticalCharacteristics());
+
+                        Point3D<Float, Float, Float> p1 = handleTriangle(triangle1, start3DInModel, endPoint3DInModel);
+                        Point3D<Float, Float, Float> p2 = handleTriangle(triangle2, start3DInModel, endPoint3DInModel);
+
+                        crossPoint = p1 == null ? p2 : p1;
                     }
 
                     if (it instanceof TriangleDrawer) {
-                        Triangle triangle = ((TriangleDrawer) (it)).getTriangle();
-                        gPlane = new GPlane(triangle.getPoint1(), triangle.getPoint2(), triangle.getPoint3()).normalize();
+                        Triangle triangle = ((TriangleDrawer) it).getTriangle();
+                        crossPoint = handleTriangle(triangle, start3DInModel, endPoint3DInModel);
                     }
 
-                    if (null == gPlane) {
-                        return;
+                    if (null != crossPoint) {
+                        bufferedImage.setRGB(finalI, finalK, Color.RED.getRGB());
+                    } else {
+                        bufferedImage.setRGB(finalI, finalK, renderSettings.getBackgroundColor().getRGB());
                     }
 
-                    System.out.println(gPlane.getA() * gPlane.getA() + gPlane.getB() * gPlane.getB() + gPlane.getC() * gPlane.getC());
+                    //System.out.println(gPlane.getA() * gPlane.getA() + gPlane.getB() * gPlane.getB() + gPlane.getC() * gPlane.getC());
                 });
-
             }
         }
+
+        isRendered = true;
+        this.bufferedImage = bufferedImage;
+        repaint();
+    }
+
+    private Point3D<Float, Float, Float> handleTriangle(Triangle triangle, Point3D<Float, Float, Float> firstPointInModel,
+                                Point3D<Float, Float, Float> endPointInModel) {
+        GPlane gPlane = new GPlane(triangle.getPoint1(), triangle.getPoint2(), triangle.getPoint3()).normalize();
+        Point3D<Float, Float, Float> normalToGPlane = MathSupport.crossProduct(
+                MathSupport.createVector(triangle.getPoint1(), triangle.getPoint2()),
+                MathSupport.createVector(triangle.getPoint1(), triangle.getPoint3()));
+
+        float t = -(gPlane.getA() * firstPointInModel.getX()
+                + gPlane.getB() * firstPointInModel.getY()
+                + gPlane.getC() * firstPointInModel.getZ() + gPlane.getD()) /
+                (gPlane.getA() * endPointInModel.getX()
+                        + gPlane.getB() * endPointInModel.getY()
+                        + gPlane.getC() * endPointInModel.getZ());
+
+        float scalarMultiplicationResult = MathSupport.scalarMultiply(normalToGPlane, endPointInModel);
+
+        if (scalarMultiplicationResult >= 0 || t < 0) {
+            return new Point3D<>(firstPointInModel.getX() + endPointInModel.getX() * t,
+                    firstPointInModel.getY() * endPointInModel.getY() * t,
+                    firstPointInModel.getZ() * endPointInModel.getZ() * t);
+        }
+
         return null;
     }
 }

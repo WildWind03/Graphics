@@ -1,5 +1,6 @@
 package chirikhin.matrix;
 
+import chirikhin.support.MathSupport;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.Arrays;
@@ -57,6 +58,27 @@ public class Matrix {
         }
 
         set(h, w, data[h][w] + value);
+    }
+
+    public Matrix transpose() {
+        float newData[][] = new float[data[0].length][data.length];
+
+        for (int k = 0; k < data[0].length; ++k) {
+            for (int i = 0; i < data.length; ++i) {
+                newData[k][i] = data[i][k];
+            }
+        }
+
+        return new Matrix(newData);
+    }
+
+    public Matrix subtract(Matrix matrix) {
+        for (int i = 0; i < data.length; ++i) {
+            for (int k = 0; k < data[0].length; ++k) {
+                data[i][k]-=matrix.data[i][k];
+            }
+        }
+        return this;
     }
 
     @Override
