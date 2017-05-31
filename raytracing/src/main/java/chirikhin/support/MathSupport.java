@@ -5,6 +5,7 @@ import chirikhin.swing.util.ListUtil;
 import ru.nsu.fit.g14201.chirikhin.model.Triangle;
 
 import javax.swing.text.html.ListView;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -70,5 +71,11 @@ public class MathSupport {
         double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
         return (u >= 0) && (v >= 0) && (u + v < 1);
+    }
+
+    public static float getDistance(Point3D<Float, Float, Float> p1, Point3D<Float, Float, Float> p2) {
+        return (float) Math.sqrt((p2.getX() - p1.getX()) * (p2.getX() - p1.getX()) +
+                (p2.getY() - p1.getY()) * (p2.getY() - p1.getY()) +
+                (p2.getZ() - p1.getZ()) * (p2.getZ() - p1.getZ()));
     }
 }

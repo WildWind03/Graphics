@@ -444,6 +444,14 @@ public class ShapeView extends JPanel {
         float leftTopClippingPlaneX = centerClippingPlaneX - renderSettings.getSw() / 2;
         float leftTopClippingPlaneY = centerClippingPlaneY + renderSettings.getSh() / 2;
 
+        Matrix start = new Matrix(new float[][]{{cameraX},
+                {cameraY}, {cameraZ}, {1}});
+
+        Matrix firstPointInModel = MatrixUtil.multiply(toModelMatrix, start);
+
+        Point3D<Float, Float, Float> start3DInModel = new Point3D<>(firstPointInModel.get(0, 0),
+                firstPointInModel.get(1, 0), firstPointInModel.get(2, 0));
+
         for (int i = 0; i < height; ++i) {
             float currentPointClippingPlaneY = leftTopClippingPlaneY - i * stepY;
             float normalQualityY = currentPointClippingPlaneY - stepY / 2;
@@ -452,23 +460,22 @@ public class ShapeView extends JPanel {
                 float currentPointClippingPlaneX = leftTopClippingPlaneX + k * stepX;
                 float normalQualityX = currentPointClippingPlaneX + stepX / 2;
 
-                Matrix start = new Matrix(new float[][]{{cameraX},
-                        {cameraY}, {cameraZ}, {1}});
-
                 Matrix end = new Matrix(new float[][]{{normalQualityX},
                         {normalQualityY}, {clippingPlaneZ}, {1}});
 
-                Matrix firstPointInModel = MatrixUtil.multiply(toModelMatrix, start);
                 Matrix endPointInModel = MatrixUtil.multiply(toModelMatrix, end);
 
-                Point3D<Float, Float, Float> start3DInModel = new Point3D<>(firstPointInModel.get(0, 0),
-                        firstPointInModel.get(1, 0), firstPointInModel.get(2, 0));
 
                 Point3D<Float, Float, Float> endPoint3DInModel = new Point3D<>(endPointInModel.get(0, 0),
                         endPointInModel.get(1, 0), endPointInModel.get(2, 0));
 
+                Point3D<Float, Float, Float> nearestPoint = null;
+                Color color = Color.BLACK;
+
                 for (int counter  = 0; counter < shapeDrawers.size(); ++counter) {
-                    Point3D<Float, Float, Float> crossPoint;
+                    Point3D<Float, Float, Float> crossPoint = null;
+                    Color currentColor = renderSettings.getBackgroundColor();
+
                     if (shapeDrawers.get(counter) instanceof QuadrangleDrawer) {
                         Quadrangle quadrangle = ((QuadrangleDrawer) (shapeDrawers.get(counter))).getQuadrangle();
                         Triangle triangle1 = new Triangle(quadrangle.getPoint1(), quadrangle.getPoint2(), quadrangle.getPoint3(), quadrangle.getOpticalCharacteristics());
@@ -479,11 +486,14 @@ public class ShapeView extends JPanel {
 
                         crossPoint = p1 == null ? p2 : p1;
 
-                        if (null != crossPoint && (MathSupport.isInTriangle(triangle1, crossPoint) || MathSupport.isInTriangle(triangle2, crossPoint))) {
-                            bufferedImage.setRGB(k, i, Color.RED.getRGB());
-                            break;
+                        if (null == crossPoint) {
+                            continue;
+                        }
+
+                        if (!MathSupport.isInTriangle(triangle1, crossPoint) && !MathSupport.isInTriangle(triangle2, crossPoint)) {
+                            continue;
                         } else {
-                            bufferedImage.setRGB(k, i, renderSettings.getBackgroundColor().getRGB());
+                            currentColor = Color.RED;
                         }
                     }
 
@@ -491,14 +501,32 @@ public class ShapeView extends JPanel {
                         Triangle triangle = ((TriangleDrawer) shapeDrawers.get(counter)).getTriangle();
                         crossPoint = handleTriangle(triangle, start3DInModel, endPoint3DInModel);
 
-                        if (null != crossPoint && (MathSupport.isInTriangle(triangle, crossPoint))) {
-                            bufferedImage.setRGB(k, i, Color.RED.getRGB());
-                            break;
+                        if (null == crossPoint) {
+                            continue;
+                        }
+
+                        if (!MathSupport.isInTriangle(triangle, crossPoint)) {
+                            continue;
                         } else {
-                            bufferedImage.setRGB(k, i, renderSettings.getBackgroundColor().getRGB());
+                            currentColor = Color.GREEN;
+                        }
+                    }
+
+                    if (null == nearestPoint) {
+                        nearestPoint = crossPoint;
+                        color = currentColor;
+                    } else {
+                        float oldDistance = MathSupport.getDistance(nearestPoint, start3DInModel);
+                        float currentDistance = MathSupport.getDistance(crossPoint, start3DInModel);
+
+                        if (currentDistance < oldDistance) {
+                            nearestPoint = crossPoint;
+                            color = currentColor;
                         }
                     }
                 }
+
+                bufferedImage.setRGB(k, i, color.getRGB());
             }
         }
 
