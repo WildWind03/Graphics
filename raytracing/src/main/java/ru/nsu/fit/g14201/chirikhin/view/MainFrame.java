@@ -1,16 +1,21 @@
 package ru.nsu.fit.g14201.chirikhin.view;
 
 import chirikhin.swing.util.MenuToolBarListenerUtil;
+import com.sun.org.apache.regexp.internal.RE;
 import ru.nsu.fit.g14201.chirikhin.model.RenderSettings;
 import ru.nsu.fit.g14201.chirikhin.model.SceneConfig;
 import ru.nsu.fit.g14201.chirikhin.parser.RenderConfigParser;
 import ru.nsu.fit.g14201.chirikhin.parser.SceneConfigParser;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.MemoryImageSource;
 import java.io.File;
+import java.io.IOException;
 
 public class MainFrame extends JFrame {
     private static final String FILE = "File";
@@ -136,7 +141,26 @@ public class MainFrame extends JFrame {
     }
 
     private void onSaveImageClick() {
+        BufferedImage renderedMessage = shapeView.getRenderedImage();
 
+        if (null == renderedMessage) {
+            JOptionPane.showMessageDialog(this, "There is not a rendered image");
+            return;
+        }
+
+        JFileChooser jFileChooser = new JFileChooser();
+        FileNameExtensionFilter modelFilter = new FileNameExtensionFilter("*.png", "png");
+        jFileChooser.addChoosableFileFilter(modelFilter);
+        jFileChooser.setCurrentDirectory(new File(DATA_FOLDER));
+        int result = jFileChooser.showSaveDialog(this);
+
+        if (JFileChooser.APPROVE_OPTION ==  result) {
+            try {
+                ImageIO.write(renderedMessage, "PNG", jFileChooser.getSelectedFile());
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
+            }
+        }
     }
 
     private void onRenderSettingsClick() {

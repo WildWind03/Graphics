@@ -680,4 +680,12 @@ public class ShapeView extends JPanel {
         isRendered = false;
         repaint();
     }
+
+    public BufferedImage getRenderedImage() {
+        if (isRendered) {
+            return bufferedImage;
+        } else {
+            return null;
+        }
+    }
 }
