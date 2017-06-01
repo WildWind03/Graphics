@@ -5,8 +5,7 @@ import javax.swing.border.Border;
 import java.awt.*;
 
 public class StatusBar extends JPanel {
-    private JLabel jLabel = new JLabel();
-    private JPanel colorPanel = new JPanel();
+    private JProgressBar jProgressBar = new JProgressBar();
 
     public StatusBar() {
         super(true);
@@ -14,18 +13,21 @@ public class StatusBar extends JPanel {
         setBorder(marginBorder);
         setLayout(new BorderLayout());
 
-        add(jLabel, BorderLayout.CENTER);
-        add(colorPanel, BorderLayout.EAST);
+        add(jProgressBar, BorderLayout.CENTER);
+        jProgressBar.setMinimum(0);
+        jProgressBar.setMaximum(100);
+        jProgressBar.setVisible(false);
     }
 
-    public void setText(String string, Color color) {
-        jLabel.setText(string);
+    public void updateValue(int pos) {
+        jProgressBar.setValue(pos);
+    }
 
-        if (null == color) {
-            colorPanel.setVisible(false);
-        } else {
-            colorPanel.setVisible(true);
-            colorPanel.setBackground(color);
-        }
+    public void startRender() {
+        jProgressBar.setVisible(true);
+    }
+
+    public void endRender() {
+        jProgressBar.setVisible(false);
     }
 }

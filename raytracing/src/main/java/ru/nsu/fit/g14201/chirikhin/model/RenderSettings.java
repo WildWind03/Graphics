@@ -39,6 +39,10 @@ public class RenderSettings {
         return backgroundColor;
     }
 
+    public Point3D<Float, Float, Float> getBackgroundColorAsPoint() {
+        return new Point3D<>(backgroundColor.getRed() / 255f, backgroundColor.getGreen() / 255f, backgroundColor.getBlue() / 255f);
+    }
+
     public float getGamma() {
         return gamma;
     }

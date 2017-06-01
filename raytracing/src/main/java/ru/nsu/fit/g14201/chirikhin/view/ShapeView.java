@@ -8,10 +8,8 @@ import chirikhin.support.Line;
 import chirikhin.support.MathSupport;
 import chirikhin.support.Point;
 import chirikhin.support.Point3D;
-import chirikhin.swing.util.ListUtil;
 import ru.nsu.fit.g14201.chirikhin.geometry.GPlane;
 import ru.nsu.fit.g14201.chirikhin.model.*;
-import ru.nsu.fit.g14201.chirikhin.model.Shape;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.cos;
-import static java.lang.Math.floorDiv;
 import static java.lang.Math.sin;
 
 public class ShapeView extends JPanel {
@@ -49,6 +46,8 @@ public class ShapeView extends JPanel {
 
     private Point<Integer, Integer> prevPointScene = new chirikhin.support.Point<>(0, 0);
     private PixelCoordinateToAreaConverter pixelCoordinateToAreaConverter;
+    private IntegerRunnable integerRunnable;
+    private RenderEventHandler renderEventHandler;
 
     public ShapeView(int defaultShapeViewWidth, int defaultShapeViewHeight) {
         super(true);
@@ -155,8 +154,12 @@ public class ShapeView extends JPanel {
     }
 
     private void onMouseDragged(MouseEvent e) {
+        if (isRendered) {
+            return;
+        }
+
         if (SwingUtilities.isLeftMouseButton(e)) {
-            int dx = (e.getY() - prevPointScene.getY());
+            int dx = -(e.getY() - prevPointScene.getY());
             int dy = -(e.getX() - prevPointScene.getX());
 
             Matrix qzMatrix = calculateQzMatrix((float) (((float) dy / (float) height) * 2 * Math.PI));
@@ -353,9 +356,9 @@ public class ShapeView extends JPanel {
 
         Graphics2D g = bufferedImage.createGraphics();
         g.setColor(color);
-        g.drawLine(pixelCoordinateToAreaConverter.toPixelX(clippedLine.getStart().getX()),
+        g.drawLine(width - pixelCoordinateToAreaConverter.toPixelX(clippedLine.getStart().getX()),
                 pixelCoordinateToAreaConverter.toPixelY(clippedLine.getStart().getY()),
-                pixelCoordinateToAreaConverter.toPixelX(clippedLine.getEnd().getX()),
+                width - pixelCoordinateToAreaConverter.toPixelX(clippedLine.getEnd().getX()),
                 pixelCoordinateToAreaConverter.toPixelY(clippedLine.getEnd().getY()));
 
         g.dispose();
@@ -371,6 +374,11 @@ public class ShapeView extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        if (renderSettings == null) {
+            return;
+        }
+
         if (isRendered) {
             g.drawImage(bufferedImage, 0, 0, null);
             return;
@@ -382,10 +390,10 @@ public class ShapeView extends JPanel {
         g2d.fillRect(0, 0, width + 1, height + 1);
         g2d.dispose();
 
-        if (null != renderSettings) {
-            drawCube();
-            drawCoordinateSystem(0, 0, 0, 1);
-        }
+//        if (null != renderSettings) {
+//            drawCube();
+//            drawCoordinateSystem(0, 0, 0, 1);
+//        }
 
         shapeDrawers.forEach(drawer -> {
             drawer.draw(this);
@@ -424,15 +432,17 @@ public class ShapeView extends JPanel {
         }
     }
 
-    private Color getIntensity(Point3D<Float, Float, Float> start3DInModel, Point3D<Float, Float, Float> endPoint3DInModel, int depth) {
-        Point3D<Float, Float, Float> nearestPoint = null;
+    private Point3D<Float, Float, Float> getIntensity(Point3D<Float, Float, Float> start3DInModel, Point3D<Float, Float, Float> endPoint3DInModel, int depth) {
+        Point3D<Float, Float, Float> nearestCrossPoint = null;
         GPlane gPlane = null;
         OpticalCharacteristics opticalCharacteristics = null;
+        Point3D<Float, Float, Float> normal = null;
 
         for (int counter = 0; counter < shapeDrawers.size(); ++counter) {
             Point3D<Float, Float, Float> crossPoint = null;
             GPlane currentPlane = null;
             OpticalCharacteristics currentOpticalCharacteristics = null;
+            Point3D<Float, Float, Float> currentNormal = null;
 
             if (shapeDrawers.get(counter) instanceof QuadrangleDrawer) {
                 Quadrangle quadrangle = ((QuadrangleDrawer) (shapeDrawers.get(counter))).getQuadrangle();
@@ -442,6 +452,9 @@ public class ShapeView extends JPanel {
                 Point3D<Float, Float, Float> p1 = handleTriangle(triangle1, start3DInModel, endPoint3DInModel);
                 Point3D<Float, Float, Float> p2 = handleTriangle(triangle2, start3DInModel, endPoint3DInModel);
                 currentPlane = new GPlane(triangle1.getPoint1(), triangle1.getPoint2(), triangle1.getPoint3());
+                currentNormal = MathSupport.crossProduct(MathSupport.createVector(triangle1.getPoint1(), triangle1.getPoint2()),
+                        MathSupport.createVector(triangle1.getPoint1(), triangle1.getPoint3()));
+                currentNormal = normalizePoint(currentNormal);
                 currentOpticalCharacteristics = triangle1.getOpticalCharacteristics();
 
                 crossPoint = p1 == null ? p2 : p1;
@@ -459,6 +472,9 @@ public class ShapeView extends JPanel {
                 Triangle triangle = ((TriangleDrawer) shapeDrawers.get(counter)).getTriangle();
                 crossPoint = handleTriangle(triangle, start3DInModel, endPoint3DInModel);
                 currentPlane = new GPlane(triangle.getPoint1(), triangle.getPoint2(), triangle.getPoint3());
+                currentNormal = MathSupport.crossProduct(MathSupport.createVector(triangle.getPoint1(), triangle.getPoint2()),
+                        MathSupport.createVector(triangle.getPoint1(), triangle.getPoint3()));
+                currentNormal = normalizePoint(currentNormal);
                 currentOpticalCharacteristics = triangle.getOpticalCharacteristics();
 
                 if (null == crossPoint) {
@@ -470,81 +486,68 @@ public class ShapeView extends JPanel {
                 }
             }
 
-            if (null == nearestPoint) {
-                nearestPoint = crossPoint;
+            if (null == nearestCrossPoint) {
+                nearestCrossPoint = crossPoint;
                 opticalCharacteristics = currentOpticalCharacteristics;
                 gPlane = currentPlane;
+                normal = currentNormal;
             } else {
-                float oldDistance = MathSupport.getDistance(nearestPoint, start3DInModel);
+                float oldDistance = MathSupport.getDistance(nearestCrossPoint, start3DInModel);
                 float currentDistance = MathSupport.getDistance(crossPoint, start3DInModel);
 
                 if (currentDistance < oldDistance) {
-                    nearestPoint = crossPoint;
+                    nearestCrossPoint = crossPoint;
                     gPlane = currentPlane;
+                    normal = currentNormal;
                     opticalCharacteristics = currentOpticalCharacteristics;
                 }
             }
         }
 
         if (null == gPlane) {
-            return renderSettings.getBackgroundColor();
+            return renderSettings.getBackgroundColorAsPoint();
         } else {
-//            if (depth < renderSettings.getDepth()) {
-//                Color actualColor = new Color(color.getRed() * (sceneConfig.getSpaceColor().getRed() / 255f),
-//                        color.getBlue() * (sceneConfig.getSpaceColor().getBlue() / 255f), color.getGreen() * (sceneConfig.getSpaceColor().getGreen() / 255f));
-//                Point3D<Float, Float, Float> normal = new Point3D<>(gPlane.getA(), gPlane.getB(), gPlane.getC());
-//                normal = normalizePoint(normal);
 
-//                Point3D<Float, Float, Float> normalizedEndPointInModel = normalizePoint(endPoint3DInModel);
-//
-//                float reflectPoint = MathSupport.scalarMultiply(normal, normalizedEndPointInModel);
-//
-//                Point3D<Float, Float, Float> reflectRay = new Point3D<>(2 * normalizedEndPointInModel.getX() - normal.getX() * 2 * reflectPoint,
-//                        2 * normalizedEndPointInModel.getY() - normal.getY() * 2 * reflectPoint, 2 * normalizedEndPointInModel.getZ() - normal.getZ() * 2 * reflectPoint);
-//
-//                reflectRay = normalizePoint(reflectRay);
+            if (depth < renderSettings.getDepth()) {
+                Point3D<Float, Float, Float> e = new Point3D<>((nearestCrossPoint.getX() - start3DInModel.getX()),
+                        (nearestCrossPoint.getY() - start3DInModel.getY()), (nearestCrossPoint.getZ() - start3DInModel.getZ()));
+                e = normalizePoint(e);
 
-//                Color intensity = getIntensity(endPoint3DInModel, reflectRay, depth + 1);
-//                Color fixedIntensity = new Color((int) (intensity.getRed() * opticalCharacteristics.getMirrorReflectRate().getX()),
-//                        (int) (intensity.getGreen() * opticalCharacteristics.getMirrorReflectRate().getY()),
-//                        (int) (intensity.getBlue() * opticalCharacteristics.getMirrorReflectRate().getZ()));
+                float reflectPoint = MathSupport.scalarMultiply(normal, e);
 
-//                Color firstTerm = new Color((sceneConfig.getSpaceColor().getRed() / 255f) * opticalCharacteristics.getDiffuseReflectRate().getX(),
-//                        (sceneConfig.getSpaceColor().getGreen() / 255f) * opticalCharacteristics.getDiffuseReflectRate().getY(),
-//                        (sceneConfig.getSpaceColor().getBlue() / 255f) * opticalCharacteristics.getDiffuseReflectRate().getZ());
-//
-//                return new Color(firstTerm.getRed() * 255, firstTerm.getGreen() * 255,
-//                        firstTerm.getBlue() * 255);
-//            } else {
-                float red = (sceneConfig.getSpaceColor().getRed() / 255f) * opticalCharacteristics.getDiffuseReflectRate().getX();
-                float green = (sceneConfig.getSpaceColor().getGreen() / 255f) * opticalCharacteristics.getDiffuseReflectRate().getY();
-                float blue = (sceneConfig.getSpaceColor().getBlue() / 255f) * opticalCharacteristics.getDiffuseReflectRate().getZ();
+                Point3D<Float, Float, Float> reflectRay = new Point3D<>((e.getX() - normal.getX() * 2 * reflectPoint),
+                         (e.getY() - normal.getY() * 2 * reflectPoint), (e.getZ() - normal.getZ() * 2 * reflectPoint));
 
-                red *= 255;
-                green *= 255;
-                blue *= 255;
+                reflectRay = normalizePoint(reflectRay);
+                Point3D<Float, Float, Float> newPoint = new Point3D<>(reflectRay.getX() + nearestCrossPoint.getX(),
+                        reflectRay.getY() + nearestCrossPoint.getY(), reflectRay.getZ() + nearestCrossPoint.getZ());
 
-                red = Math.min(red, 255);
-                blue = Math.min(blue, 255);
-                green = Math.min(green, 255);
+                Point3D<Float, Float, Float> intensity = getIntensity(nearestCrossPoint, newPoint, depth + 1);
+                Point3D<Float, Float, Float> fixedIntensity = new Point3D<>((intensity.getX() * opticalCharacteristics.getMirrorReflectRate().getX()),
+                        (intensity.getY() * opticalCharacteristics.getMirrorReflectRate().getY()),
+                        (intensity.getZ() * opticalCharacteristics.getMirrorReflectRate().getZ()));
 
-//                float max = ListUtil.asList(red, green, blue).stream().max(Float::compareTo).get();
-//                red = red / max;
-//                green = green / max;
-//                blue = blue / max;
+                Point3D<Float, Float, Float> firstTerm = new Point3D<>(sceneConfig.getSpaceColorAsPoint().getX() * opticalCharacteristics.getDiffuseReflectRate().getX(),
+                        sceneConfig.getSpaceColorAsPoint().getY() * opticalCharacteristics.getDiffuseReflectRate().getY(),
+                        sceneConfig.getSpaceColorAsPoint().getZ() * opticalCharacteristics.getDiffuseReflectRate().getZ());
 
-//                Color firstTerm = new Color((sceneConfig.getSpaceColor().getRed() / 255f) * opticalCharacteristics.getDiffuseReflectRate().getX(),
-//                        (sceneConfig.getSpaceColor().getGreen() / 255f) * opticalCharacteristics.getDiffuseReflectRate().getY(),
-//                        (sceneConfig.getSpaceColor().getBlue() / 255f) * opticalCharacteristics.getDiffuseReflectRate().getZ());
-//
-                return new Color((int) red, (int) green,
-                        (int) blue);
-//            }
-            //return Color.RED;
+                return new Point3D<>(firstTerm.getX() + fixedIntensity.getX(), firstTerm.getY() + fixedIntensity.getY(),
+                        firstTerm.getZ() + fixedIntensity.getZ());
+            } else {
+                float red = sceneConfig.getSpaceColorAsPoint().getX() * opticalCharacteristics.getDiffuseReflectRate().getX();
+                float green = sceneConfig.getSpaceColorAsPoint().getY() * opticalCharacteristics.getDiffuseReflectRate().getY();
+                float blue = sceneConfig.getSpaceColorAsPoint().getZ() * opticalCharacteristics.getDiffuseReflectRate().getZ();
+                return new Point3D<>(red, green, blue);
+            }
         }
     }
 
     public void render() {
+        if (null == sceneConfig || null == renderSettings) {
+            JOptionPane.showMessageDialog(this, "You should load scene and render settings before rendering!");
+            return;
+        }
+
         BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Matrix toModelMatrix = calculateToModelMatrix(renderSettings.getCameraPoint(),
                 renderSettings.getViewPoint(),
@@ -569,33 +572,71 @@ public class ShapeView extends JPanel {
         Point3D<Float, Float, Float> start3DInModel = new Point3D<>(firstPointInModel.get(0, 0),
                 firstPointInModel.get(1, 0), firstPointInModel.get(2, 0));
 
-        for (int i = 0; i < height; ++i) {
-            float currentPointClippingPlaneY = leftTopClippingPlaneY - i * stepY;
-            float normalQualityY = currentPointClippingPlaneY - stepY / 2;
+        renderEventHandler.run(RenderEvent.START);
 
-            for (int k = 0; k < width; ++k) {
-                float currentPointClippingPlaneX = leftTopClippingPlaneX + k * stepX;
-                float normalQualityX = currentPointClippingPlaneX + stepX / 2;
+        new Thread(() -> {
+            for (int i = 0; i < height; ++i) {
+                float currentPointClippingPlaneY = leftTopClippingPlaneY - i * stepY;
+                float normalQualityY = currentPointClippingPlaneY - stepY / 2;
 
-                Matrix end = new Matrix(new float[][]{{normalQualityX},
-                        {normalQualityY}, {clippingPlaneZ}, {1}});
+                for (int k = 0; k < width; ++k) {
+                    float currentPointClippingPlaneX = leftTopClippingPlaneX + k * stepX;
+                    float normalQualityX = currentPointClippingPlaneX + stepX / 2;
 
-                Matrix endPointInModel = MatrixUtil.multiply(toModelMatrix, end);
+                    Matrix end = new Matrix(new float[][]{{normalQualityX},
+                            {normalQualityY}, {clippingPlaneZ}, {1}});
+
+                    Matrix endPointInModel = MatrixUtil.multiply(toModelMatrix, end);
 
 
-                Point3D<Float, Float, Float> endPoint3DInModel = new Point3D<>(endPointInModel.get(0, 0),
-                        endPointInModel.get(1, 0), endPointInModel.get(2, 0));
+                    Point3D<Float, Float, Float> endPoint3DInModel = new Point3D<>(endPointInModel.get(0, 0),
+                            endPointInModel.get(1, 0), endPointInModel.get(2, 0));
 
-                Color intensity = getIntensity(start3DInModel, endPoint3DInModel, 1);
-                bufferedImage.setRGB(width - k - 1, i, intensity.getRGB());
+                    Point3D<Float, Float, Float> intensity = getIntensity(start3DInModel, endPoint3DInModel, 1);
 
-                //bufferedImage.setRGB(k, i, color.getRGB());
+                    float red  = intensity.getX();
+                    float green = intensity.getY();
+                    float blue = intensity.getZ();
+
+                    float max = MathSupport.getMax(red, green, blue);
+
+                    if (max > 1) {
+                        red /= max;
+                        green /= max;
+                        blue /= max;
+                    }
+
+                    red *= 255;
+                    green *= 255;
+                    blue *= 255;
+
+                    red = Math.min(red, 255);
+                    blue = Math.min(blue, 255);
+                    green = Math.min(green, 255);
+
+                    bufferedImage.setRGB(k, i, new Color((int) red, (int) green, (int) blue).getRGB());
+                    int finalI = i;
+                    int finalK = k;
+                    SwingUtilities.invokeLater(() -> {
+                        integerRunnable.run((int) (((float) (finalI * width + finalK) / (float) (width * height)) * 100));
+                    });
+                }
             }
-        }
 
-        isRendered = true;
-        this.bufferedImage = bufferedImage;
-        repaint();
+            isRendered = true;
+            this.bufferedImage = bufferedImage;
+            renderEventHandler.run(RenderEvent.END);
+            SwingUtilities.invokeLater(this::repaint);
+
+        }).start();
+    }
+
+    public void setOnRenderUpdateListener(IntegerRunnable integerRunnable) {
+        this.integerRunnable = integerRunnable;
+    }
+
+    public void setRenderEventHandler(RenderEventHandler renderEventHandler) {
+        this.renderEventHandler = renderEventHandler;
     }
 
     private Point3D<Float, Float, Float> handleTriangle(Triangle triangle, Point3D<Float, Float, Float> firstPointInModel,
@@ -633,5 +674,10 @@ public class ShapeView extends JPanel {
     private Point3D<Float, Float, Float> normalizePoint(Point3D<Float, Float, Float> p) {
         float normalizeRate = (float) Math.sqrt(p.getX() * p.getX() + p.getY() * p.getY() + p.getZ() * p.getZ());
         return new Point3D<>(p.getX() / normalizeRate, p.getY() / normalizeRate, p.getZ() / normalizeRate);
+    }
+
+    public void wireMode() {
+        isRendered = false;
+        repaint();
     }
 }

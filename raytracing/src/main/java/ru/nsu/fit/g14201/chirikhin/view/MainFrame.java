@@ -10,7 +10,6 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class MainFrame extends JFrame {
@@ -18,8 +17,8 @@ public class MainFrame extends JFrame {
     private static final String SETTINGS = "Settings";
     private static final String ABOUT = "About";
 
-    private static final int DEFAULT_SHAPE_VIEW_WIDTH = 2000;
-    private static final int DEFAULT_SHAPE_VIEW_HEIGHT = 800;
+    private static final int DEFAULT_SHAPE_VIEW_WIDTH = 621;
+    private static final int DEFAULT_SHAPE_VIEW_HEIGHT = 621;
 
     private static final int MARGIN_BORDER = 10;
 
@@ -82,6 +81,31 @@ public class MainFrame extends JFrame {
         add(jToolBar, BorderLayout.NORTH);
         add(mainFrameInnerPanel, BorderLayout.CENTER);
         add(statusBar, BorderLayout.SOUTH);
+        shapeView.setOnRenderUpdateListener(value -> statusBar.updateValue(value));
+        shapeView.setRenderEventHandler(renderEvent -> {
+            switch (renderEvent) {
+                case START:
+                    for (Component component : jToolBar.getComponents()) {
+                        component.setEnabled(false);
+                    }
+
+                    for (Component component : jMenubar.getComponents()) {
+                        component.setEnabled(false);
+                    }
+                    statusBar.startRender();
+                    break;
+                case END:
+                    for (Component component : jToolBar.getComponents()) {
+                        component.setEnabled(true);
+                    }
+
+                    for (Component component : jMenubar.getComponents()) {
+                        component.setEnabled(true);
+                    }
+                    statusBar.endRender();
+                    break;
+            }
+        });
 
         mainFrameInnerPanel.add(shapeView, BorderLayout.CENTER);
 
@@ -90,7 +114,7 @@ public class MainFrame extends JFrame {
         MenuToolBarListenerUtil.addNewOption(fileMenu, jToolBar, SAVE_RENDER_SETTINGS_PNG, SAVE_RENDER_SETTINGS_TITLE, this::onSaveRenderSettingsClick);
         MenuToolBarListenerUtil.addNewOption(settingsMenu, jToolBar, INIT_PNG, INIT_TITLE, this::onInitClick);
         MenuToolBarListenerUtil.addNewOption(settingsMenu, jToolBar, RENDER_SETTINGS_PNG, RENDER_SETTINGS_TITLE, this::onRenderSettingsClick);
-        MenuToolBarListenerUtil.addNewSelectableOption(settingsMenu, jToolBar, SELECT_VIEW_PNG, SELECT_VIEW_TITLE, this::onSelectViewModeClick);
+        MenuToolBarListenerUtil.addNewOption(settingsMenu, jToolBar, SELECT_VIEW_PNG, SELECT_VIEW_TITLE, this::onSelectViewModeClick);
         MenuToolBarListenerUtil.addNewOption(settingsMenu, jToolBar, RENDER_PNG, RENDER_TITLE, this::onRenderModeClick);
         MenuToolBarListenerUtil.addNewOption(fileMenu, jToolBar, SAVE_IMAGE_PNG, SAVE_IMAGE_TITLE, this::onSaveImageClick);
         MenuToolBarListenerUtil.addNewOption(aboutMenu, jToolBar, ABOUT_PNG, ABOUT_TITLE, this::onAboutClick);
@@ -99,19 +123,19 @@ public class MainFrame extends JFrame {
         setVisible(true);
     }
 
+    private void onSelectViewModeClick() {
+        shapeView.wireMode();
+    }
+
     private void onRenderModeClick() {
         shapeView.render();
     }
 
     private void onAboutClick() {
-
+        JOptionPane.showMessageDialog(this, "Made by Chirikhin Alexander \n Raytracing");
     }
 
     private void onSaveImageClick() {
-
-    }
-
-    private void onSelectViewModeClick(boolean b) {
 
     }
 

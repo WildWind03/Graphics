@@ -1,6 +1,8 @@
 package ru.nsu.fit.g14201.chirikhin.model;
 
 
+import chirikhin.support.Point3D;
+
 import java.awt.*;
 import java.util.List;
 
@@ -17,6 +19,10 @@ public class SceneConfig {
 
     public Color getSpaceColor() {
         return spaceColor;
+    }
+
+    public Point3D<Float, Float, Float> getSpaceColorAsPoint() {
+        return new Point3D<>(spaceColor.getRed() / 255f, spaceColor.getGreen() / 255f, spaceColor.getBlue() / 255f);
     }
 
     public List<LightSource> getLightSources() {
