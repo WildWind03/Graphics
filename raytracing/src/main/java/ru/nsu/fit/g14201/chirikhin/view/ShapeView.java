@@ -522,7 +522,10 @@ public class ShapeView extends JPanel {
                 Point3D<Float, Float, Float> newPoint = new Point3D<>(reflectRay.getX() + nearestCrossPoint.getX(),
                         reflectRay.getY() + nearestCrossPoint.getY(), reflectRay.getZ() + nearestCrossPoint.getZ());
 
-                Point3D<Float, Float, Float> intensity = getIntensity(nearestCrossPoint, newPoint, depth + 1);
+                Point3D<Float, Float, Float> fixedNearestCrossPoint = new Point3D<>(nearestCrossPoint.getX() + 0.01f * normal.getX(),
+                        nearestCrossPoint.getY() + 0.01f * normal.getY(), nearestCrossPoint.getZ() + 0.01f * normal.getZ());
+
+                Point3D<Float, Float, Float> intensity = getIntensity(fixedNearestCrossPoint, newPoint, depth + 1);
                 Point3D<Float, Float, Float> fixedIntensity = new Point3D<>((intensity.getX() * opticalCharacteristics.getMirrorReflectRate().getX()),
                         (intensity.getY() * opticalCharacteristics.getMirrorReflectRate().getY()),
                         (intensity.getZ() * opticalCharacteristics.getMirrorReflectRate().getZ()));
