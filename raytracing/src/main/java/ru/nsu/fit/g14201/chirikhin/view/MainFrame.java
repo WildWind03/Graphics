@@ -1,7 +1,6 @@
 package ru.nsu.fit.g14201.chirikhin.view;
 
 import chirikhin.swing.util.MenuToolBarListenerUtil;
-import com.sun.org.apache.regexp.internal.RE;
 import ru.nsu.fit.g14201.chirikhin.model.RenderSettings;
 import ru.nsu.fit.g14201.chirikhin.model.SceneConfig;
 import ru.nsu.fit.g14201.chirikhin.parser.RenderConfigParser;
@@ -13,7 +12,6 @@ import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.MemoryImageSource;
 import java.io.File;
 import java.io.IOException;
 
